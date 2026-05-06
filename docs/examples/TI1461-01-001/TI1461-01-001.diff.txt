@@ -1,0 +1,129 @@
+PDF:           TI1461-01-001.pdf
+Lines changed: 25
+Char delta:    -2
+
+--- line 3 RAW:
+གནས་དང་པོ་ཁམས་བསྟན་པ། 
++++ line 3 PATCHED:
+གནས་དང་པོ་ཁམས་བྟན་པ། 
+
+--- line 12 RAW:
+མ�ོང་ལམ།
++++ line 12 PATCHED:
+མཐོང་ལམ།
+
+--- line 13 RAW:
+�ོམ་ལམ།
++++ line 13 PATCHED:
+ྒོམ་ལམ།
+
+--- line 14 RAW:
+མི་�ོབ་ལམ།
++++ line 14 PATCHED:
+མི་ློབ་ལམ།
+
+--- line 15 RAW:
+�ང་བ�ིན་�ི་མངོན་པ།
++++ line 15 PATCHED:
+རང་བཞིན་ྱི་མངོན་པ།
+
+--- line 16 RAW:
+བ�གས་པའི་མངོན་པ།
++++ line 16 PATCHED:
+བཏགས་པའི་མངོན་པ།
+
+--- line 17 RAW:
+�ངོན་�འི་ད�ེ་�་���་དང་�ང་�ོ་�་���།
++++ line 17 PATCHED:
+མངོན་པའི་དྱེ་བ་ཁམས་དང་ུང་པོ་ུ་བཅས།
+
+--- line 18 RAW:
+ག�ང་བ�གས་པའི་མངོན་པ།
++++ line 18 PATCHED:
+གུང་བཏགས་པའི་མངོན་པ།
+
+--- line 19 RAW:
+བ�འ་བསྟན་�ི་ག�ང་།
++++ line 19 PATCHED:
+བཀའ་བྟན་ྱི་གུང་།
+
+--- line 20 RAW:
+�ོ�་�ང་།
++++ line 20 PATCHED:
+�ོར་�ང་།
+
+--- line 21 RAW:
+ལམ་བ�གས་པའི་མངོན་པ།
++++ line 21 PATCHED:
+ལམ་བཏགས་པའི་མངོན་པ།
+
+--- line 22 RAW:
+�ོས་�ང་།
++++ line 22 PATCHED:
+ཐོས་�ང་།
+
+--- line 23 RAW:
+འདོད་ག�གས་
++++ line 23 PATCHED:
+འདོད་གུགས་
+
+--- line 24 RAW:
+ན་�ོད། 
++++ line 24 PATCHED:
+ན་ཡོད། 
+
+--- line 25 RAW:
+�ང་པོ་བ�ི།
++++ line 25 PATCHED:
+ུང་པོ་བཞི།
+
+--- line 28 RAW:
+�ང་པོ་བ�ི།
++++ line 28 PATCHED:
+ུང་པོ་བཞི།
+
+--- line 29 RAW:
+�ོམ་�ང་།
++++ line 29 PATCHED:
+ྒོམ་�ང་།
+
+--- line 30 RAW:
+ག�གས་དང་
++++ line 30 PATCHED:
+གུགས་དང་
+
+--- line 31 RAW:
+ག�གས་མེད།
++++ line 31 PATCHED:
+གུགས་མེད།
+
+--- line 32 RAW:
+�ང་པོ་
++++ line 32 PATCHED:
+ུང་པོ་
+
+--- line 33 RAW:
+བ�ིའམ་�།
++++ line 33 PATCHED:
+བཞིའམ་ྔ།
+
+--- line 34 RAW:
+�ེས་�ོབ།
++++ line 34 PATCHED:
+�ེས་ཐོབ།
+
+--- line 36 RAW:
+�མས་�ད་�ོད།
++++ line 36 PATCHED:
+ཐམས་ཅད་ཡོད།
+
+--- line 37 RAW:
+�ང་པོ་
++++ line 37 PATCHED:
+ུང་པོ་
+
+--- line 38 RAW:
+བ�ི་�ན།
++++ line 38 PATCHED:
+བཞི་ཅན།
+
