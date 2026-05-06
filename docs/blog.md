@@ -4,6 +4,20 @@
 
 ---
 
+## Acknowledgements
+
+**Development.** **`pdf-cmap-fix`** was developed by **Dharmaduta** from specifications provided by the **[Buddhist Digital Resource Center](https://www.bdrc.io)** (BDRC) for **“The BDRC Etext Corpus”**, with funding from the **Khyentse Foundation**.
+
+**Authors** (software): **Ganga Gyatso** ([ganga@webuddhist.com](mailto:ganga@webuddhist.com)), **Elie Roux** ([roux.elie@gmail.com](mailto:roux.elie@gmail.com)).
+
+---
+
+## Hero illustration (optional)
+
+Some reviewers welcome a **lead figure**: an editorial image suggesting **PDF + font → correct Unicode text** (for example a PDF icon merging with a glyph grid or OpenType motif, with an arrow toward a clean Tibetan text line). Flat vector style reads well on Medium and GitHub. **Accessibility:** add alt text such as *“Diagram: combining PDF content with font-derived glyph mappings to recover Unicode text.”* If the artwork is **AI-generated**, say so in the caption (tool name + human-directed prompt).
+
+---
+
 ## What this article covers
 
 `pdf-cmap-fix` exists to solve one specific, widespread problem: **Tibetan PDFs that render correctly on screen but produce wrong Unicode when their text is copied or extracted**. The cause is almost always the PDF's own `/ToUnicode` mapping table, written incorrectly by the document producer. The fix is to replace that table with a correct one, derived **directly from the source fonts** rather than from the producer's guess.
@@ -39,6 +53,10 @@ What you typed in copies fine in English. Tibetan does not. From a real example 
 RAW:      བྗོད་གངས་ཅན་ལྗོངས་སུ་ནང་ཆྗོས་ཀྱི་དབུ་ཚུགས་པ་
 PATCHED:  བོད་གངས་ཅན་ལྗོངས་སུ་ནང་ཆོས་ཀྱི་དབུ་ཚུགས་པ་
 ```
+
+**Example provenance.** Tibetan publications distributed through **[Budaedu](https://www.budaedu.org/)** ([budaedu.org](https://www.budaedu.org/)) feed into BDRC-related digitisation workflows; the pattern above is representative of Word-export PDFs of that kind.
+
+**Demo tip.** For screenshots or a short screencast, **extract a single page** (any PDF tool or reputable online “extract pages” service) so readers see one crisp **RAW vs PATCHED** pair without loading hundreds of pages. Full-corpus metrics below still refer to complete exports in the repository.
 
 Notice the **spurious ྗ** (subjoined ja) sitting under several vowels in **RAW**. That extra letter is **invisible to a printer** because the visible glyph is the same; it is **catastrophic for search, NLP, and TEI alignment** because it changes the underlying Unicode.
 
@@ -300,6 +318,17 @@ If you maintain your own font corpus, pass a custom `rev_db=` dict instead of us
 
 ---
 
+## How to cite
+
+
+Ganga Gyatso & Elie Roux. (2026). *pdf-cmap-fix* . OpenPecha. https://github.com/OpenPecha/pdf-cmap-fix  
+
+
+
+**Contact:** [ganga@webuddhist.com](mailto:ganga@webuddhist.com) · [roux.elie@gmail.com](mailto:roux.elie@gmail.com)
+
+---
+
 ## Summary
 
 Tibetan PDFs often fail in a way that is easy to miss: the page **looks** right because the font drew the correct ligatures, but the embedded **`/ToUnicode`** map tells extractors and the clipboard a different story—dropped stacks from InDesign, injected noise from Word, or other half-truths that poison search, alignment, and any pipeline that trusts “text inside the PDF.”
@@ -308,4 +337,4 @@ Tibetan PDFs often fail in a way that is easy to miss: the page **looks** right 
 
 The approach has clear edges: it targets **Identity-H** PDFs where character codes align with GIDs; it does nothing for fonts it cannot match; and some PDF viewers still handle Tibetan clipboard worse than a desktop reader even when the map is fixed. Within those bounds, the examples in this repository show the effect at publication scale—thousands of lines of extracted text corrected on real InDesign and Word exports.
 
-**[OpenPecha](https://github.com/OpenPecha)** maintains this tool as part of open infrastructure for Tibetan textual heritage: a narrow bridge from “what the reader saw” to “what the Unicode string ought to have been,” so digitisation and research workflows can treat PDF text as data again. The source code, bundled database, worked examples, and installation instructions live in **[github.com/OpenPecha/pdf-cmap-fix](https://github.com/OpenPecha/pdf-cmap-fix)**. Draft text in this article has been reviewed by **Ngawang Trinley** and **Evan Yerburgh** alongside the author; for release numbering, CLI names, and rebuild commands, the root **[README](../README.md)** remains the canonical reference for the **0.2.x** line (`pdf-cmap-fix` / `pdf_cmap_fix`, successor to the earlier `tibetan-pdf-fix` package name).
+**[OpenPecha](https://github.com/OpenPecha)** maintains this tool as part of open infrastructure for Tibetan textual heritage: a narrow bridge from “what the reader saw” to “what the Unicode string ought to have been,” so digitisation and research workflows can treat PDF text as data again. The source code, bundled database, worked examples, and installation instructions live in **[github.com/OpenPecha/pdf-cmap-fix](https://github.com/OpenPecha/pdf-cmap-fix)**. This article has been reviewed by **Ngawang Trinley** and **Evan Yerburgh** alongside the authors **Ganga Gyatso** and **Elie Roux**. For release numbering, CLI names, and rebuild commands, the root **[README](../README.md)** remains the canonical reference for the **0.2.x** line (`pdf-cmap-fix` / `pdf_cmap_fix`, successor to the earlier `tibetan-pdf-fix` package name).

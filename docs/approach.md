@@ -44,22 +44,47 @@ For each font file:
 
 1. Load the font with `fontTools`.
 2. Read the **cmap** table: `codepoint → glyph_name` for atomic characters.
-3. Read all **GSUB type-4 (ligature)** rules: `lig_glyph → [component_glyphs]`.
-4. Recursively decompose each ligature back to its atomic components and then
-   to their Unicode codepoints.
+3. Walk the **GSUB lookup list** and collect the substitution rules we can
+   reverse statically:
+   - **Type 4 (ligature)** — `lig_glyph → [component_glyphs]`.
+   - **Type 2 (multiple)** — `one_glyph → [component_glyphs]` (split, then
+     recurse).
+   - **Type 1 (single)** — `target_glyph ← [source_glyphs]` (so intermediate
+     glyphs such as `tibKa2` resolve back through `tibKa` to a `cmap` entry).
+   - **Type 7 (extension)** — wrappers that hold a 32‑bit offset to one of
+     types 1/2/4 above; transparently unwrapped to the inner subtable.
+4. Recursively decompose each glyph back to its atomic components and then to
+   their Unicode code points; the recursion stops when it reaches a `cmap`
+   entry or runs out of rules.
 
 This gives us the **reverse mapping**: `GID → correct Unicode sequence` for
 every glyph in the font, including complex stacked syllables.
 
 ```python
-# simplified sketch
+# simplified sketch — see scripts/build_reverse_db.py for the full walk.
 def decompose(gname):
-    if gname in cmap_reverse:          # atomic character
+    if gname in cmap_reverse:           # atomic letter or digit
         return cmap_reverse[gname]
-    if gname in gsub_rules:            # ligature
-        return "".join(decompose(c) for c in gsub_rules[gname])
-    return ""                          # unmappable glyph
+    if gname in lig_rules:              # GSUB type 4 (ligature)
+        return "".join(decompose(c) for c in lig_rules[gname])
+    if gname in multiple_fwd:           # GSUB type 2 (one -> many)
+        return "".join(decompose(c) for c in multiple_fwd[gname])
+    if gname in single_rev:             # GSUB type 1 (substitute -> source)
+        for src in single_rev[gname]:
+            r = decompose(src)
+            if r:
+                return r
+    return ""                           # truly unmappable glyph
 ```
+
+Lookup types **3 (alternate)** and **5 / 6 / 8 (contextual / chained /
+reverse‑chain)** are *not* reduced to a static `GID → Unicode` column. They
+depend on surrounding glyphs at shaping time and would require simulating the
+shaper to reverse safely. In practice, for the Tibetan corpus we ship, the
+inner substitutions called by contextual lookups are themselves type 1 / 4 and
+are already covered by the walk above; see
+`scripts/diagnose_contextual_gsub.py` for a per‑font check that prints how
+many glyphs (if any) would gain a mapping from explicit contextual modelling.
 
 The result is stored in `pdf_cmap_fix/data/reverse_db.json`:
 
@@ -77,6 +102,26 @@ The result is stored in `pdf_cmap_fix/data/reverse_db.json`:
 The earliest documentation referred only to **`bodyig.zip`** (Monlam / Himalaya /
 Jomolhari-heavy); the **bundled** database now aggregates many more faces—see
 the full key list in [font-inventory.md](font-inventory.md).
+
+### Per‑font overlay JSONs
+
+The merged `reverse_db.json` is one large blob (~16 MB). For inspection, single‑face refresh, or just‑in‑time fixes without rebuilding the bundled DB, **[`scripts/build_per_font_gid_maps.py`](../scripts/build_per_font_gid_maps.py)** writes one small JSON per face into **`pdf_cmap_fix/data/per_font/<normalised_key>.json`**, plus a `_manifest.json` index. The same GSUB walk (types 1, 2, 4 with type‑7 wrappers unwrapped) is used.
+
+Each file has the same shape as one entry of the merged DB so it can be merged on top of the bundled DB at runtime via `pdf-cmap-fix --overlay-db <file>` (see the [README](../README.md#per-font-overlays)). A small `_meta` block carries provenance and GSUB lookup counts and is ignored by the runtime merge:
+
+```json
+{
+  "monlamuniouchan2": { "216": "ོ", "390": "ལྔ", "1042": "རྐྱུ", "...": "..." },
+  "_meta": {
+    "source": "tibetan-fonts-main.zip::.../MonlamUniOuChan2.ttf",
+    "gids_mapped": 3247,
+    "multi_char_stacks": 2410,
+    "gsub_lookup_counts": {"1": 6, "2": 1, "4": 12, "6": 4}
+  }
+}
+```
+
+The full list of per‑font keys we ship is in [font-inventory.md](font-inventory.md#per-font-gid-maps-pdf_cmap_fixdataper_font).
 
 ### Step 2 — Match PDF Font to Database Entry
 
@@ -135,6 +180,28 @@ sequences.  This was wrong for Word-generated PDFs (TI1055):
 Word inserted a spurious subjoined-ja (`ྗ`, U+0F97) into many vowel-only
 glyphs.  The authoritative DB value is always correct because it comes from
 the actual font's GSUB table rather than from Word's heuristics.
+
+### Whitespace and PDF positioning
+
+The patcher only rewrites `/ToUnicode` streams; it never inserts, deletes, or
+reorders whitespace. Apparent “double spaces” inside Tibetan stacks in
+`*.patched.txt` (for example `སྤྱ  ོད`) come from PyMuPDF's text extraction,
+which interprets PDF `TJ` kerning offsets between glyphs as whitespace when the
+gap exceeds a heuristic threshold. Tibetan stack glyphs are physically wider
+than Latin characters, so the surrounding kerning often crosses that threshold.
+Counting whitespace runs in `*.raw.txt` vs `*.patched.txt` line‑by‑line shows
+identical totals — the spaces were already in the raw extraction; they only
+become visible once the surrounding `U+FFFD` placeholders are replaced with
+readable Tibetan letters.
+
+Three options if you need cleaner whitespace downstream: (a) drop
+`fitz.TEXT_PRESERVE_WHITESPACE` in `extract_all` (less aggressive heuristic,
+risk of losing real word separators on some PDFs), (b) extract via
+`get_text("words"|"dict")` and join glyphs yourself with a width‑aware threshold,
+or (c) collapse runs of two or more ASCII spaces between consecutive Tibetan
+characters in a post‑processing step. Option (c) is what we recommend for
+downstream NLP pipelines because it is local, reversible, and never touches
+spaces between Tibetan and other scripts.
 
 ### Why Only Type0 Fonts?
 
@@ -221,32 +288,35 @@ output is shorter but accurate.
 
 ```
 pdf-cmap-fix/
-├── pdf_cmap_fix/             Python package (installed)
+├── pdf_cmap_fix/                  Python package (installed)
 │   ├── __init__.py
-│   ├── extractor.py          Patch ToUnicode; extract; build_tounicode_dict; CLI
+│   ├── extractor.py               Patch ToUnicode; extract; build_tounicode_dict; CLI; --overlay-db
 │   └── data/
-│       └── reverse_db.json   Pre-built GID → Unicode database (~16 MB; 962 keys)
+│       ├── reverse_db.json        Pre-built GID → Unicode database (~16 MB; 963 keys)
+│       └── per_font/              One JSON per face (overlay-friendly; ~970 files, ~21 MB)
+│           ├── _manifest.json     Index + duplicates + read errors
+│           └── <key>.json         e.g. monlamuniouchan2.json, microsofthimalaya.json
 ├── scripts/
-│   ├── font_sources.py       Enumerate fonts from zip and/or directories
-│   ├── build_reverse_db.py   Rebuild reverse_db.json (zip and/or --fonts-dir)
-│   └── build_glyph_db.py     DEPRECATED — use build_reverse_db.py
+│   ├── font_sources.py                          Enumerate fonts from zip and/or directories
+│   ├── build_reverse_db.py                      Rebuild reverse_db.json (GSUB types 1/2/4 + Extension 7)
+│   ├── build_per_font_gid_maps.py               Per-font JSONs (writes pdf_cmap_fix/data/per_font/)
+│   ├── update_reverse_db_from_windows_himalaya.py  In-place refresh of `himalaya` row from %WINDIR%\Fonts\himalaya.ttf
+│   ├── diagnose_contextual_gsub.py              Read-only: per-font GSUB 5/6/8 coverage report
+│   └── build_glyph_db.py                        DEPRECATED — use build_reverse_db.py
 ├── docs/
+│   ├── README.md             Documentation index
 │   ├── approach.md           This file
-│   └── examples/
-│       ├── TI1751-01-001/    InDesign PDF + reference outputs
-│       │   ├── TI1751-01-001.pdf
-│       │   ├── TI1751-01-001.raw.txt
-│       │   ├── TI1751-01-001.patched.txt
-│       │   ├── TI1751-01-001.diff.txt
-│       │   ├── TI1751-01-001.patched.pdf   (from CLI `-p` / `--patch-pdf`)
-│       │   └── TI1751-01-001.cmap-dump.json  (`--dump-cmap`; very large)
-│       └── TI1055-01-001/    Word PDF + reference outputs
-│           ├── TI1055-01-001.pdf
-│           ├── TI1055-01-001.raw.txt
-│           ├── TI1055-01-001.patched.txt
-│           ├── TI1055-01-001.diff.txt
-│           ├── TI1055-01-001.patched.pdf
-│           └── TI1055-01-001.cmap-dump.json
+│   ├── glossary-and-json.md  Terms + JSON shapes
+│   ├── font-inventory.md     All bundled DB keys + per_font keys
+│   ├── blog.md               Article (publication-ready)
+│   └── examples/             Worked examples (one folder per PDF)
+│       ├── README.md         Index + reproduce commands
+│       ├── TI1055-01-001/    MS Word, 528 pages
+│       ├── TI1751-01-001/    InDesign, 528 pages
+│       ├── TI803-01-001/     MS Word, 398 pages, Microsoft Himalaya
+│       ├── TI1461-01-001/    InDesign, 1 page, mixed Qomolangma + Monlam
+│       └── TI1763-01-002/    MS Word, 1 page, Monlam Uni OuChan 2
+├── tests/
 ├── pyproject.toml
 ├── README.md
 └── .gitignore
@@ -274,3 +344,14 @@ when that file exists.  Duplicate normalised font names: **later** sources
 overwrite earlier ones (with a warning on stderr).
 
 Output defaults to `pdf_cmap_fix/data/reverse_db.json`.
+
+To regenerate the per‑font overlay JSONs that ship inside the package:
+
+```bash
+python scripts/build_per_font_gid_maps.py \
+    --zip scripts/bodyig.zip \
+    --zip scripts/tibetan-fonts-main.zip \
+    --zip scripts/tibetan-fonts-private-main.zip
+```
+
+This writes `pdf_cmap_fix/data/per_font/<key>.json` for every face it can decode and a `_manifest.json` with the full index, duplicate report, and any read errors.
