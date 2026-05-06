@@ -474,10 +474,21 @@ def _show_diff_sample(raw: str, patched: str, n: int = PREVIEW_DIFF) -> None:
 
 USAGE = (
     "Usage:\n"
-    "  pdf-cmap-fix <pdf1> [pdf2] ...                 extract patched Unicode text\n"
-    "  pdf-cmap-fix --patch-pdf <pdf1> [pdf2] ...     write patched PDFs only\n"
-    "  pdf-cmap-fix --dump-cmap OUT.json <pdf> ...    write ToUnicode merge dict (JSON)\n"
+    "  pdf-cmap-fix [--overlay-db PATH.json] <pdf1> [pdf2] ...\n"
+    "      merge extra font key(s) into bundled reverse_db.json, then extract\n"
+    "  pdf-cmap-fix [--overlay-db PATH.json] --patch-pdf <pdf> ...\n"
+    "  pdf-cmap-fix [--overlay-db PATH.json] --dump-cmap OUT.json <pdf> ...\n"
 )
+
+
+def _merge_overlay_reverse_db(base: dict, overlay_path: Path) -> dict:
+    """Overlay JSON must be { \"fontkey\": { \"gid\": \"unicode\", ... }, ... }."""
+    overlay = json.loads(overlay_path.read_text(encoding="utf-8"))
+    out = dict(base)
+    for k, v in overlay.items():
+        if isinstance(v, dict):
+            out[k] = v
+    return out
 
 
 def main() -> None:
@@ -492,6 +503,16 @@ def main() -> None:
     args = sys.argv[1:]
     if not args:
         sys.exit(USAGE)
+
+    overlay_paths: list[Path] = []
+    i = 0
+    while i < len(args):
+        if args[i] == "--overlay-db" and i + 1 < len(args):
+            overlay_paths.append(Path(args[i + 1]))
+            i += 2
+            continue
+        break
+    args = args[i:]
 
     dump_cmap: Optional[str] = None
     patch_pdf_mode = False
@@ -517,6 +538,12 @@ def main() -> None:
 
     print("Loading reverse DB ...")
     rev_db = json.loads(_DEFAULT_DB.read_text(encoding="utf-8"))
+    for op in overlay_paths:
+        op = op.expanduser().resolve()
+        if not op.is_file():
+            sys.exit(f"--overlay-db not found: {op}")
+        rev_db = _merge_overlay_reverse_db(rev_db, op)
+        print(f"  merged overlay: {op.name}")
     print(f"  {len(rev_db)} fonts loaded")
 
     for arg in pdf_args:

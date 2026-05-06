@@ -1,0 +1,19 @@
+{
+  "dedrissyma": {
+    "3": " ",
+    "4": "{",
+    "5": "}",
+    "6": "[",
+    "7": "]",
+    "8": "#",
+    "9": "$",
+    "10": "(",
+    "11": ")"
+  },
+  "_meta": {
+    "source": "tibetan-fonts-main.zip::tibetan-fonts-main/Non-Unicode Fonts/Nitartha/Dedris/dedris-syma.ttf",
+    "gids_mapped": 9,
+    "multi_char_stacks": 0,
+    "gsub_lookup_counts": {}
+  }
+}

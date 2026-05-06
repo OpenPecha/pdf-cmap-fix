@@ -41,3 +41,22 @@ def test_normalise_font_stem() -> None:
     import build_reverse_db as br
 
     assert br.normalise_name("fonts/Monlam Uni OuChan2.ttf") == "monlamuniouchan2"
+
+
+@pytest.mark.skipif(
+    not (SCRIPTS / "MicrosoftHimalaya.ttf").is_file(),
+    reason="scripts/MicrosoftHimalaya.ttf not present",
+)
+def test_build_gid_map_microsoft_himalaya_shapkyu_yata() -> None:
+    """GSUB single + ligature must yield ka+vowel, not vowel alone."""
+    if str(SCRIPTS) not in sys.path:
+        sys.path.insert(0, str(SCRIPTS))
+    import build_reverse_db as br
+
+    font = TTFont(str(SCRIPTS / "MicrosoftHimalaya.ttf"), lazy=False)
+    m = br.build_gid_map(font)
+    go = font.getGlyphOrder()
+    gi_shap = go.index("tibKa_Shapkyu")
+    gi_yata = go.index("tibKa_Yata")
+    assert m.get(gi_shap) == "\u0f40\u0f74"  # ka + shapkyu (ུ)
+    assert m.get(gi_yata) == "\u0f40\u0fb1"  # ka + yata (ྱ)
