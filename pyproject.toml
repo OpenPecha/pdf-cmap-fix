@@ -31,7 +31,10 @@ where = ["."]
 include = ["pdf_cmap_fix*"]
 
 [tool.setuptools.package-data]
-pdf_cmap_fix = ["data/*.json"]
+pdf_cmap_fix = [
+    "data/*.json",
+    "data/per_font/*.json",
+]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
