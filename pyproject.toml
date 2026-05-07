@@ -4,8 +4,8 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "pdf-cmap-fix"
-version = "0.2.0"
-description = "Fix PDF ToUnicode CMaps using GSUB-derived mappings; strong support for Tibetan stacked syllables (Monlam, Himalaya, Jomolhari)"
+version = "0.3.0"
+description = "Fix PDF ToUnicode CMaps using per-font GSUB-derived font lookup JSON; strong support for Tibetan stacked syllables (Monlam, Himalaya, Jomolhari)"
 readme = "README.md"
 requires-python = ">=3.8"
 license = {text = "MIT"}
@@ -31,10 +31,7 @@ where = ["."]
 include = ["pdf_cmap_fix*"]
 
 [tool.setuptools.package-data]
-pdf_cmap_fix = [
-    "data/*.json",
-    "data/per_font/*.json",
-]
+pdf_cmap_fix = ["data/font_lookup/*.json"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]

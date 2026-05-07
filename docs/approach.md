@@ -30,15 +30,16 @@ In practice, this mapping is frequently wrong or incomplete:
 
 ## The Solution
 
-### Step 1 — Build a Reverse GID Database
+### Step 1 — Build a Reverse GID map per font
 
-The shipped **`pdf_cmap_fix/data/reverse_db.json`** lists **962** normalised
-font keys (~16 MB on disk for the current bundle; see [font-inventory.md](font-inventory.md)).
-It is produced by **`scripts/build_reverse_db.py`** from one or more archives
-and/or directories (see root **README**): in practice **`scripts/bodyig.zip`**,
-**`scripts/tibetan-fonts-main.zip`**, and **`scripts/tibetan-fonts-private-main.zip`**
-are merged **in order**, with **later** inputs overriding earlier entries when
-the normalised font stem collides.
+The shipped **`pdf_cmap_fix/data/font_lookup/<key>.json`** files (968 unique keys;
+see [font-inventory.md](font-inventory.md)) are produced by
+**`scripts/build_per_font_gid_maps.py`** from the same archives **README** lists:
+**`scripts/bodyig.zip`**, **`scripts/tibetan-fonts-main.zip`**, and
+**`scripts/tibetan-fonts-private-main.zip`**, merged **in order** so **later**
+inputs override earlier entries when the normalised font stem collides.
+
+The GSUB walk is implemented in **`scripts/gid_map.py`** (`build_gid_map`).
 
 For each font file:
 
@@ -61,7 +62,7 @@ This gives us the **reverse mapping**: `GID → correct Unicode sequence` for
 every glyph in the font, including complex stacked syllables.
 
 ```python
-# simplified sketch — see scripts/build_reverse_db.py for the full walk.
+# simplified sketch — see scripts/gid_map.py for the full walk.
 def decompose(gname):
     if gname in cmap_reverse:           # atomic letter or digit
         return cmap_reverse[gname]
@@ -86,7 +87,7 @@ are already covered by the walk above; see
 `scripts/diagnose_contextual_gsub.py` for a per‑font check that prints how
 many glyphs (if any) would gain a mapping from explicit contextual modelling.
 
-The result is stored in `pdf_cmap_fix/data/reverse_db.json`:
+Each face’s map is written as one JSON file under `pdf_cmap_fix/data/font_lookup/`:
 
 ```json
 {
@@ -103,11 +104,11 @@ The earliest documentation referred only to **`bodyig.zip`** (Monlam / Himalaya 
 Jomolhari-heavy); the **bundled** database now aggregates many more faces—see
 the full key list in [font-inventory.md](font-inventory.md).
 
-### Per‑font overlay JSONs
+### Font lookup JSONs
 
-The merged `reverse_db.json` is one large blob (~16 MB). For inspection, single‑face refresh, or just‑in‑time fixes without rebuilding the bundled DB, **[`scripts/build_per_font_gid_maps.py`](../scripts/build_per_font_gid_maps.py)** writes one small JSON per face into **`pdf_cmap_fix/data/per_font/<normalised_key>.json`**, plus a `_manifest.json` index. The same GSUB walk (types 1, 2, 4 with type‑7 wrappers unwrapped) is used.
+**[`scripts/build_per_font_gid_maps.py`](../scripts/build_per_font_gid_maps.py)** writes one JSON per face into **`pdf_cmap_fix/data/font_lookup/<normalised_key>.json`**, plus **`_manifest.json`**. The extractor loads **`font_lookup/<matched_key>.json`** on demand (lazy read per matched font), from the bundled directory or from **`--font-lookup-dir`** / **`font_lookup_dir=`** (see the [README](../README.md#custom-font-lookup-directory-cli)). The same GSUB walk (types 1, 2, 4 with type‑7 wrappers unwrapped) is used.
 
-Each file has the same shape as one entry of the merged DB so it can be merged on top of the bundled DB at runtime via `pdf-cmap-fix --overlay-db <file>` (see the [README](../README.md#per-font-overlays)). A small `_meta` block carries provenance and GSUB lookup counts and is ignored by the runtime merge:
+A `_meta` block carries provenance and GSUB lookup counts and is ignored when resolving GIDs:
 
 ```json
 {
@@ -121,7 +122,7 @@ Each file has the same shape as one entry of the merged DB so it can be merged o
 }
 ```
 
-The full list of per‑font keys we ship is in [font-inventory.md](font-inventory.md#per-font-gid-maps-pdf_cmap_fixdataper_font).
+The full list of keys we ship is in [font-inventory.md](font-inventory.md#font-lookup-gid-maps-pdf_cmap_fixdatafont_lookup).
 
 ### Step 2 — Match PDF Font to Database Entry
 
@@ -155,7 +156,7 @@ Identity-H fonts.
 ### Text extraction vs patched PDF
 
 After the CMap merge, the library can do either of the following (same patch,
-same `reverse_db.json` matching rules):
+same font matching rules):
 
 | Mode | API | CLI | On disk |
 |------|-----|-----|---------|
@@ -207,7 +208,7 @@ spaces between Tibetan and other scripts.
 
 Type0/CID fonts with **Identity-H encoding** preserve the original font GIDs
 in the PDF.  Char code `N` in the PDF content stream = GID `N` in the
-original font = entry `N` in our reverse_db.  The mapping is exact.
+original font = GID `N` in our font lookup map.  The mapping is exact.
 
 TrueType **simple-encoding** fonts (e.g. Ghostscript-generated PDFs) assign
 their own sequential char codes (1, 2, 3, ...) per-subset.  Char code 1 is
@@ -219,9 +220,8 @@ garbled output.
 
 ## Supported Fonts
 
-Matching uses **normalised keys** as stored in **`reverse_db.json`** (lowercase
-letters and digits only). The bundled file lists **962** keys—see
-[font-inventory.md](font-inventory.md). Example keys still common in Tibetan
+Matching uses **normalised keys** matching **`font_lookup/<key>.json`** stems (lowercase
+letters and digits only). See [font-inventory.md](font-inventory.md). Example keys still common in Tibetan
 publications include **`monlamuniouchan2`**, **`himalaya`**, **`jomolhari`**, and
 many others from the combined font ZIPs.
 
@@ -236,7 +236,7 @@ Fonts **not** yet supported (TrueType simple encoding):
 
 ### TI1751-01-001.pdf (InDesign, 528 pages)
 
-Metrics below use the **bundled** `reverse_db.json` and current extractor;
+Metrics below use the **bundled** `font_lookup/` data and current extractor;
 exact counts move slightly if the database or PDF tooling changes.
 
 | Metric | Value |
@@ -290,24 +290,22 @@ output is shorter but accurate.
 pdf-cmap-fix/
 ├── pdf_cmap_fix/                  Python package (installed)
 │   ├── __init__.py
-│   ├── extractor.py               Patch ToUnicode; extract; build_tounicode_dict; CLI; --overlay-db
+│   ├── extractor.py               Patch ToUnicode; extract; build_tounicode_dict; CLI; --font-lookup-dir
 │   └── data/
-│       ├── reverse_db.json        Pre-built GID → Unicode database (~16 MB; 963 keys)
-│       └── per_font/              One JSON per face (overlay-friendly; ~970 files, ~21 MB)
+│       └── font_lookup/           One JSON per face (~970 files); runtime GID → Unicode source
 │           ├── _manifest.json     Index + duplicates + read errors
 │           └── <key>.json         e.g. monlamuniouchan2.json, microsofthimalaya.json
 ├── scripts/
 │   ├── font_sources.py                          Enumerate fonts from zip and/or directories
-│   ├── build_reverse_db.py                      Rebuild reverse_db.json (GSUB types 1/2/4 + Extension 7)
-│   ├── build_per_font_gid_maps.py               Per-font JSONs (writes pdf_cmap_fix/data/per_font/)
-│   ├── update_reverse_db_from_windows_himalaya.py  In-place refresh of `himalaya` row from %WINDIR%\Fonts\himalaya.ttf
-│   ├── diagnose_contextual_gsub.py              Read-only: per-font GSUB 5/6/8 coverage report
-│   └── build_glyph_db.py                        DEPRECATED — use build_reverse_db.py
+│   ├── gid_map.py                               cmap + GSUB decomposition (`build_gid_map`)
+│   ├── build_per_font_gid_maps.py               Rebuild pdf_cmap_fix/data/font_lookup/
+│   ├── update_font_lookup.py                  Create/update one font_lookup JSON from a local font
+│   └── diagnose_contextual_gsub.py              Optional GSUB 5/6/8 coverage report
 ├── docs/
 │   ├── README.md             Documentation index
 │   ├── approach.md           This file
 │   ├── glossary-and-json.md  Terms + JSON shapes
-│   ├── font-inventory.md     All bundled DB keys + per_font keys
+│   ├── font-inventory.md     All bundled font_lookup keys
 │   ├── blog.md               Article (publication-ready)
 │   └── examples/             Worked examples (one folder per PDF)
 │       ├── README.md         Index + reproduce commands
@@ -322,36 +320,19 @@ pdf-cmap-fix/
 └── .gitignore
 ```
 
-## Rebuilding the Database
+## Rebuilding font lookup
 
 Place the font ZIPs under `scripts/` (and/or pass `--fonts-dir`)—see the root
 **README** for the recommended **`bodyig`** + **`tibetan-fonts-main`** +
-**`tibetan-fonts-private-main`** order:
+**`tibetan-fonts-private-main`** order. Duplicate normalised font names:
+**later** sources overwrite earlier ones (with a warning on stderr).
 
 ```bash
 pip install fonttools
-python scripts/build_reverse_db.py --zip scripts/bodyig.zip
-python scripts/build_reverse_db.py --fonts-dir ../tibetan-fonts
-python scripts/build_reverse_db.py \
-  --zip scripts/bodyig.zip \
-  --zip scripts/tibetan-fonts-main.zip \
-  --zip scripts/tibetan-fonts-private-main.zip \
-  -o pdf_cmap_fix/data/reverse_db.json
-```
-
-If you omit `--zip` and `--fonts-dir`, the script defaults to `scripts/bodyig.zip`
-when that file exists.  Duplicate normalised font names: **later** sources
-overwrite earlier ones (with a warning on stderr).
-
-Output defaults to `pdf_cmap_fix/data/reverse_db.json`.
-
-To regenerate the per‑font overlay JSONs that ship inside the package:
-
-```bash
 python scripts/build_per_font_gid_maps.py \
     --zip scripts/bodyig.zip \
     --zip scripts/tibetan-fonts-main.zip \
     --zip scripts/tibetan-fonts-private-main.zip
 ```
 
-This writes `pdf_cmap_fix/data/per_font/<key>.json` for every face it can decode and a `_manifest.json` with the full index, duplicate report, and any read errors.
+This writes `pdf_cmap_fix/data/font_lookup/<key>.json` for every face it can decode and a `_manifest.json` with the full index, duplicate report, and any read errors.

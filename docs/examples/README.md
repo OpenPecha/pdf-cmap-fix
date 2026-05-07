@@ -9,7 +9,7 @@ Each subdirectory ships a real Tibetan PDF together with the artefacts produced 
 - **`*.patched.pdf`** — the input PDF with corrected `/ToUnicode` streams (visible glyphs are unchanged; copy/paste and search now return correct Unicode).
 - **`*.cmap-dump.json`** *(optional, only on the two large PDFs below)* — full per‑font merged ToUnicode for inspection (`pdf-cmap-fix --dump-cmap`).
 
-> All five inputs were processed with the bundled `pdf_cmap_fix/data/reverse_db.json`. Where a font benefits from the per‑font GSUB‑1/2/4/7 expansion (Microsoft Himalaya, Monlam Uni OuChan 2, …), the `--overlay-db pdf_cmap_fix/data/per_font/<key>.json` flag is shown next to the example.
+> All five inputs were processed with the bundled **`pdf_cmap_fix/data/font_lookup/*.json`** files. If your checkout’s maps differ from the committed reference outputs, align **`font_lookup/<key>.json`** (for example with **`scripts/update_font_lookup.py`**) or pass **`--font-lookup-dir`** to a folder that contains the JSON set you used.
 
 ## Index
 
@@ -28,28 +28,22 @@ Each subdirectory ships a real Tibetan PDF together with the artefacts produced 
 From the repository root, after `pip install -e .`:
 
 ```bash
-# Default (uses bundled reverse_db.json only)
+# Default (uses bundled font_lookup/*.json)
 pdf-cmap-fix docs/examples/TI1055-01-001/TI1055-01-001.pdf
 pdf-cmap-fix -p docs/examples/TI1055-01-001/TI1055-01-001.pdf
 ```
 
-For PDFs that embed **Microsoft Himalaya** subsets, layer the per‑font overlay so the GSUB type 1/2/4/7 expansion fires:
+For PDFs that embed **Microsoft Himalaya** subsets, ensure **`microsofthimalaya.json`** in your lookup directory reflects the GSUB type **1/2/4/7** walk (refresh with **`scripts/update_font_lookup.py`** if needed), then run:
 
 ```bash
-pdf-cmap-fix \
-    --overlay-db pdf_cmap_fix/data/per_font/microsofthimalaya.json \
-    docs/examples/TI803-01-001/TI803-01-001.pdf
-pdf-cmap-fix -p \
-    --overlay-db pdf_cmap_fix/data/per_font/microsofthimalaya.json \
-    docs/examples/TI803-01-001/TI803-01-001.pdf
+pdf-cmap-fix docs/examples/TI803-01-001/TI803-01-001.pdf
+pdf-cmap-fix -p docs/examples/TI803-01-001/TI803-01-001.pdf
 ```
 
-For TI1763 (Monlam Uni OuChan 2) the matching overlay is `monlamuniouchan2.json`:
+For TI1763 (Monlam Uni OuChan 2), the matching key is **`monlamuniouchan2`**:
 
 ```bash
-pdf-cmap-fix \
-    --overlay-db pdf_cmap_fix/data/per_font/monlamuniouchan2.json \
-    docs/examples/TI1763-01-002/TI1763-01-002.pdf
+pdf-cmap-fix docs/examples/TI1763-01-002/TI1763-01-002.pdf
 ```
 
 ## What each example shows
@@ -74,7 +68,7 @@ PATCHED:  འོད་གསལ་ཀློང་ཡངས་... རྣལ་འ
 
 ### `TI803-01-001/` — Word + Microsoft Himalaya subsets
 
-Same Word symptom as TI1055, but on a **Microsoft Himalaya** subset. The default `reverse_db.json` already covers most glyphs; the per‑font overlay (`microsofthimalaya.json`, built with the GSUB type 1/2/4/7 walk) recovers the remaining stack glyphs that were leaving `U+FFFD` placeholders.
+Same Word symptom as TI1055, but on a **Microsoft Himalaya** subset. The **`microsofthimalaya.json`** font lookup (GSUB type 1/2/4/7 walk) recovers stack glyphs that a cmap‑only or older map may leave as `U+FFFD` placeholders; regenerate that JSON if your local font build differs from the bundled file.
 
 ### `TI1461-01-001/` — InDesign, mixed Qomolangma + Monlam
 
@@ -82,6 +76,6 @@ Single‑page sample from a multi‑font InDesign export. The patcher resolves s
 
 ### `TI1763-01-002/` — Word, single page, Monlam Uni OuChan 2
 
-The smallest, easiest example to read end‑to‑end. With the per‑font overlay (`monlamuniouchan2.json`) the patched extraction has **0 residual `U+FFFD`** characters; the bundled DB alone leaves 3.
+The smallest, easiest example to read end‑to‑end. With an up‑to‑date **`monlamuniouchan2.json`** the patched extraction has **0 residual `U+FFFD`** characters; an older bundled map alone may leave 3.
 
 > Spaces inside Tibetan stacks (`སྤྱ  ོད`) come from PyMuPDF interpreting PDF kerning offsets as whitespace; they are present in `*.raw.txt` too. The patch never inserts or moves a space; see [`approach.md`](../approach.md#whitespace-and-pdf-positioning) for details.

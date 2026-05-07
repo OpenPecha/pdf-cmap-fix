@@ -1,4 +1,4 @@
-# Font archives — download locally to rebuild reverse_db.json (see README). Do not commit.
+# Font archives — download locally to rebuild font lookup (see README). Do not commit.
 scripts/*.zip
 
 # Loose font binaries used as one-off build inputs (do not commit)
@@ -8,7 +8,7 @@ scripts/*.otf
 # Build artefacts of one-off Microsoft Himalaya rebuilds (regenerate on demand)
 scripts/microsoft_himalaya_reverse_db.json
 
-# Per-font build logs (regenerate when you re-run scripts/build_per_font_gid_maps.py)
+# Font lookup build logs (regenerate when you re-run scripts/build_per_font_gid_maps.py)
 scripts/per_font_build.log
 
 # Optional shape DB (placeholder; regenerate locally if you ever need it)

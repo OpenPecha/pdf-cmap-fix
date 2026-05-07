@@ -2,14 +2,17 @@
 pdf_cmap_fix.extractor
 ======================
 
-Patches PDF ToUnicode CMaps using a GSUB-derived reverse mapping database,
+Patches PDF ToUnicode CMaps using a GSUB-derived reverse mapping per font,
 extracts Unicode text, or returns merged CMap data without mutating the PDF.
 
 Supported font class
 --------------------
 Type0 / CID / Identity-H fonts whose GID space is preserved in the PDF
-subset.  The bundled reverse_db.json is built from Tibetan fonts (Monlam,
-Himalaya, Jomolhari) and can be extended via ``scripts/build_reverse_db.py``.
+subset.  Runtime reads **font lookup** JSON files from ``data/font_lookup/`` (or a
+directory you pass as ``font_lookup_dir=`` / ``pdf-cmap-fix --font-lookup-dir``).
+Rebuild the tree with ``scripts/build_per_font_gid_maps.py`` or refresh one
+``<key>.json`` with ``scripts/update_font_lookup.py`` (see ``scripts/gid_map.py``
+for the GID→Unicode core).
 
 Public API
 ----------
@@ -25,12 +28,12 @@ import json
 import re
 import sys
 from pathlib import Path
-from typing import Any, Optional
+from typing import Any, Iterable, Optional
 
 import fitz
 
 _DATA_DIR = Path(__file__).parent / "data"
-_DEFAULT_DB = _DATA_DIR / "reverse_db.json"
+FONT_LOOKUP_DIR = _DATA_DIR / "font_lookup"
 
 PREVIEW_LINES = 15
 PREVIEW_DIFF = 8
@@ -58,14 +61,12 @@ def _normalise_name(name: str) -> str:
     return re.sub(r"[^a-z0-9]", "", name.lower())
 
 
-def _build_db_index(rev_db: dict) -> dict:
-    return {re.sub(r"[^a-z0-9]", "", k.lower()): k for k in rev_db}
+def _build_db_index(font_keys: Iterable[str]) -> dict:
+    return {re.sub(r"[^a-z0-9]", "", k.lower()): k for k in font_keys}
 
 
-def _find_in_db_with_key(
-    rev_db: dict, db_index: dict, pdf_basename: str
-) -> tuple[Optional[dict], Optional[str]]:
-    """Return ({gid: unicode}, rev_db_font_key) or (None, None)."""
+def _pick_best_font_key(db_index: dict, pdf_basename: str) -> Optional[str]:
+    """Return the font key that best matches a PDF base font name."""
     pdf_key = _normalise_name(pdf_basename)
     best_key: Optional[str] = None
     best_score, best_delta = 0, 10**9
@@ -81,9 +82,36 @@ def _find_in_db_with_key(
         delta = abs(len(db_norm) - len(pdf_key))
         if score > best_score or (score == best_score and delta < best_delta):
             best_score, best_delta, best_key = score, delta, db_key
-    if best_key is None:
-        return None, None
-    return {int(k): v for k, v in rev_db[best_key].items()}, best_key
+    return best_key
+
+
+def _discover_lookup_keys(lookup_dir: Path) -> list[str]:
+    if not lookup_dir.is_dir():
+        return []
+    return sorted(
+        p.stem for p in lookup_dir.glob("*.json") if p.name != "_manifest.json"
+    )
+
+
+def _font_json_payload_to_gid_map(data: dict) -> dict[int, str]:
+    for k, v in data.items():
+        if k == "_meta":
+            continue
+        if not isinstance(v, dict) or not v:
+            continue
+        try:
+            return {int(g): u for g, u in v.items()}
+        except (ValueError, TypeError):
+            continue
+    return {}
+
+
+def _load_gid_map_file(path: Path) -> dict[int, str]:
+    try:
+        data = json.loads(path.read_text(encoding="utf-8"))
+    except (OSError, json.JSONDecodeError):
+        return {}
+    return _font_json_payload_to_gid_map(data)
 
 
 def _parse_tounicode(stream: bytes) -> dict:
@@ -165,16 +193,24 @@ def _overrides(existing: dict, merged: dict) -> dict:
 
 def collect_font_merges(
     doc: fitz.Document,
-    rev_db: dict,
     *,
+    font_lookup_dir: Optional[Path] = None,
     verbose: bool = False,
 ) -> tuple[list[dict[str, Any]], dict[str, int]]:
     """Scan Type0 fonts with ToUnicode; compute merged maps without writing PDF.
 
+    Loads GID maps from ``font_lookup_dir`` (default :data:`FONT_LOOKUP_DIR`):
+    one ``<key>.json`` per normalised font key (see ``scripts/update_font_lookup.py``).
+
     Returns (records, stats). Each record has font_xref, to_unicode_xref,
     pdf_font_name, db_key_matched, existing, merged, overrides, changed.
     """
-    db_index = _build_db_index(rev_db)
+    cache: dict[str, dict[int, str]] = {}
+
+    lookup_dir = Path(font_lookup_dir) if font_lookup_dir is not None else FONT_LOOKUP_DIR
+    keys_disk = _discover_lookup_keys(lookup_dir)
+    db_index = _build_db_index(keys_disk)
+
     stats = dict(fonts_seen=0, patched=0, upgrades=0, no_change=0, no_match=0)
     records: list[dict[str, Any]] = []
     seen: set = set()
@@ -204,7 +240,21 @@ def collect_font_merges(
                 continue
 
             existing = _parse_tounicode(tu_stream)
-            db_map, db_key = _find_in_db_with_key(rev_db, db_index, basename)
+
+            picked = _pick_best_font_key(db_index, basename)
+            if picked is None:
+                db_map, db_key = None, None
+            else:
+                path = lookup_dir / f"{picked}.json"
+                if path.is_file():
+                    if picked not in cache:
+                        cache[picked] = _load_gid_map_file(path)
+                    db_map = cache[picked]
+                    db_key = picked if db_map else None
+                else:
+                    db_map, db_key = None, None
+            if not db_map:
+                db_map, db_key = None, None
 
             if db_map is None:
                 stats["no_match"] += 1
@@ -214,20 +264,12 @@ def collect_font_merges(
                     print(f"  [no DB match] {basename}")
                 merged = dict(existing)
                 changed = 0
-                overrides: dict = {}
+                overrides = {}
             else:
                 norm = _normalise_name(basename)
                 if verbose and norm not in reported:
                     reported.add(norm)
-                    matched = next(
-                        (
-                            dk
-                            for nk, dk in db_index.items()
-                            if norm == nk or norm in nk or nk in norm
-                        ),
-                        "?",
-                    )
-                    print(f"  [matched] {basename[:50]} -> {matched}")
+                    print(f"  [matched] {basename[:50]} -> {db_key}")
                 merged, changed = _merge(existing, db_map)
                 overrides = _overrides(existing, merged)
 
@@ -268,11 +310,15 @@ def apply_font_merges_to_doc(doc: fitz.Document, records: list[dict[str, Any]]) 
 
 def patch_doc(
     doc: fitz.Document,
-    rev_db: dict,
     *,
+    font_lookup_dir: Optional[Path] = None,
     verbose: bool = False,
 ) -> dict[str, int]:
-    records, stats = collect_font_merges(doc, rev_db, verbose=verbose)
+    records, stats = collect_font_merges(
+        doc,
+        font_lookup_dir=font_lookup_dir,
+        verbose=verbose,
+    )
     apply_font_merges_to_doc(doc, records)
     return stats
 
@@ -290,14 +336,15 @@ def extract_all(doc: fitz.Document) -> str:
 
 def build_tounicode_dict(
     pdf_path,
-    rev_db: Optional[dict] = None,
+    *,
+    font_lookup_dir: Optional[Path] = None,
 ) -> dict[str, Any]:
     """Return per-font ToUnicode maps (existing, merged, overrides) without patching.
 
     Parameters
     ----------
     pdf_path : str or Path
-    rev_db : optional pre-loaded reverse database
+    font_lookup_dir : directory of ``<key>.json`` files (default: bundled lookup)
 
     Returns
     -------
@@ -307,12 +354,14 @@ def build_tounicode_dict(
         stats : aggregate counters (fonts_seen, patched, upgrades, no_change, no_match)
     """
     pdf_path = Path(pdf_path)
-    if rev_db is None:
-        rev_db = json.loads(_DEFAULT_DB.read_text(encoding="utf-8"))
 
     doc = fitz.open(str(pdf_path))
     try:
-        records, stats = collect_font_merges(doc, rev_db, verbose=False)
+        records, stats = collect_font_merges(
+            doc,
+            font_lookup_dir=font_lookup_dir,
+            verbose=False,
+        )
     finally:
         doc.close()
 
@@ -324,15 +373,12 @@ def patch_pdf(
     pdf_path,
     output_path=None,
     write_file: bool = True,
-    rev_db: Optional[dict] = None,
     *,
+    font_lookup_dir: Optional[Path] = None,
     verbose: bool = False,
 ) -> dict:
     pdf_path = Path(pdf_path)
     stem = pdf_path.stem
-
-    if rev_db is None:
-        rev_db = json.loads(_DEFAULT_DB.read_text(encoding="utf-8"))
 
     out_path: Optional[Path] = None
     if write_file:
@@ -340,7 +386,11 @@ def patch_pdf(
 
     doc = fitz.open(str(pdf_path))
     try:
-        stats = patch_doc(doc, rev_db, verbose=verbose)
+        stats = patch_doc(
+            doc,
+            font_lookup_dir=font_lookup_dir,
+            verbose=verbose,
+        )
         pdf_bytes = doc.tobytes(garbage=4, deflate=True)
     finally:
         doc.close()
@@ -355,16 +405,13 @@ def extract_pdf_text(
     pdf_path,
     output_dir=None,
     write_files: bool = True,
-    rev_db: Optional[dict] = None,
     *,
+    font_lookup_dir: Optional[Path] = None,
     verbose: bool = False,
 ) -> dict:
     pdf_path = Path(pdf_path)
     out_dir = Path(output_dir) if output_dir else pdf_path.parent
     stem = pdf_path.stem
-
-    if rev_db is None:
-        rev_db = json.loads(_DEFAULT_DB.read_text(encoding="utf-8"))
 
     doc_raw = fitz.open(str(pdf_path))
     raw_text = extract_all(doc_raw)
@@ -372,7 +419,11 @@ def extract_pdf_text(
 
     doc_pat = fitz.open(str(pdf_path))
     try:
-        stats = patch_doc(doc_pat, rev_db, verbose=verbose)
+        stats = patch_doc(
+            doc_pat,
+            font_lookup_dir=font_lookup_dir,
+            verbose=verbose,
+        )
         patched_text = extract_all(doc_pat)
     finally:
         doc_pat.close()
@@ -474,21 +525,11 @@ def _show_diff_sample(raw: str, patched: str, n: int = PREVIEW_DIFF) -> None:
 
 USAGE = (
     "Usage:\n"
-    "  pdf-cmap-fix [--overlay-db PATH.json] <pdf1> [pdf2] ...\n"
-    "      merge extra font key(s) into bundled reverse_db.json, then extract\n"
-    "  pdf-cmap-fix [--overlay-db PATH.json] --patch-pdf <pdf> ...\n"
-    "  pdf-cmap-fix [--overlay-db PATH.json] --dump-cmap OUT.json <pdf> ...\n"
+    "  pdf-cmap-fix [--font-lookup-dir DIR] <pdf1> [pdf2] ...\n"
+    "      extract using JSON GID maps from DIR (default: bundled pdf_cmap_fix/data/font_lookup)\n"
+    "  pdf-cmap-fix [--font-lookup-dir DIR] --patch-pdf <pdf> ...\n"
+    "  pdf-cmap-fix [--font-lookup-dir DIR] --dump-cmap OUT.json <pdf> ...\n"
 )
-
-
-def _merge_overlay_reverse_db(base: dict, overlay_path: Path) -> dict:
-    """Overlay JSON must be { \"fontkey\": { \"gid\": \"unicode\", ... }, ... }."""
-    overlay = json.loads(overlay_path.read_text(encoding="utf-8"))
-    out = dict(base)
-    for k, v in overlay.items():
-        if isinstance(v, dict):
-            out[k] = v
-    return out
 
 
 def main() -> None:
@@ -503,16 +544,28 @@ def main() -> None:
     args = sys.argv[1:]
     if not args:
         sys.exit(USAGE)
+    if args[0] in ("-h", "--help"):
+        sys.stdout.write(USAGE)
+        sys.exit(0)
 
-    overlay_paths: list[Path] = []
+    font_lookup_cli: Optional[Path] = None
     i = 0
     while i < len(args):
-        if args[i] == "--overlay-db" and i + 1 < len(args):
-            overlay_paths.append(Path(args[i + 1]))
+        if args[i] == "--font-lookup-dir" and i + 1 < len(args):
+            font_lookup_cli = Path(args[i + 1])
             i += 2
             continue
         break
     args = args[i:]
+
+    lookup_root = (
+        font_lookup_cli.expanduser().resolve()
+        if font_lookup_cli is not None
+        else FONT_LOOKUP_DIR
+    )
+    if not lookup_root.is_dir():
+        flag = "--font-lookup-dir" if font_lookup_cli is not None else "bundled font_lookup"
+        sys.exit(f"font lookup directory not found ({flag}): {lookup_root}")
 
     dump_cmap: Optional[str] = None
     patch_pdf_mode = False
@@ -530,21 +583,9 @@ def main() -> None:
     if not pdf_args:
         sys.exit(USAGE)
 
-    if not _DEFAULT_DB.exists():
-        sys.exit(
-            f"reverse_db.json not found at {_DEFAULT_DB}.\n"
-            "If you installed from source, run: python scripts/build_reverse_db.py"
-        )
-
-    print("Loading reverse DB ...")
-    rev_db = json.loads(_DEFAULT_DB.read_text(encoding="utf-8"))
-    for op in overlay_paths:
-        op = op.expanduser().resolve()
-        if not op.is_file():
-            sys.exit(f"--overlay-db not found: {op}")
-        rev_db = _merge_overlay_reverse_db(rev_db, op)
-        print(f"  merged overlay: {op.name}")
-    print(f"  {len(rev_db)} fonts loaded")
+    n_lookup = len(_discover_lookup_keys(lookup_root))
+    print("Loading font lookup ...")
+    print(f"  {n_lookup} font JSON files under {lookup_root}")
 
     for arg in pdf_args:
         pdf_path = Path(arg)
@@ -561,7 +602,10 @@ def main() -> None:
             out_json = Path(dump_cmap)
             if len(pdf_args) > 1:
                 out_json = out_json.parent / f"{out_json.stem}_{pdf_path.stem}{out_json.suffix}"
-            payload = build_tounicode_dict(pdf_path, rev_db=rev_db)
+            payload = build_tounicode_dict(
+                pdf_path,
+                font_lookup_dir=lookup_root,
+            )
             serial = _sanitise_json_utf8(_serialise_cmap_result(payload))
             out_json.parent.mkdir(parents=True, exist_ok=True)
             out_json.write_text(json.dumps(serial, ensure_ascii=False, indent=2), encoding="utf-8")
@@ -575,7 +619,11 @@ def main() -> None:
 
         if patch_pdf_mode:
             print("\n[Patch-only mode] Rewriting ToUnicode CMaps ...")
-            result = patch_pdf(pdf_path, rev_db=rev_db, verbose=True)
+            result = patch_pdf(
+                pdf_path,
+                font_lookup_dir=lookup_root,
+                verbose=True,
+            )
             stats = result["stats"]
             pdf_bytes = result["pdf_bytes"]
             out_path = result["output_path"]
@@ -587,7 +635,11 @@ def main() -> None:
             continue
 
         print("\n[Phase 1] Raw extraction ...")
-        result = extract_pdf_text(pdf_path, rev_db=rev_db, verbose=True)
+        result = extract_pdf_text(
+            pdf_path,
+            font_lookup_dir=lookup_root,
+            verbose=True,
+        )
         raw_text = result["raw"]
         patched_text = result["patched"]
         stats = result["stats"]

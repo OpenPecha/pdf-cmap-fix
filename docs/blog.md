@@ -26,7 +26,7 @@ This article walks through:
 
 - **Why this failure mode happens specifically with Tibetan** (and other complex scripts) and almost never with English.
 - **What the tool actually changes** inside a PDF, and what it deliberately leaves alone.
-- **How the bundled glyph database (`reverse_db.json`) is built** from real font files, with diagrams showing both the *composition* path used by font shapers and the *decomposition* path used by the database builder.
+- **How the bundled font lookup** (`pdf_cmap_fix/data/font_lookup/*.json`) **is built** from real font files, with diagrams showing both the *composition* path used by font shapers and the *decomposition* path used by the database builder.
 - **Measured results on two production-grade publications** committed to the repository as worked examples.
 - **The boundaries of the approach** — the cases where it deliberately does nothing.
 - **How to install and run it**, both as a command-line tool and as a Python library.
@@ -103,8 +103,8 @@ flowchart LR
     PDF[Original PDF]:::in
     PDF --> A[Find every Type0 / Identity-H font<br/>and its /ToUnicode stream]
     A --> B[Parse existing ToUnicode<br/>GID → Unicode]
-    A --> M[Match font name to a key<br/>in reverse_db.json]
-    M --> DB[(reverse_db.json<br/>962 fonts<br/>~16 MB)]:::db
+    A --> M[Match font name to a key<br/>in font_lookup/*.json]
+    M --> DB[(font_lookup/<br/>~968 font files)]:::db
     B --> C[Merge: DB value wins<br/>where DB has an entry]
     DB --> C
     C --> O1[*.raw.txt / *.patched.txt / *.diff.txt]:::out
@@ -126,7 +126,7 @@ Three things are deliberately **not** in this diagram:
 
 ## How the bundled glyph database is built from the source fonts
 
-**`reverse_db.json`** is a single JSON file shipped inside the package. It maps **font identity → { GID → Unicode string }**:
+**`font_lookup/<key>.json`** files (one per normalised font key) are shipped inside the package. Each maps **font identity → { GID → Unicode string }** (with optional `_meta`):
 
 ```json
 {
@@ -168,7 +168,7 @@ flowchart LR
       CL --> CG["glyph ‘ka_ya_i’"]
     end
 
-    subgraph Decompose["Decomposition (what reverse_db build does)"]
+    subgraph Decompose["Decomposition (GID → Unicode map build)"]
       direction LR
       DG["glyph ‘ka_ya_i’"] --> DR[apply GSUB type-4 in reverse]
       DR --> D1["uni0F40"]
@@ -181,7 +181,7 @@ flowchart LR
     end
 ```
 
-Concretely, the builder ([`scripts/build_reverse_db.py`](../scripts/build_reverse_db.py)) loads each font with [fontTools](https://fonttools.readthedocs.io/) and runs a small recursive walk:
+Concretely, the builder ([`scripts/gid_map.py`](../scripts/gid_map.py) via [`build_per_font_gid_maps.py`](../scripts/build_per_font_gid_maps.py)) loads each font with [fontTools](https://fonttools.readthedocs.io/) and runs a small recursive walk:
 
 ```python
 def decompose(gname):
@@ -198,7 +198,7 @@ For every glyph ID `gid` in the font:
 gid → glyph name → decompose(...) → Unicode string
 ```
 
-The result for one font is a **complete and authoritative GID → Unicode table** — derived **from the font itself**, not from anyone’s ToUnicode guess. Repeat for hundreds of Tibetan fonts; merge in a defined order (later sources override earlier on key collision); write JSON. That is `reverse_db.json`.
+The result for one font is a **complete and authoritative GID → Unicode table** — derived **from the font itself**, not from anyone’s ToUnicode guess. Repeat for hundreds of Tibetan fonts; merge in a defined order (later sources override earlier on key collision); write one JSON per face under **`font_lookup/`**.
 
 ### Why deriving the database from the fonts is trustworthy
 
@@ -208,15 +208,15 @@ The result for one font is a **complete and authoritative GID → Unicode table*
 
 ### Refreshing one font without rebuilding the entire database
 
-For maintainers who care about a **specific build** of a face (for example the **Microsoft Himalaya** that ships with their Windows install), the repo ships **[`scripts/update_reverse_db_from_windows_himalaya.py`](../scripts/update_reverse_db_from_windows_himalaya.py)**. It reads `%WINDIR%\Fonts\himalaya.ttf` and replaces only the `himalaya` entry inside `reverse_db.json` — no full rebuild needed.
+For maintainers who care about a **specific build** of a face, **[`scripts/update_font_lookup.py`](../scripts/update_font_lookup.py)** rebuilds one **`font_lookup/<key>.json`** from a local ``.ttf`` / ``.otf`` (defaulting to Windows ``himalaya.ttf`` when run with no arguments) — no full ZIP rebuild needed.
 
 ---
 
 ## Inside the patching workflow: matching, merging, and writing the PDF
 
-Once `reverse_db.json` exists, fixing a PDF reduces to three steps for every Type0 / Identity-H font we find:
+Once the **font lookup** files exist, fixing a PDF reduces to three steps for every Type0 / Identity-H font we find:
 
-1. **Match.** Strip the PDF subset prefix (e.g. `FPFIFO+`), decode hex escapes (`#23`, `#2320`), normalise to letters and digits. Look up that key in `reverse_db.json`.
+1. **Match.** Strip the PDF subset prefix (e.g. `FPFIFO+`), decode hex escapes (`#23`, `#2320`), normalise to letters and digits. Load **`font_lookup/<key>.json`** for that key.
 2. **Merge.** Where the database has a value for a GID, **the database wins** — even if the PDF’s ToUnicode disagrees. (Empirically, the producer is wrong far more often than the font.)
 3. **Write.** Replace the **`/ToUnicode`** stream of that font object with a fresh CMap built from the merged map. The font dictionary, the page content, and the visible glyphs are all left alone.
 
@@ -226,7 +226,7 @@ sequenceDiagram
     autonumber
     participant U as "User"
     participant CLI as "pdf-cmap-fix CLI"
-    participant DB as "reverse_db.json"
+    participant DB as "font_lookup/*.json"
     participant Mu as "PyMuPDF (fitz)"
     participant PDF as "Patched PDF"
 
@@ -284,7 +284,7 @@ A negative char delta is, in this case, the sign of **a successful clean-up**: e
 Honesty is part of the contract.
 
 - **Type0 / Identity-H only.** Some Ghostscript and older TrueType-simple-encoded PDFs use byte codes that are **not** the font’s GIDs. This pipeline correctly refuses to touch them, because patching them blindly would produce garbled output. ([approach.md](approach.md) explains why.)
-- **The font must be in `reverse_db.json`.** Unknown faces get `db_key_matched: null` and stay unchanged. Adding a font is a one-shot rebuild.
+- **The font must have a `font_lookup/<key>.json` entry** in the lookup directory you use (bundled or **`--font-lookup-dir`**). Unknown faces get `db_key_matched: null` and stay unchanged. Adding a font is a one-shot rebuild or a single-file refresh with **`scripts/update_font_lookup.py`**.
 - **Viewer behaviour matters.** Some in-browser PDF tabs do a poor job of clipboard or font fallback for Tibetan even when the underlying ToUnicode is fine. **Adobe Acrobat Reader** (and most desktop viewers) handle the patched PDFs correctly. The package’s own `*.patched.txt` is the authoritative “what the patch produced.”
 
 ---
@@ -314,7 +314,7 @@ patch_pdf("doc.pdf")                     # writes doc.patched.pdf
 build_tounicode_dict("doc.pdf")          # per-font existing/merged/overrides
 ```
 
-If you maintain your own font corpus, pass a custom `rev_db=` dict instead of using the bundled JSON — the merging logic is identical.
+If you maintain your own font corpus, point **`font_lookup_dir=`** (or **`pdf-cmap-fix --font-lookup-dir`**) at a directory of `<key>.json` files.
 
 ---
 
@@ -333,7 +333,7 @@ Ganga Gyatso & Elie Roux. (2026). *pdf-cmap-fix* . OpenPecha. https://github.com
 
 Tibetan PDFs often fail in a way that is easy to miss: the page **looks** right because the font drew the correct ligatures, but the embedded **`/ToUnicode`** map tells extractors and the clipboard a different story—dropped stacks from InDesign, injected noise from Word, or other half-truths that poison search, alignment, and any pipeline that trusts “text inside the PDF.”
 
-**[`pdf-cmap-fix`](https://github.com/OpenPecha/pdf-cmap-fix)** does not guess from pixels. It treats the **OpenType font** as the authority: the bundled **`reverse_db.json`** is built offline from hundreds of **`.ttf`** / **`.otf`** sources by walking **`cmap`** for atomic letters and **`GSUB` type-4** for ligatures, then walking those rules **backwards** so every glyph ID resolves to the Unicode string the shaper would have consumed in the forward direction. At patch time, the tool matches each embedded Type0 / Identity-H face to a key in that database, **merges** the database’s map into the PDF’s existing ToUnicode (the database wins where it has an entry), and **writes** new CMap streams—leaving the original bytes on disk alone unless you emit a separate **`*.patched.pdf`**.
+**[`pdf-cmap-fix`](https://github.com/OpenPecha/pdf-cmap-fix)** does not guess from pixels. It treats the **OpenType font** as the authority: the bundled **`font_lookup/`** trees are built offline from hundreds of **`.ttf`** / **`.otf`** sources by walking **`cmap`** for atomic letters and **`GSUB`** (types 1, 2, 4, plus Extension 7) for substitutions and ligatures, then walking those rules **backwards** so every glyph ID resolves to the Unicode string the shaper would have consumed in the forward direction. At patch time, the tool matches each embedded Type0 / Identity-H face to a key, loads that **`font_lookup/<key>.json`**, **merges** its map into the PDF’s existing ToUnicode (the lookup wins where it has an entry), and **writes** new CMap streams—leaving the original bytes on disk alone unless you emit a separate **`*.patched.pdf`**.
 
 The approach has clear edges: it targets **Identity-H** PDFs where character codes align with GIDs; it does nothing for fonts it cannot match; and some PDF viewers still handle Tibetan clipboard worse than a desktop reader even when the map is fixed. Within those bounds, the examples in this repository show the effect at publication scale—thousands of lines of extracted text corrected on real InDesign and Word exports.
 

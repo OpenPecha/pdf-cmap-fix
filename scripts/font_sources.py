@@ -1,5 +1,5 @@
 """
-Enumerate font files for reverse_db building.
+Enumerate font files for font lookup / merged GID database builds.
 
 Supports:
   - zip archives (any .ttf / .otf member path)

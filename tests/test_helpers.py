@@ -1,7 +1,6 @@
 """Unit tests for pdf_cmap_fix pure helpers and integration smoke tests."""
 from __future__ import annotations
 
-import json
 from pathlib import Path
 
 import pytest
@@ -103,9 +102,7 @@ def test_serialise_cmap_result_str_keys() -> None:
 
 @pytest.mark.skipif(not TI1751.is_file(), reason="example PDF not present")
 def test_build_tounicode_dict_ti1751() -> None:
-    db_path = REPO / "pdf_cmap_fix" / "data" / "reverse_db.json"
-    rev_db = json.loads(db_path.read_text(encoding="utf-8"))
-    result = build_tounicode_dict(TI1751, rev_db=rev_db)
+    result = build_tounicode_dict(TI1751)
     assert result["stats"]["fonts_seen"] >= 1
     assert len(result["fonts"]) >= 1
     any_overrides = any(len(f["overrides"]) > 0 for f in result["fonts"])

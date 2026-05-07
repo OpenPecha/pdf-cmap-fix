@@ -1,6 +1,6 @@
 # Glossary and JSON formats
 
-Terms and file formats used throughout **pdf-cmap-fix**. Read this if you are integrating the library or regenerating `reverse_db.json`.
+Terms and file formats used throughout **pdf-cmap-fix**. Read this if you are integrating the library or regenerating **`pdf_cmap_fix/data/font_lookup/*.json`**.
 
 ## Terms
 
@@ -12,13 +12,13 @@ Terms and file formats used throughout **pdf-cmap-fix**. Read this if you are in
 | **ToUnicode** | A PDF stream (`/ToUnicode`) that maps character codes to Unicode for copy-paste and text extraction. Many Tibetan PDFs ship incomplete or wrong tables for stacked syllables. |
 | **CMap** | Character map; here mainly the **ToUnicode CMap** content (PDF syntax with `beginbfchar` / `beginbfrange` ranges). |
 | **GSUB** | OpenType **Glyph Substitution** table. Type-4 lookups describe **ligatures** (e.g. stacked Tibetan). The builder walks these rules to expand ligature glyphs into Unicode sequences. |
-| **Reverse database** | `reverse_db.json`: for each known font (by normalised name), a map **GID (string) → Unicode string**. Built offline from `.ttf`/`.otf` using cmap + GSUB. |
+| **Font lookup** | Directory `pdf_cmap_fix/data/font_lookup/`: one **`<key>.json`** per face with **GID (string) → Unicode string** plus optional `_meta`. Built offline from `.ttf`/`.otf` using cmap + GSUB. |
 | **Normalised font key** | Font family name derived from the source filename: lowercase, only `a–z` and `0–9` (all other characters removed). Used as JSON keys and for matching PDF subset names. |
-| **`rev_db` / `db_key_matched`** | At runtime, the PDF’s embedded font base name is matched to one key in the reverse database; `db_key_matched` records which key was used (or `null`). |
+| **`db_key_matched`** | After matching the PDF font name, records which **`font_lookup`** key was used (or `null`). |
 
-## `pdf_cmap_fix/data/reverse_db.json`
+## `pdf_cmap_fix/data/font_lookup/<key>.json`
 
-Shipped as package data. Shape:
+Shipped as package data (many files). Each file looks like:
 
 ```json
 {
@@ -26,14 +26,18 @@ Shipped as package data. Shape:
     "42": "ཀ",
     "43": "ཁ"
   },
-  "himalayaa": { ... }
+  "_meta": {
+    "source": "bodyig.zip::Fonts/MonlamUniOuChan1.ttf",
+    "gids_mapped": 1234
+  }
 }
 ```
 
-- **Top-level keys:** normalised font identifiers (see [font-inventory.md](font-inventory.md)).
-- **Per-font values:** object whose keys are **decimal strings** of GID integers, values are **Unicode strings** (may be multiple code points for one glyph after GSUB decomposition).
+- **Font key:** one top-level entry matching the filename stem (e.g. `monlamuniouchan1.json`).
+- **GID map:** keys are **decimal strings** of GID integers; values are **Unicode strings** (may be multiple code points after GSUB decomposition).
+- **`_meta`:** ignored by the extractor when resolving GIDs.
 
-This file is **not** a PDF mapping of page bytes; it is only the font-authoritative GID→Unicode side used to **patch** each font’s ToUnicode stream.
+This data is **not** a PDF mapping of page bytes; it is the font-authoritative GID→Unicode side used to **patch** each font’s ToUnicode stream.
 
 ## Python API: `build_tounicode_dict` return value
 
@@ -52,7 +56,7 @@ Each record in `fonts`:
 | `font_xref` | PDF object number for the font dictionary. |
 | `to_unicode_xref` | PDF object number for the `/ToUnicode` stream. |
 | `pdf_font_name` | Base name as reported by the PDF (may include subset prefix). |
-| `db_key_matched` | Key from `reverse_db.json` used for merge, or `null` if no match. |
+| `db_key_matched` | Font lookup key used for merge (`<key>.json` stem), or `null` if no match. |
 | `existing` | Parsed current ToUnicode: **GID → Unicode** (`int` keys in memory). |
 | `merged` | After applying the database: combined map used if written to PDF. |
 | `overrides` | Entries where merged differs from existing (what actually changes). |

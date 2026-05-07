@@ -56,7 +56,7 @@ SCRIPTS_DIR = Path(__file__).resolve().parent
 if str(SCRIPTS_DIR) not in sys.path:
     sys.path.insert(0, str(SCRIPTS_DIR))
 
-from build_reverse_db import (  # noqa: E402
+from gid_map import (  # noqa: E402
     _iter_subtables,
     build_gid_map,
     gsub_lig_rules,

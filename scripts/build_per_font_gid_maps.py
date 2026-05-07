@@ -3,15 +3,15 @@ Write one JSON per font with its GID -> Unicode map.
 
 Reads ``.ttf`` / ``.otf`` from one or more zip archives and/or directories
 (recursively) using :mod:`font_sources`, builds the map with
-:func:`build_reverse_db.build_gid_map` (which handles GSUB lookup types
+:func:`gid_map.build_gid_map` (which handles GSUB lookup types
 1, 2, 4 and Extension/7 wrappers), then writes a small per-font JSON file
 into the package data directory.
 
 File layout::
 
-    pdf_cmap_fix/data/per_font/<normalised_name>.json
+    pdf_cmap_fix/data/font_lookup/<normalised_name>.json
 
-Each file is shaped exactly like one entry of the merged ``reverse_db.json``::
+Each file is shaped like::
 
     {
       "<normalised_name>": { "gid_str": "unicode_str", ... },
@@ -23,10 +23,8 @@ Each file is shaped exactly like one entry of the merged ``reverse_db.json``::
       }
     }
 
-The ``_meta`` block is a sibling key (not nested inside the font dict) so the
-extractor's overlay merge (``--overlay-db``) ignores it cleanly: only dict
-values are merged into the reverse DB and the font key already maps to the GID
-dict.
+The ``_meta`` block is ignored by the extractor when resolving GIDs; runtime
+loads ``<key>.json`` and uses the font-key → gid-map entry.
 
 Usage::
 
@@ -35,7 +33,7 @@ Usage::
         --zip scripts/tibetan-fonts-main.zip \\
         --zip scripts/tibetan-fonts-private-main.zip
     python scripts/build_per_font_gid_maps.py --fonts-dir scripts
-    python scripts/build_per_font_gid_maps.py --zip a.zip -o other_dir/per_font
+    python scripts/build_per_font_gid_maps.py --zip a.zip -o other_dir/font_lookup
 """
 from __future__ import annotations
 
@@ -57,7 +55,7 @@ SCRIPTS_DIR = Path(__file__).resolve().parent
 if str(SCRIPTS_DIR) not in sys.path:
     sys.path.insert(0, str(SCRIPTS_DIR))
 
-from build_reverse_db import (  # noqa: E402
+from gid_map import (  # noqa: E402
     build_gid_map,
     gsub_lookup_type_counts,
     normalise_name,
@@ -65,7 +63,7 @@ from build_reverse_db import (  # noqa: E402
 from font_sources import iter_fonts_from_dir, iter_fonts_from_zip  # noqa: E402
 
 REPO_ROOT = SCRIPTS_DIR.parent
-DEFAULT_OUT = REPO_ROOT / "pdf_cmap_fix" / "data" / "per_font"
+DEFAULT_OUT = REPO_ROOT / "pdf_cmap_fix" / "data" / "font_lookup"
 
 
 @dataclass
@@ -116,7 +114,7 @@ def _resolve_font_key(label: str, font: TTFont) -> str:
     """Pick a non-empty, filesystem-safe key for *label* / *font*.
 
     Strategy:
-      1. ``normalise_name(label)`` (matches the reverse_db merge key when ASCII).
+      1. ``normalise_name(label)`` (matches the merged-export / font_lookup key when ASCII).
       2. ``normalise_name`` of any font internal name (PostScript / Full / Family).
       3. ``font_<sha1[:10]>`` of the original label as a last resort.
     """
@@ -245,7 +243,7 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
     p = argparse.ArgumentParser(
         description=(
             "Write one JSON per font (GID -> Unicode) under "
-            "pdf_cmap_fix/data/per_font/. GSUB types handled: 1, 2, 4 (and 7 wrappers)."
+            "pdf_cmap_fix/data/font_lookup/. GSUB types handled: 1, 2, 4 (and 7 wrappers)."
         )
     )
     p.add_argument(
