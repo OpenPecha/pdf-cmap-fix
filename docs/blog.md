@@ -12,9 +12,7 @@
 
 ---
 
-## Hero illustration (optional)
-
-Some reviewers welcome a **lead figure**: an editorial image suggesting **PDF + font → correct Unicode text** (for example a PDF icon merging with a glyph grid or OpenType motif, with an arrow toward a clean Tibetan text line). Flat vector style reads well on Medium and GitHub. **Accessibility:** add alt text such as *“Diagram: combining PDF content with font-derived glyph mappings to recover Unicode text.”* If the artwork is **AI-generated**, say so in the caption (tool name + human-directed prompt).
+<img src="./assets/blog-hero.svg" alt="Diagram showing a PDF combined with font-derived glyph mappings to recover correct Tibetan Unicode text." width="100%" />
 
 ---
 
@@ -246,11 +244,11 @@ sequenceDiagram
 
 ## Measured results on two production-grade Tibetan publications
 
-Two PDFs are committed to the repository under [`docs/examples/`](examples/) along with their `.raw.txt`, `.patched.txt`, `.diff.txt`, and `.patched.pdf`:
+Five PDFs are committed under [`docs/examples/`](examples/) (see [approach.md § Worked examples](approach.md#worked-examples) for the full index and reproduce commands). The table below highlights two of them; all ship `.raw.txt`, `.patched.txt`, `.diff.txt`, `.patched.pdf`, and `.cmap-dump.json`:
 
 | Example | Producer | Pages | Lines changed | Char delta |
 |---------|----------|------:|--------------:|-----------:|
-| **TI1751-01-001** | InDesign | 528 | **5,295** | **+10,093** |
+| **TI1751-01-001** | InDesign | 528 | **2,545** | **+9,969** |
 | **TI1055-01-001** | MS Word  | 528 | **10,205** | **−23,725** |
 
 Numbers are the headers of the committed `*.diff.txt` files.

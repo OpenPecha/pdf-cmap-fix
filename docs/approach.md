@@ -106,7 +106,7 @@ the full key list in [font-inventory.md](font-inventory.md).
 
 ### Font lookup JSONs
 
-**[`scripts/build_per_font_gid_maps.py`](../scripts/build_per_font_gid_maps.py)** writes one JSON per face into **`pdf_cmap_fix/data/font_lookup/<normalised_key>.json`**, plus **`_manifest.json`**. The extractor loads **`font_lookup/<matched_key>.json`** on demand (lazy read per matched font), from the bundled directory or from **`--font-lookup-dir`** / **`font_lookup_dir=`** (see the [README](../README.md#custom-font-lookup-directory-cli)). The same GSUB walk (types 1, 2, 4 with type‑7 wrappers unwrapped) is used.
+**[`scripts/build_per_font_gid_maps.py`](../scripts/build_per_font_gid_maps.py)** writes one JSON per face into **`pdf_cmap_fix/data/font_lookup/<normalised_key>.json`**, plus **`_manifest.json`**. The extractor loads **`font_lookup/<matched_key>.json`** on demand (lazy read per matched font), from the bundled directory or from **`--font-lookup-dir`** / **`font_lookup_dir=`** (see **[Font lookup workflows](../README.md#font-lookup-workflows)** in the README). The same GSUB walk (types 1, 2, 4 with type‑7 wrappers unwrapped) is used.
 
 A `_meta` block carries provenance and GSUB lookup counts and is ignored when resolving GIDs:
 
@@ -232,23 +232,102 @@ Fonts **not** yet supported (TrueType simple encoding):
 - Any Ghostscript-generated PDF where Tibetan fonts are embedded as TrueType
   simple fonts with sequential char-code assignment
 
-## Results on Example PDFs
+## Worked examples
 
-### TI1751-01-001.pdf (InDesign, 528 pages)
+Sample PDFs and reference outputs live under **[`docs/examples/`](examples/)** (one subdirectory per document). Each folder ships:
 
-Metrics below use the **bundled** `font_lookup/` data and current extractor;
-exact counts move slightly if the database or PDF tooling changes.
+- **`*.pdf`** — original input.
+- **`*.raw.txt`** — text extracted **before** patching (broken Unicode as the PDF exposes it today).
+- **`*.patched.txt`** — text after the `/ToUnicode` merge.
+- **`*.diff.txt`** — line-by-line raw vs patched; the first lines record **`Lines changed`** and **`Char delta`**.
+- **`*.patched.pdf`** — same document with corrected `/ToUnicode` streams (`pdf-cmap-fix -p`); glyphs on the page are unchanged.
+- **`*.cmap-dump.json`** — per-font merged ToUnicode as JSON (`pdf-cmap-fix --dump-cmap`).
+
+All five examples were generated with the bundled **`pdf_cmap_fix/data/font_lookup/*.json`**. If your maps differ from the committed reference outputs, refresh **`font_lookup/<key>.json`** (e.g. **`scripts/update_font_lookup.py`**) or pass **`--font-lookup-dir`**.
+
+### Index
+
+| Example | Producer | Pages | Lines changed | Char delta | Notable fonts |
+|---------|----------|------:|--------------:|-----------:|---------------|
+| [`TI1055-01-001/`](examples/TI1055-01-001/) | MS Word | 528 | **10,205** | **−23,725** | Monlam Uni OuChan 2, Calibri, Cambria |
+| [`TI1751-01-001/`](examples/TI1751-01-001/) | InDesign | 528 | **2,545** | **+9,969** | Monlam Uni OuChan 2, Dedris‑*, Microsoft Himalaya, Jomolhari |
+| [`TI803-01-001/`](examples/TI803-01-001/) | MS Word | 398 | **9,356** | **−23,922** | Microsoft Himalaya, Calibri, Cambria |
+| [`TI1461-01-001/`](examples/TI1461-01-001/) | InDesign | 1 | 25 | **+30** | Qomolangma‑Uchen‑Sarchen/Sarchung, Monlam Uni OuChan 1/5 |
+| [`TI1763-01-002/`](examples/TI1763-01-002/) | MS Word | 1 | 17 | +127 | Monlam Uni OuChan 2 |
+
+`Lines changed` and `Char delta` come from the header of each `*.diff.txt`.
+
+### Reproduce
+
+From the repository root, after `pip install -e .`:
+
+```bash
+# Default extract + diff (uses bundled font_lookup/*.json)
+pdf-cmap-fix docs/examples/TI1055-01-001/TI1055-01-001.pdf
+pdf-cmap-fix -p docs/examples/TI1055-01-001/TI1055-01-001.pdf
+pdf-cmap-fix --dump-cmap docs/examples/TI1055-01-001/TI1055-01-001.cmap-dump.json \
+    docs/examples/TI1055-01-001/TI1055-01-001.pdf
+```
+
+For PDFs that embed **Microsoft Himalaya** subsets, ensure **`microsofthimalaya.json`** reflects the GSUB type **1/2/4/7** walk (refresh with **`scripts/update_font_lookup.py`** if needed), then:
+
+```bash
+pdf-cmap-fix docs/examples/TI803-01-001/TI803-01-001.pdf
+pdf-cmap-fix -p docs/examples/TI803-01-001/TI803-01-001.pdf
+```
+
+**TI1763** (Monlam Uni OuChan 2; lookup key **`monlamuniouchan2`**):
+
+```bash
+pdf-cmap-fix docs/examples/TI1763-01-002/TI1763-01-002.pdf
+```
+
+### What each example illustrates
+
+#### `TI1055-01-001` — Word inserting spurious subjoined‑ja
+
+Word silently injects `ྗ` (subjoined‑ja, U+0F97) into vowel‑only glyphs of Monlam Uni OuChan 2. The patched output **shrinks** as the spurious characters are removed.
+
+```
+RAW:      བྗོད་གངས་ཅན་... ཐྗོས་བསམ་སྗོམ་...
+PATCHED:  བོད་གངས་ཅན་... ཐོས་བསམ་སྒོམ་...
+```
+
+#### `TI1751-01-001` — InDesign dropping subjoined letters
+
+InDesign’s `/ToUnicode` for the same Monlam family **omits** subjoined letters; the patched output **grows** as `ྵ`/`ྱ`/`ྡ`/… are restored.
+
+```
+RAW:      འོད་གསལ་ཀོང་ཡངས་... རྣལ་འབོར་པ་... ཀི་ཟབ་གཏེར།
+PATCHED:  འོད་གསལ་ཀློང་ཡངས་... རྣལ་འབྱོར་པ་... ཀྱི་ཟབ་གཏེར།
+```
+
+#### `TI803-01-001` — Word + Microsoft Himalaya subsets
+
+Same Word symptom as TI1055, but on a **Microsoft Himalaya** subset. The **`microsofthimalaya.json`** lookup (GSUB type 1/2/4/7) recovers stack glyphs that a cmap‑only or older map may leave as `U+FFFD`; regenerate that JSON if your font build differs from the bundled file.
+
+#### `TI1461-01-001` — InDesign, mixed Qomolangma + Monlam
+
+Single‑page sample from a multi‑font InDesign export. The patcher resolves stacks for **Qomolangma‑Uchen‑Sarchen / Sarchung** and **Monlam Uni OuChan 1 / 5**.
+
+#### `TI1763-01-002` — Word, single page, Monlam Uni OuChan 2
+
+Smallest end‑to‑end read. With an up‑to‑date **`monlamuniouchan2.json`**, patched text has **no residual `U+FFFD`**; an older map alone may leave a few.
+
+> Spaces inside Tibetan stacks (e.g. `སྤྱ  ོད`) come from PyMuPDF and PDF kerning; they appear in `*.raw.txt` too. See [Whitespace and PDF positioning](#whitespace-and-pdf-positioning).
+
+### Extended metrics: TI1751-01-001 (InDesign, 528 pages)
+
+Metrics use the **bundled** `font_lookup/` and current extractor; counts can shift slightly if data or tooling changes.
 
 | Metric | Value |
 |--------|-------|
 | Pages | 528 |
 | Type0 fonts seen (with `/ToUnicode`) | 2,163 |
-| Lines differing (`.diff.txt`, page-banner format) | ~5,295 |
-| Char delta (`patched` − `raw`) | ~+10,093 |
+| Lines differing (`.diff.txt`, page-banner format) | ~2,545 |
+| Char delta (`patched` − `raw`) | ~+9,969 |
 
-Tibetan body text is largely **Monlam Uni OuChan2**; the publication also embeds
-other Type0/Latin/CJK fonts (Calibri, Himalaya, Dedris, PMingLiU, …)—see the
-**`--dump-cmap`** JSON for per-font names and xref IDs.
+Tibetan body text is largely **Monlam Uni OuChan2**; the publication also embeds other Type0/Latin/CJK fonts (Calibri, Himalaya, Dedris, PMingLiU, …)—see the **`--dump-cmap`** JSON for per-font names and xref IDs.
 
 Representative fixes:
 
@@ -261,7 +340,7 @@ Representative fixes:
 | `སིང་` | `སྙིང་` (added subjoined-nya) |
 | `བིན་རླབས་` | `བྱིན་རླབས་` (added subjoined-ya) |
 
-### TI1055-01-001.pdf (Microsoft Word, 528 pages)
+### Extended metrics: TI1055-01-001 (Microsoft Word, 528 pages)
 
 | Metric | Value |
 |--------|-------|
@@ -280,9 +359,7 @@ Representative fixes:
 | `ཐྗོས་བསམ་སྗོམ་` | `ཐོས་བསམ་སྒོམ་` (spurious ྗ removed) |
 | `གྲངས་གྱིས་མ་ལྗོང་` | `གྲངས་གྱིས་མ་ལོང་` (spurious ྗ removed) |
 
-The negative char delta is expected: Word had inserted spurious multi-codepoint
-sequences for glyphs that should map to a single codepoint, so the corrected
-output is shorter but accurate.
+The negative char delta is expected: Word had inserted spurious multi-codepoint sequences for glyphs that should map to a single codepoint, so the corrected output is shorter but accurate.
 
 ## File Layout
 
@@ -308,7 +385,6 @@ pdf-cmap-fix/
 │   ├── font-inventory.md     All bundled font_lookup keys
 │   ├── blog.md               Article (publication-ready)
 │   └── examples/             Worked examples (one folder per PDF)
-│       ├── README.md         Index + reproduce commands
 │       ├── TI1055-01-001/    MS Word, 528 pages
 │       ├── TI1751-01-001/    InDesign, 528 pages
 │       ├── TI803-01-001/     MS Word, 398 pages, Microsoft Himalaya
@@ -322,17 +398,4 @@ pdf-cmap-fix/
 
 ## Rebuilding font lookup
 
-Place the font ZIPs under `scripts/` (and/or pass `--fonts-dir`)—see the root
-**README** for the recommended **`bodyig`** + **`tibetan-fonts-main`** +
-**`tibetan-fonts-private-main`** order. Duplicate normalised font names:
-**later** sources overwrite earlier ones (with a warning on stderr).
-
-```bash
-pip install fonttools
-python scripts/build_per_font_gid_maps.py \
-    --zip scripts/bodyig.zip \
-    --zip scripts/tibetan-fonts-main.zip \
-    --zip scripts/tibetan-fonts-private-main.zip
-```
-
-This writes `pdf_cmap_fix/data/font_lookup/<key>.json` for every face it can decode and a `_manifest.json` with the full index, duplicate report, and any read errors.
+Instructions for **bulk ZIP rebuilds**, **single-font `update_font_lookup.py`**, and runtime **`--font-lookup-dir`** are maintained in the root **[README.md](../README.md#font-lookup-workflows)** (**Font lookup workflows**).
