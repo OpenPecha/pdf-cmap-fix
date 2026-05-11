@@ -1,0 +1,16 @@
+%%{init: {'theme':'base', 'themeVariables': {'background':'#000000','primaryColor':'#151515','primaryTextColor':'#ffffff','primaryBorderColor':'#e8e8e8','secondaryColor':'#151515','tertiaryColor':'#000000','lineColor':'#ffffff','textColor':'#ffffff','mainBkg':'#101010','secondBkg':'#181818','nodeBorder':'#ffffff','clusterBkg':'#0a0a0a','clusterBorder':'#ffffff','clusterTextColor':'#ffffff','titleColor':'#ffffff','edgeLabelBackground':'#000000'}}}%%
+flowchart LR
+    PDF[Original PDF]:::in
+    PDF --> A[Find every Type0 / Identity-H font<br/>and its /ToUnicode stream]
+    A --> B[Parse existing ToUnicode<br/>GID → Unicode]
+    A --> M[Match font name to a key<br/>in font_lookup/*.json]
+    M --> DB[(font_lookup/<br/>~968 font files)]:::db
+    B --> C[Merge: DB value wins<br/>where DB has an entry]
+    DB --> C
+    C --> O1[*.raw.txt / *.patched.txt / *.diff.txt]:::out
+    C --> O2[*.patched.pdf<br/>fixed /ToUnicode streams]:::out
+    C --> O3[*.cmap-dump.json<br/>per-font diff for inspection]:::out
+
+    classDef in fill:#1a1a1a,stroke:#e0e0e0,color:#fff
+    classDef db fill:#222222,stroke:#f5f5f5,color:#fff
+    classDef out fill:#1c1c1c,stroke:#d8d8d8,color:#fff

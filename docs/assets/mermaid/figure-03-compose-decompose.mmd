@@ -1,0 +1,21 @@
+%%{init: {'theme':'base', 'themeVariables': {'background':'#000000','primaryColor':'#151515','primaryTextColor':'#ffffff','primaryBorderColor':'#e8e8e8','secondaryColor':'#151515','tertiaryColor':'#000000','lineColor':'#ffffff','textColor':'#ffffff','mainBkg':'#101010','secondBkg':'#181818','nodeBorder':'#ffffff','clusterBkg':'#0a0a0a','clusterBorder':'#ffffff','clusterTextColor':'#ffffff','titleColor':'#ffffff','edgeLabelBackground':'#000000'}}}%%
+flowchart LR
+    subgraph Compose["Composition (what shapers do at print time)"]
+      direction LR
+      C1["U+0F40 ཀ"] --> CL[ligature rule]
+      C2["U+0FB1 ྱ"] --> CL
+      C3["U+0F72 ི"] --> CL
+      CL --> CG["glyph ‘ka_ya_i’"]
+    end
+
+    subgraph Decompose["Decomposition (GID → Unicode map build)"]
+      direction LR
+      DG["glyph ‘ka_ya_i’"] --> DR["reverse GSUB — types 1, 2, 4; Extension 7 unwrap"]
+      DR --> D1["uni0F40"]
+      DR --> D2["uni0FB1"]
+      DR --> D3["uni0F72"]
+      D1 --> DC[lookup cmap]
+      D2 --> DC
+      D3 --> DC
+      DC --> DOUT["Unicode string ‘ཀྱི’<br/>(U+0F40 U+0FB1 U+0F72)"]
+    end

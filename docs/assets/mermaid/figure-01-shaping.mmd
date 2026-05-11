@@ -1,0 +1,9 @@
+%%{init: {'theme':'base', 'themeVariables': {'background':'#000000','primaryColor':'#151515','primaryTextColor':'#ffffff','primaryBorderColor':'#e8e8e8','secondaryColor':'#151515','tertiaryColor':'#000000','lineColor':'#ffffff','textColor':'#ffffff','mainBkg':'#101010','secondBkg':'#181818','nodeBorder':'#ffffff','clusterBkg':'#0a0a0a','clusterBorder':'#ffffff','clusterTextColor':'#ffffff','titleColor':'#ffffff','edgeLabelBackground':'#000000'}}}%%
+flowchart LR
+    U1["U+0F40 ཀ"]:::u --> S
+    U2["U+0FB1 ྱ"]:::u --> S
+    U3["U+0F72 ི"]:::u --> S
+    S["Shaper<br/>(harfbuzz / DirectWrite / …)"]:::eng --> G["GID = ligature ‘k+ya+i’"]:::g
+    classDef u fill:#1a1a1a,stroke:#e0e0e0,color:#fff
+    classDef eng fill:#252525,stroke:#e0e0e0,color:#fff
+    classDef g fill:#1f1f1f,stroke:#d0d0d0,color:#fff

@@ -1,0 +1,19 @@
+%%{init: {'theme':'base', 'themeVariables': {'background':'#000000','primaryColor':'#151515','primaryTextColor':'#ffffff','primaryBorderColor':'#e8e8e8','lineColor':'#ffffff','textColor':'#ffffff','actorBkg':'#151515','actorBorder':'#ffffff','actorTextColor':'#ffffff','signalColor':'#ffffff','signalTextColor':'#ffffff','labelBoxBkgColor':'#151515','labelBoxBorderColor':'#ffffff','activationBkgColor':'#2a2a2a','activationBorderColor':'#ffffff','sequenceNumberColor':'#ffffff','loopTextColor':'#ffffff','noteBkgColor':'#151515','noteTextColor':'#ffffff','noteBorderColor':'#ffffff','titleColor':'#ffffff'}}}%%
+sequenceDiagram
+    autonumber
+    participant U as "User"
+    participant CLI as "pdf-cmap-fix CLI"
+    participant DB as "font_lookup/*.json"
+    participant Mu as "PyMuPDF (fitz)"
+    participant PDF as "Patched PDF"
+
+    U->>CLI: pdf-cmap-fix doc.pdf
+    CLI->>Mu: open doc.pdf
+    loop for each Type0 font with /ToUnicode
+        CLI->>Mu: read existing ToUnicode (GID → Unicode)
+        CLI->>DB: lookup normalised font name
+        DB-->>CLI: GID → Unicode (authoritative)
+        CLI->>CLI: merge (DB wins)
+    end
+    CLI->>Mu: update_stream(/ToUnicode) for each changed font
+    Mu->>PDF: serialise patched PDF / extract text
