@@ -164,7 +164,7 @@ flowchart LR
 
     subgraph Decompose["Decomposition (GID → Unicode map build)"]
       direction LR
-      DG["glyph ‘ka_ya_i’"] --> DR[reverse GSUB (types 1/2/4; ext. 7)]
+      DG["glyph ‘ka_ya_i’"] --> DR["Reverse GSUB: types 1, 2, 4; extension 7 unwrapped"]
       DR --> D1["uni0F40"]
       DR --> D2["uni0FB1"]
       DR --> D3["uni0F72"]
