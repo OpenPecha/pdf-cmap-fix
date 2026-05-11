@@ -6,13 +6,9 @@
 
 ## Acknowledgements
 
-**Development.** **`pdf-cmap-fix`** was developed by **Dharmaduta** from specifications provided by the **[Buddhist Digital Resource Center](https://www.bdrc.io)** (BDRC) for **“The BDRC Etext Corpus”**, with funding from the **Khyentse Foundation**.
+**`pdf-cmap-fix`** was developed by **Dharmaduta** from specifications provided by the **[Buddhist Digital Resource Center](https://www.bdrc.io)** (BDRC) for **“The BDRC Etext Corpus”**, with funding from the **Khyentse Foundation**.
 
 **Authors** (software): **Ganga Gyatso** ([ganga@webuddhist.com](mailto:ganga@webuddhist.com)), **Elie Roux** ([roux.elie@gmail.com](mailto:roux.elie@gmail.com)).
-
----
-
-<img src="./assets/blog-hero.svg" alt="Diagram showing a PDF combined with font-derived glyph mappings to recover correct Tibetan Unicode text." width="100%" />
 
 ---
 
@@ -54,7 +50,7 @@ PATCHED:  བོད་གངས་ཅན་ལྗོངས་སུ་ནང་�
 
 **Example provenance.** Tibetan publications distributed through **[Budaedu](https://www.budaedu.org/)** ([budaedu.org](https://www.budaedu.org/)) feed into BDRC-related digitisation workflows; the pattern above is representative of Word-export PDFs of that kind.
 
-**Demo tip.** For screenshots or a short screencast, **extract a single page** (any PDF tool or reputable online “extract pages” service) so readers see one crisp **RAW vs PATCHED** pair without loading hundreds of pages. Full-corpus metrics below still refer to complete exports in the repository.
+**Demo setup used in this article.** The visual examples are presented as short, readable line snippets, while all reported metrics (lines changed and character deltas) are computed from full publication PDFs committed in this repository.
 
 Notice the **spurious ྗ** (subjoined ja) sitting under several vowels in **RAW**. That extra letter is **invisible to a printer** because the visible glyph is the same; it is **catastrophic for search, NLP, and TEI alignment** because it changes the underlying Unicode.
 
@@ -147,11 +143,11 @@ Every TrueType / OpenType font knows two things that are almost always correct:
 
 1. **`cmap`** — *“Unicode code point ↔ atomic glyph name.”*  
    `U+0F40` → glyph **`uni0F40`**. This is the alphabet, before any shaping.
-2. **`GSUB` (Glyph Substitution), table type 4 — ligatures.**  
-   *“These N component glyph names compose into this 1 ligature glyph.”*  
-   `(uni0F40, uni0FB1, uni0F72)` → **`ka_ya_i`**.
+2. **`GSUB` (Glyph Substitution).** The database builder walks the lookup list and collects rules it can **reverse statically**, matching [`scripts/gid_map.py`](../scripts/gid_map.py) (see [Technical approach](approach.md) step 1):  
+   **type 4** (ligature: components → one glyph), **type 2** (multiple: one glyph → several components), **type 1** (single: map substituted glyphs back to their sources), and **type 7** (extension tables that **wrap** inner lookups of types 1/2/4 — unwrapped and treated transparently).  
+   Lookup types **3** (alternate) and **5 / 6 / 8** (contextual / chained) are **not** turned into a fixed `GID → Unicode` column without simulating the shaper; for the Tibetan fonts we ship, the important stacks still resolve through the rules above.
 
-GSUB type 4 is **how the shaper builds a stack**. We just need to **walk it backwards** to recover the Unicode behind each ligature.
+We **walk those rules backwards** from each glyph name until we reach `cmap` atoms, which yields the Unicode string behind each GID.
 
 ### Composition versus decomposition, side by side
 
@@ -168,7 +164,7 @@ flowchart LR
 
     subgraph Decompose["Decomposition (GID → Unicode map build)"]
       direction LR
-      DG["glyph ‘ka_ya_i’"] --> DR[apply GSUB type-4 in reverse]
+      DG["glyph ‘ka_ya_i’"] --> DR[reverse GSUB (types 1/2/4; ext. 7)]
       DR --> D1["uni0F40"]
       DR --> D2["uni0FB1"]
       DR --> D3["uni0F72"]
