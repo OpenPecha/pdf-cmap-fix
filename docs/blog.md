@@ -6,13 +6,9 @@
 
 ## Acknowledgements
 
-**Development.** **`pdf-cmap-fix`** was developed by **Dharmaduta** from specifications provided by the **[Buddhist Digital Resource Center](https://www.bdrc.io)** (BDRC) for **“The BDRC Etext Corpus”**, with funding from the **Khyentse Foundation**.
+**`pdf-cmap-fix`** was developed by **Dharmaduta** from specifications provided by the **[Buddhist Digital Resource Center](https://www.bdrc.io)** (BDRC) for **“The BDRC Etext Corpus”**, with funding from the **Khyentse Foundation**.
 
 **Authors** (software): **Ganga Gyatso** ([ganga@webuddhist.com](mailto:ganga@webuddhist.com)), **Elie Roux** ([roux.elie@gmail.com](mailto:roux.elie@gmail.com)).
-
----
-
-<img src="./assets/blog-hero.svg" alt="Diagram showing a PDF combined with font-derived glyph mappings to recover correct Tibetan Unicode text." width="100%" />
 
 ---
 
@@ -54,7 +50,7 @@ PATCHED:  བོད་གངས་ཅན་ལྗོངས་སུ་ནང་�
 
 **Example provenance.** Tibetan publications distributed through **[Budaedu](https://www.budaedu.org/)** ([budaedu.org](https://www.budaedu.org/)) feed into BDRC-related digitisation workflows; the pattern above is representative of Word-export PDFs of that kind.
 
-**Demo tip.** For screenshots or a short screencast, **extract a single page** (any PDF tool or reputable online “extract pages” service) so readers see one crisp **RAW vs PATCHED** pair without loading hundreds of pages. Full-corpus metrics below still refer to complete exports in the repository.
+**Demo setup used in this article.** The visual examples are presented as short, readable line snippets, while all reported metrics (lines changed and character deltas) are computed from full publication PDFs committed in this repository.
 
 Notice the **spurious ྗ** (subjoined ja) sitting under several vowels in **RAW**. That extra letter is **invisible to a printer** because the visible glyph is the same; it is **catastrophic for search, NLP, and TEI alignment** because it changes the underlying Unicode.
 
@@ -77,6 +73,8 @@ flowchart LR
     classDef eng fill:#252525,stroke:#e0e0e0,color:#fff
     classDef g fill:#1f1f1f,stroke:#d0d0d0,color:#fff
 ```
+
+*Figure 1. The forward shaping path maps a Unicode sequence to one rendered ligature glyph.*
 
 That **forward path** (Unicode → ligature glyph) is what makes the PDF **look** right. The **reverse path** (ligature glyph → original Unicode), used during **copy / extraction**, is the **`/ToUnicode`** CMap embedded in the PDF.
 
@@ -114,6 +112,8 @@ flowchart LR
     classDef out fill:#1c1c1c,stroke:#d8d8d8,color:#fff
 ```
 
+*Figure 2. End-to-end processing pipeline from input PDF to patched text and patched PDF outputs.*
+
 Three things are deliberately **not** in this diagram:
 
 - **No re-OCR.** No pixels are read.
@@ -147,11 +147,16 @@ Every TrueType / OpenType font knows two things that are almost always correct:
 
 1. **`cmap`** — *“Unicode code point ↔ atomic glyph name.”*  
    `U+0F40` → glyph **`uni0F40`**. This is the alphabet, before any shaping.
-2. **`GSUB` (Glyph Substitution), table type 4 — ligatures.**  
-   *“These N component glyph names compose into this 1 ligature glyph.”*  
-   `(uni0F40, uni0FB1, uni0F72)` → **`ka_ya_i`**.
+2. **`GSUB` (Glyph Substitution)** — substitution rules the font embeds for shaping.  
+   The lookup builder in **`scripts/gid_map.py`** reverses the rules it can resolve statically, matching **Step 1** in [Technical approach](approach.md#the-solution):
+   - **Type 4 (ligature)** — one ligature glyph → its component glyph names.
+   - **Type 2 (multiple)** — one glyph → several components (split, then recurse).
+   - **Type 1 (single)** — substitute glyphs resolve back toward **`cmap`** entries via source glyphs.
+   - **Type 7 (extension)** — wrappers that point at inner subtables of types **1 / 2 / 4**; unwrapped transparently.
 
-GSUB type 4 is **how the shaper builds a stack**. We just need to **walk it backwards** to recover the Unicode behind each ligature.
+Lookup types **3 (alternate)** and **5 / 6 / 8 (contextual)** are *not* folded into a single static `GID → Unicode` column; they depend on context at shaping time (see `approach.md` for details). For the Tibetan corpus we ship, stacks still recover because the inner substitutions those lookups invoke are covered by the reversible rules above.
+
+The diagram below uses **`ཀྱི`** as a minimal example where **type‑4 ligature** composition is the clearest mental model; the same decomposition step also chains **types 1 / 2** where the font defines them.
 
 ### Composition versus decomposition, side by side
 
@@ -168,7 +173,7 @@ flowchart LR
 
     subgraph Decompose["Decomposition (GID → Unicode map build)"]
       direction LR
-      DG["glyph ‘ka_ya_i’"] --> DR[apply GSUB type-4 in reverse]
+      DG["glyph ‘ka_ya_i’"] --> DR[reverse GSUB (types 1 / 2 / 4; Extension 7 unwraps)]
       DR --> D1["uni0F40"]
       DR --> D2["uni0FB1"]
       DR --> D3["uni0F72"]
@@ -179,15 +184,25 @@ flowchart LR
     end
 ```
 
+*Figure 3. Database build logic: reverse GSUB decomposition reconstructs the original Unicode stack for each glyph.*
+
 Concretely, the builder ([`scripts/gid_map.py`](../scripts/gid_map.py) via [`build_per_font_gid_maps.py`](../scripts/build_per_font_gid_maps.py)) loads each font with [fontTools](https://fonttools.readthedocs.io/) and runs a small recursive walk:
 
 ```python
+# Simplified sketch — see scripts/gid_map.py for the full walk (types 1 / 2 / 4 + Extension 7).
 def decompose(gname):
-    if gname in cmap_reverse:          # atomic letter or digit
+    if gname in cmap_reverse:
         return cmap_reverse[gname]
-    if gname in gsub_rules:            # ligature → component glyph names
-        return "".join(decompose(c) for c in gsub_rules[gname])
-    return ""                          # truly unmappable glyph
+    if gname in lig_rules:              # GSUB type 4
+        return "".join(decompose(c) for c in lig_rules[gname])
+    if gname in multiple_fwd:           # GSUB type 2
+        return "".join(decompose(c) for c in multiple_fwd[gname])
+    if gname in single_rev:             # GSUB type 1
+        for src in single_rev[gname]:
+            r = decompose(src)
+            if r:
+                return r
+    return ""
 ```
 
 For every glyph ID `gid` in the font:
@@ -239,6 +254,8 @@ sequenceDiagram
     CLI->>Mu: update_stream(/ToUnicode) for each changed font
     Mu->>PDF: serialise patched PDF / extract text
 ```
+
+*Figure 4. Runtime sequence: font match, map merge, then `/ToUnicode` stream rewrite.*
 
 ---
 
