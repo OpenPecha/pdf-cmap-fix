@@ -49358,6 +49358,7 @@
     "49496": "힣"
   },
   "_meta": {
+    "lookup_kind": "gid",
     "source": "tibetan-fonts-main.zip::tibetan-fonts-main/Unicode Problematic:Outdated:ReExported:Incomplete fonts/ARIALUNI.TTF",
     "gids_mapped": 49356,
     "multi_char_stacks": 1246,

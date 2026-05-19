@@ -4728,6 +4728,7 @@
     "5109": "ས྄"
   },
   "_meta": {
+    "lookup_kind": "gid",
     "source": "tibetan-fonts-main.zip::tibetan-fonts-main/Unicode Individual fonts/tibp.ttf",
     "gids_mapped": 4726,
     "multi_char_stacks": 3443,

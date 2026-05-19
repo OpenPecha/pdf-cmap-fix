@@ -8446,6 +8446,7 @@
     "8444": "󱙅"
   },
   "_meta": {
+    "lookup_kind": "gid",
     "source": "tibetan-fonts-main.zip::tibetan-fonts-main/Unicode Font Families & Typefaces/FZZWZT-FounderType Tibetan Font Family/FZZWXBTOT_Uni.ttf",
     "gids_mapped": 8444,
     "multi_char_stacks": 0,

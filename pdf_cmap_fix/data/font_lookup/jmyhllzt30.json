@@ -7058,6 +7058,7 @@
     "7121": "མྨྨྨ"
   },
   "_meta": {
+    "lookup_kind": "gid",
     "source": "tibetan-fonts-main.zip::tibetan-fonts-main/Unicode Font Families & Typefaces/Jamyang Font Family/JMY-HLLZT3.0.otf",
     "gids_mapped": 7056,
     "multi_char_stacks": 5248,

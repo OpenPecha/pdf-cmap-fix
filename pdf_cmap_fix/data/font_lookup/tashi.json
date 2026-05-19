@@ -3285,6 +3285,7 @@
     "4408": " ࿆"
   },
   "_meta": {
+    "lookup_kind": "gid",
     "source": "tibetan-fonts-main.zip::tibetan-fonts-main/Unicode Font Families & Typefaces/Dzongkha fonts/tashi.ttf",
     "gids_mapped": 3283,
     "multi_char_stacks": 2576,

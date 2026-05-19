@@ -175,6 +175,7 @@
     "175": "í"
   },
   "_meta": {
+    "lookup_kind": "gid",
     "source": "tibetan-fonts-main.zip::tibetan-fonts-main/Non-Unicode Fonts/CDAC_Dzongkha/Drnw1btt.ttf",
     "gids_mapped": 173,
     "multi_char_stacks": 0,

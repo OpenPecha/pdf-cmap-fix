@@ -1116,6 +1116,7 @@
     "1117": ""
   },
   "_meta": {
+    "lookup_kind": "gid",
     "source": "tibetan-fonts-main.zip::tibetan-fonts-main/Unicode Font Families & Typefaces/AnAn/AnAnTibetanBeta1.ttf",
     "gids_mapped": 1114,
     "multi_char_stacks": 0,

@@ -1825,6 +1825,7 @@
     "1823": "ㆰ"
   },
   "_meta": {
+    "lookup_kind": "gid",
     "source": "tibetan-fonts-main.zip::tibetan-fonts-main/Unicode Font Families & Typefaces/Tanzin Kabree Font Family/Tanzin Kabree Capital Letters Tanzin Kabree Capital Letters.ttf",
     "gids_mapped": 1823,
     "multi_char_stacks": 1014,

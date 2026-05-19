@@ -210,6 +210,7 @@
     "210": " "
   },
   "_meta": {
+    "lookup_kind": "gid",
     "source": "tibetan-fonts-main.zip::tibetan-fonts-main/Non-Unicode Fonts/TCRC/tcrcytn1.ttf",
     "gids_mapped": 208,
     "multi_char_stacks": 0,

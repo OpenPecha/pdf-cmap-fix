@@ -41,6 +41,7 @@
     "41": "ÿ"
   },
   "_meta": {
+    "lookup_kind": "gid",
     "source": "tibetan-fonts-main.zip::tibetan-fonts-main/Non-Unicode Fonts/DakiniScripts/u10230.ttf",
     "gids_mapped": 39,
     "multi_char_stacks": 0,

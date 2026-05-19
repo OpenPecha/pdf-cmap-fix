@@ -79,6 +79,7 @@
     "79": "õ"
   },
   "_meta": {
+    "lookup_kind": "gid",
     "source": "tibetan-fonts-main.zip::tibetan-fonts-main/Non-Unicode Fonts/Landza/landz67.ttf",
     "gids_mapped": 77,
     "multi_char_stacks": 0,

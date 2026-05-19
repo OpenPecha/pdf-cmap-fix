@@ -235,6 +235,7 @@
     "235": ""
   },
   "_meta": {
+    "lookup_kind": "gid",
     "source": "tibetan-fonts-private-main.zip::tibetan-fonts-private-main/non-Unicode/UT/tiblha8z.ttf",
     "gids_mapped": 233,
     "multi_char_stacks": 0,

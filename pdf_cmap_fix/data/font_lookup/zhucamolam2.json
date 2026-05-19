@@ -1575,6 +1575,7 @@
     "1580": "ོ༌༌༌"
   },
   "_meta": {
+    "lookup_kind": "gid",
     "source": "tibetan-fonts-main.zip::tibetan-fonts-main/Unicode Font Families & Typefaces/Yuchi_(Wylie-g.yu_khri) Font Family/玉翅+zhuca+molam2.ttf",
     "gids_mapped": 1573,
     "multi_char_stacks": 928,

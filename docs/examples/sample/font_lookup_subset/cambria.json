@@ -1,0 +1,11 @@
+{
+  "cambria": {
+    "1": "I"
+  },
+  "_meta": {
+    "source": "pdf:sample.pdf::ToUnicode",
+    "gids_mapped": 1,
+    "multi_char_stacks": 0,
+    "note": "Built from PDF /ToUnicode only (subset-safe; does not repair wrong maps)."
+  }
+}

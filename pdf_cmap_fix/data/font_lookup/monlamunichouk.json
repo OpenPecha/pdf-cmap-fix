@@ -3273,6 +3273,7 @@
     "3315": "ཚོ"
   },
   "_meta": {
+    "lookup_kind": "gid",
     "source": "tibetan-fonts-main.zip::tibetan-fonts-main/Unicode Font Families & Typefaces/Monlam Font Family/monlam_uni_chouk.ttf",
     "gids_mapped": 3271,
     "multi_char_stacks": 1961,

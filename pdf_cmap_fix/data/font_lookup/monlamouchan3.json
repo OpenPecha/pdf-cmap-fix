@@ -214,6 +214,7 @@
     "230": "‐"
   },
   "_meta": {
+    "lookup_kind": "gid",
     "source": "tibetan-fonts-main.zip::tibetan-fonts-main/Non-Unicode Fonts/Monlam/Monlam ouchan 3.TTF",
     "gids_mapped": 212,
     "multi_char_stacks": 0,

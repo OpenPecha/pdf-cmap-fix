@@ -324,6 +324,7 @@
     "322": ""
   },
   "_meta": {
+    "lookup_kind": "gid",
     "source": "tibetan-fonts-main.zip::tibetan-fonts-main/Non-Unicode Fonts/CSXPlus/TCPR____.TTF",
     "gids_mapped": 322,
     "multi_char_stacks": 0,

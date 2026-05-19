@@ -1533,6 +1533,7 @@
     "1537": "࿚"
   },
   "_meta": {
+    "lookup_kind": "gid",
     "source": "tibetan-fonts-main.zip::tibetan-fonts-main/Unicode Font Families & Typefaces/Bhod Dhorchang's Fonts/Bhozuk_Dunhuang/Bhozuk Dunhuang（B）.ttf",
     "gids_mapped": 1531,
     "multi_char_stacks": 849,

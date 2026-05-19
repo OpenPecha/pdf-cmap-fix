@@ -1297,6 +1297,7 @@
     "1295": "​"
   },
   "_meta": {
+    "lookup_kind": "gid",
     "source": "tibetan-fonts-private-main.zip::tibetan-fonts-private-main/Pema Typeface/Pema-Bold.ttf",
     "gids_mapped": 1295,
     "multi_char_stacks": 1023,

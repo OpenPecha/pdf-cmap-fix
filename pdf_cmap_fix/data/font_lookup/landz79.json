@@ -64,6 +64,7 @@
     "64": "ì"
   },
   "_meta": {
+    "lookup_kind": "gid",
     "source": "tibetan-fonts-main.zip::tibetan-fonts-main/Non-Unicode Fonts/Landza/landz79.ttf",
     "gids_mapped": 62,
     "multi_char_stacks": 0,

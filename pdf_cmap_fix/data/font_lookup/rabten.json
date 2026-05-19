@@ -2388,6 +2388,7 @@
     "2537": ""
   },
   "_meta": {
+    "lookup_kind": "gid",
     "source": "tibetan-fonts-main.zip::tibetan-fonts-main/Unicode Problematic:Outdated:ReExported:Incomplete fonts/RABTEN.ttf",
     "gids_mapped": 2386,
     "multi_char_stacks": 0,

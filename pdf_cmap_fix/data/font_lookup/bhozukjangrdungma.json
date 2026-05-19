@@ -1503,6 +1503,7 @@
     "1509": "࿚"
   },
   "_meta": {
+    "lookup_kind": "gid",
     "source": "tibetan-fonts-main.zip::tibetan-fonts-main/Unicode Font Families & Typefaces/Bhod Dhorchang's Fonts/Bhozuk Jangrdungma.otf",
     "gids_mapped": 1501,
     "multi_char_stacks": 833,

@@ -3226,6 +3226,7 @@
     "3263": "ིག་"
   },
   "_meta": {
+    "lookup_kind": "gid",
     "source": "tibetan-fonts-main.zip::tibetan-fonts-main/Unicode Font Families & Typefaces/Tsewang Gyatso Font Family/TsewangGyatso.02.ttf",
     "gids_mapped": 3224,
     "multi_char_stacks": 1919,

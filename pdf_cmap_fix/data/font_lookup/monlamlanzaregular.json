@@ -2177,6 +2177,7 @@
     "2227": "༄༅"
   },
   "_meta": {
+    "lookup_kind": "gid",
     "source": "tibetan-fonts-main.zip::tibetan-fonts-main/Unicode Font Families & Typefaces/Monlam Font Family/Monlam Fonts 4.0 with three new fonts/Monlam Lanza-Regular.ttf",
     "gids_mapped": 2175,
     "multi_char_stacks": 1530,

@@ -234,6 +234,7 @@
     "257": "Ÿ"
   },
   "_meta": {
+    "lookup_kind": "gid",
     "source": "tibetan-fonts-private-main.zip::tibetan-fonts-private-main/LaserTibetan/ttf/TibetBK.ttf",
     "gids_mapped": 232,
     "multi_char_stacks": 0,

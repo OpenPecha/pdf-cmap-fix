@@ -79,6 +79,7 @@
     "132": "ཨ"
   },
   "_meta": {
+    "lookup_kind": "gid",
     "source": "tibetan-fonts-main.zip::tibetan-fonts-main/Non-Unicode Fonts/Druk/Druk_Font_Technical_Manual/Druk-aachung-Dependencies-test-3/DrukFonV14.ttf",
     "gids_mapped": 77,
     "multi_char_stacks": 0,

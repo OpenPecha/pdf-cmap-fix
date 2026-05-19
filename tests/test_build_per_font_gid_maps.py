@@ -1,4 +1,4 @@
-"""Smoke test for ``scripts/build_per_font_gid_maps.py``."""
+"""Smoke test for ``scripts/gid/build_per_font_gid_maps.py``."""
 from __future__ import annotations
 
 import json
@@ -8,8 +8,9 @@ from pathlib import Path
 import pytest
 
 REPO = Path(__file__).resolve().parents[1]
-SCRIPTS = REPO / "scripts"
-HIMALAYA = SCRIPTS / "MicrosoftHimalaya.ttf"
+SCRIPTS_ROOT = REPO / "scripts"
+SCRIPTS = SCRIPTS_ROOT / "gid"
+HIMALAYA = SCRIPTS_ROOT / "MicrosoftHimalaya.ttf"
 
 
 @pytest.mark.skipif(not HIMALAYA.is_file(), reason="MicrosoftHimalaya.ttf not present")
@@ -18,7 +19,7 @@ def test_per_font_writer_outputs_gid_map(tmp_path: Path) -> None:
         sys.path.insert(0, str(SCRIPTS))
     import build_per_font_gid_maps as bpf
 
-    bpf.main(["--fonts-dir", str(SCRIPTS), "--output-dir", str(tmp_path)])
+    bpf.main(["--fonts-dir", str(SCRIPTS_ROOT), "--output-dir", str(tmp_path)])
 
     out = tmp_path / "microsofthimalaya.json"
     assert out.is_file(), "per-font JSON not written"
@@ -35,3 +36,4 @@ def test_per_font_writer_outputs_gid_map(tmp_path: Path) -> None:
     manifest = json.loads((tmp_path / "_manifest.json").read_text(encoding="utf-8"))
     assert "microsofthimalaya" in manifest["fonts_written"]
     assert manifest["count"] == 1
+    assert manifest.get("lookup_kind") == "gid"

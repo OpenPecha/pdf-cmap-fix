@@ -56,6 +56,7 @@
     "56": "µ"
   },
   "_meta": {
+    "lookup_kind": "gid",
     "source": "tibetan-fonts-main.zip::tibetan-fonts-main/Non-Unicode Fonts/Landza/landz86.ttf",
     "gids_mapped": 54,
     "multi_char_stacks": 0,

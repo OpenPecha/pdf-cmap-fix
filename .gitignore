@@ -1,4 +1,5 @@
-# Font archives — download locally to rebuild font lookup (see README). Do not commit.
+# Font archives — prefer repo-root fonts/; scripts/ is a legacy location (see README).
+fonts/*.zip
 scripts/*.zip
 
 # Loose font binaries used as one-off build inputs (do not commit)
@@ -8,19 +9,42 @@ scripts/*.otf
 # Build artefacts of one-off Microsoft Himalaya rebuilds (regenerate on demand)
 scripts/microsoft_himalaya_reverse_db.json
 
-# Font lookup build logs (regenerate when you re-run scripts/build_per_font_gid_maps.py)
+# Font lookup build logs (regenerate when you re-run scripts/gid/build_per_font_gid_maps.py)
 scripts/per_font_build.log
 
 # Optional shape DB (placeholder; regenerate locally if you ever need it)
 pdf_cmap_fix/data/shape_db.json
 
+# Tier 2 / tier 3 lookup trees (regenerate: scripts/gname/update_font_lookup.py / scripts/gshape/update_font_lookup.py)
+pdf_cmap_fix/data/font_lookup_gname/
+pdf_cmap_fix/data/font_lookup_gshape/
+
+# PUA-free sibling trees (regenerate: scripts/lookup_pua/run_pua_free_lookup_rebuild.py)
+pdf_cmap_fix/data/font_lookup_gname_pua_free/
+pdf_cmap_fix/data/font_lookup_gshape_pua_free/
+pdf_cmap_fix/data/font_lookup_gid_pua_free/
+
 # Huge optional dumps from pdf-cmap-fix --dump-cmap (debugging only)
 *.cmap-dump.json
+!docs/examples/sample/sample.custom.cmap-dump.json
 
 # Generated text extraction outputs (re-run pdf-cmap-fix to regenerate)
 *.raw.txt
 *.patched.txt
 *.diff.txt
+
+# Generated forum export (copy-paste only; regenerate: python scripts/misc/build_openpecha_forum_post.py)
+docs/openpecha-forum-post.md
+
+# Custom per-PDF font_lookup JSON (regenerate with update_font_lookup.py)
+docs/examples/sample/font_lookup/*.json
+
+# Per-machine gshape lookup from update_font_lookup.py (regenerate locally)
+docs/examples/sample/font_lookup_gshape_local/*.json
+
+# PUA→Unicode table from pua_map_from_gname_lookup.py --write-map (regenerate locally)
+docs/examples/sample/pua_map_*.json
+docs/examples/sample/jomolhari_gname_public_unicode.json
 
 # Keep the example outputs in docs/
 !docs/examples/**/*.raw.txt

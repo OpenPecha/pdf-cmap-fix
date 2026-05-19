@@ -1501,6 +1501,7 @@
     "1530": "རྵ"
   },
   "_meta": {
+    "lookup_kind": "gid",
     "source": "tibetan-fonts-main.zip::tibetan-fonts-main/Unicode Font Families & Typefaces/Monlam Font Family/Monlam Dic2021 bold 2022.ttf",
     "gids_mapped": 1499,
     "multi_char_stacks": 854,

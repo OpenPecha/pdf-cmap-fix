@@ -3165,6 +3165,7 @@
     "3331": ""
   },
   "_meta": {
+    "lookup_kind": "gid",
     "source": "tibetan-fonts-private-main.zip::tibetan-fonts-private-main/Sambhota Font Family/SambhotaDege.ttf",
     "gids_mapped": 3163,
     "multi_char_stacks": 369,

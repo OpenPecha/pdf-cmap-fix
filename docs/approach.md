@@ -34,12 +34,12 @@ In practice, this mapping is frequently wrong or incomplete:
 
 The shipped **`pdf_cmap_fix/data/font_lookup/<key>.json`** files (968 unique keys;
 see [font-inventory.md](font-inventory.md)) are produced by
-**`scripts/build_per_font_gid_maps.py`** from the same archives **README** lists:
-**`scripts/bodyig.zip`**, **`scripts/tibetan-fonts-main.zip`**, and
-**`scripts/tibetan-fonts-private-main.zip`**, merged **in order** so **later**
+**`scripts/gid/build_per_font_gid_maps.py`** from the same archives **README** lists
+(under **`fonts/`** by default, or **`scripts/`** if missing): **`fonts/bodyig.zip`**,
+**`fonts/tibetan-fonts-main.zip`**, and **`fonts/tibetan-fonts-private-main.zip`**, merged **in order** so **later**
 inputs override earlier entries when the normalised font stem collides.
 
-The GSUB walk is implemented in **`scripts/gid_map.py`** (`build_gid_map`).
+The GSUB walk is implemented in **`scripts/font_lookup_common/gid_map.py`** (`build_gid_map`).
 
 For each font file:
 
@@ -62,7 +62,7 @@ This gives us the **reverse mapping**: `GID → correct Unicode sequence` for
 every glyph in the font, including complex stacked syllables.
 
 ```python
-# simplified sketch — see scripts/gid_map.py for the full walk.
+# simplified sketch — see scripts/font_lookup_common/gid_map.py for the full walk.
 def decompose(gname):
     if gname in cmap_reverse:           # atomic letter or digit
         return cmap_reverse[gname]
@@ -84,7 +84,7 @@ depend on surrounding glyphs at shaping time and would require simulating the
 shaper to reverse safely. In practice, for the Tibetan corpus we ship, the
 inner substitutions called by contextual lookups are themselves type 1 / 4 and
 are already covered by the walk above; see
-`scripts/diagnose_contextual_gsub.py` for a per‑font check that prints how
+`scripts/misc/diagnose_contextual_gsub.py` for a per‑font check that prints how
 many glyphs (if any) would gain a mapping from explicit contextual modelling.
 
 Each face’s map is written as one JSON file under `pdf_cmap_fix/data/font_lookup/`:
@@ -106,7 +106,7 @@ the full key list in [font-inventory.md](font-inventory.md).
 
 ### Font lookup JSONs
 
-**[`scripts/build_per_font_gid_maps.py`](../scripts/build_per_font_gid_maps.py)** writes one JSON per face into **`pdf_cmap_fix/data/font_lookup/<normalised_key>.json`**, plus **`_manifest.json`**. The extractor loads **`font_lookup/<matched_key>.json`** on demand (lazy read per matched font), from the bundled directory or from **`--font-lookup-dir`** / **`font_lookup_dir=`** (see **[Font lookup workflows](../README.md#font-lookup-workflows)** in the README). The same GSUB walk (types 1, 2, 4 with type‑7 wrappers unwrapped) is used.
+**[`scripts/gid/build_per_font_gid_maps.py`](../scripts/gid/build_per_font_gid_maps.py)** writes one JSON per face into **`pdf_cmap_fix/data/font_lookup/<normalised_key>.json`**, plus **`_manifest.json`**. The extractor loads **`font_lookup/<matched_key>.json`** on demand (lazy read per matched font), from the bundled directory or from **`--font-lookup-dir`** / **`font_lookup_dir=`** (see **[Font lookup workflows](../README.md#font-lookup-workflows)** in the README). The same GSUB walk (types 1, 2, 4 with type‑7 wrappers unwrapped) is used.
 
 A `_meta` block carries provenance and GSUB lookup counts and is ignored when resolving GIDs:
 
@@ -129,7 +129,7 @@ The full list of keys we ship is in [font-inventory.md](font-inventory.md#font-l
 PDF fonts have names like `FPFIFO+Monlam#2320Uni#2320OuChan2`.  We normalise
 both the PDF name and every DB key by:
 
-1. Stripping the 6-character subset prefix (`FPFIFO+`).
+1. Stripping the 6-character random tag prefix (e.g. `FPFIFO+`) that PDF creators prepend to embedded font names.
 2. Decoding PDF hex-escapes (`#23` → `#`, then `#20` → ` `) up to 3 times
    (InDesign double-encodes font names).
 3. Stripping all non-alphanumeric characters and lowercasing.
@@ -211,12 +211,12 @@ in the PDF.  Char code `N` in the PDF content stream = GID `N` in the
 original font = GID `N` in our font lookup map.  The mapping is exact.
 
 TrueType **simple-encoding** fonts (e.g. Ghostscript-generated PDFs) assign
-their own sequential char codes (1, 2, 3, ...) per-subset.  Char code 1 is
-Ghostscript's *first used glyph*, which may be GID 3 or GID 1042 or anything
-else in the original font.  Without reading the embedded subset's glyph order
-and matching it against the full font's glyph order, there is no reliable way
-to map char codes back to original GIDs.  Patching these blindly produces
-garbled output.
+their own sequential char codes (1, 2, 3, …) inside each embedded program.
+Char code 1 is often the *first used glyph* in that program, which may be GID 3
+or GID 1042 or anything else in the original font file. Without reading the
+embedded font program’s glyph order and matching it against the full font’s
+glyph order, there is no reliable way to map char codes back to original GIDs.
+Patching these blindly produces garbled output.
 
 ## Supported Fonts
 
@@ -243,7 +243,7 @@ Sample PDFs and reference outputs live under **[`docs/examples/`](examples/)** (
 - **`*.patched.pdf`** — same document with corrected `/ToUnicode` streams (`pdf-cmap-fix -p`); glyphs on the page are unchanged.
 - **`*.cmap-dump.json`** — per-font merged ToUnicode as JSON (`pdf-cmap-fix --dump-cmap`).
 
-All five examples were generated with the bundled **`pdf_cmap_fix/data/font_lookup/*.json`**. If your maps differ from the committed reference outputs, refresh **`font_lookup/<key>.json`** (e.g. **`scripts/update_font_lookup.py`**) or pass **`--font-lookup-dir`**.
+All five examples were generated with the bundled **`pdf_cmap_fix/data/font_lookup/*.json`**. If your maps differ from the committed reference outputs, refresh **`font_lookup/<key>.json`** (e.g. **`scripts/gid/update_font_lookup.py`**) or pass **`--font-lookup-dir`**.
 
 ### Index
 
@@ -269,7 +269,7 @@ pdf-cmap-fix --dump-cmap docs/examples/TI1055-01-001/TI1055-01-001.cmap-dump.jso
     docs/examples/TI1055-01-001/TI1055-01-001.pdf
 ```
 
-For PDFs that embed **Microsoft Himalaya** subsets, ensure **`microsofthimalaya.json`** reflects the GSUB type **1/2/4/7** walk (refresh with **`scripts/update_font_lookup.py`** if needed), then:
+For PDFs that use **Microsoft Himalaya**, ensure **`microsofthimalaya.json`** reflects the GSUB type **1/2/4/7** walk (refresh with **`scripts/gid/update_font_lookup.py`** if needed), then:
 
 ```bash
 pdf-cmap-fix docs/examples/TI803-01-001/TI803-01-001.pdf
@@ -302,9 +302,9 @@ RAW:      འོད་གསལ་ཀོང་ཡངས་... རྣལ་འབ
 PATCHED:  འོད་གསལ་ཀློང་ཡངས་... རྣལ་འབྱོར་པ་... ཀྱི་ཟབ་གཏེར།
 ```
 
-#### `TI803-01-001` — Word + Microsoft Himalaya subsets
+#### `TI803-01-001` — Word + Microsoft Himalaya
 
-Same Word symptom as TI1055, but on a **Microsoft Himalaya** subset. The **`microsofthimalaya.json`** lookup (GSUB type 1/2/4/7) recovers stack glyphs that a cmap‑only or older map may leave as `U+FFFD`; regenerate that JSON if your font build differs from the bundled file.
+Same Word symptom as TI1055, but on **Microsoft Himalaya**. The **`microsofthimalaya.json`** lookup (GSUB type 1/2/4/7) recovers stack glyphs that a cmap‑only or older map may leave as `U+FFFD`; regenerate that JSON if your font build differs from the bundled file.
 
 #### `TI1461-01-001` — InDesign, mixed Qomolangma + Monlam
 
@@ -367,23 +367,26 @@ The negative char delta is expected: Word had inserted spurious multi-codepoint 
 pdf-cmap-fix/
 ├── pdf_cmap_fix/                  Python package (installed)
 │   ├── __init__.py
-│   ├── extractor.py               Patch ToUnicode; extract; build_tounicode_dict; CLI; --font-lookup-dir
+│   ├── tounicode_core.py          Shared ToUnicode merge; tier filter
+│   ├── gid/                       Tier-1 pdf-cmap-fix CLI + API
+│   ├── gname/                     Tier-2 CLI + API
+│   ├── gshape/                    Tier-3 CLI + API
 │   └── data/
 │       └── font_lookup/           One JSON per face (~970 files); runtime GID → Unicode source
 │           ├── _manifest.json     Index + duplicates + read errors
 │           └── <key>.json         e.g. monlamuniouchan2.json, microsofthimalaya.json
 ├── scripts/
-│   ├── font_sources.py                          Enumerate fonts from zip and/or directories
-│   ├── gid_map.py                               cmap + GSUB decomposition (`build_gid_map`)
-│   ├── build_per_font_gid_maps.py               Rebuild pdf_cmap_fix/data/font_lookup/
-│   ├── update_font_lookup.py                  Create/update one font_lookup JSON from a local font
-│   └── diagnose_contextual_gsub.py              Optional GSUB 5/6/8 coverage report
+│   ├── gid/                     Tier 1: bulk + single-font GID builds (CLIs)
+│   ├── gname/                   Tier 2: gname bulk + single-font refresh
+│   ├── gshape/                  Tier 3: gshape bulk + single-font refresh
+│   ├── font_lookup_common/      Shared gid_map, per_font_maps, single_font_lookup, …
+│   ├── pua/                     PUA-free builders: gname/ gshape/ gid/ + inventory, verify, run_all
+│   └── misc/                    Samples / one-offs
 ├── docs/
 │   ├── README.md             Documentation index
 │   ├── approach.md           This file
 │   ├── glossary-and-json.md  Terms + JSON shapes
 │   ├── font-inventory.md     All bundled font_lookup keys
-│   ├── blog.md               Article (publication-ready)
 │   └── examples/             Worked examples (one folder per PDF)
 │       ├── TI1055-01-001/    MS Word, 528 pages
 │       ├── TI1751-01-001/    InDesign, 528 pages
@@ -398,4 +401,4 @@ pdf-cmap-fix/
 
 ## Rebuilding font lookup
 
-Instructions for **bulk ZIP rebuilds**, **single-font `update_font_lookup.py`**, and runtime **`--font-lookup-dir`** are maintained in the root **[README.md](../README.md#font-lookup-workflows)** (**Font lookup workflows**).
+Instructions for **bulk ZIP rebuilds**, **single-font `update_font_lookup.py` (per tier under `scripts/gid/`, `scripts/gname/`, `scripts/gshape/`)**, and runtime **`--font-lookup-dir`** are maintained in the root **[README.md](../README.md#font-lookup-workflows)** (**Font lookup workflows**).

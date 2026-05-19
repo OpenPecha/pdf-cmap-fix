@@ -1812,6 +1812,7 @@
     "1810": "ဧ"
   },
   "_meta": {
+    "lookup_kind": "gid",
     "source": "tibetan-fonts-main.zip::tibetan-fonts-main/Unicode Font Families & Typefaces/Tanzin Kabree Font Family/Tanzin Kabree mediocre Letters Tanzin Kabree mediocre Letters.ttf",
     "gids_mapped": 1810,
     "multi_char_stacks": 1138,

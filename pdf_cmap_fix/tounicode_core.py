@@ -1,25 +1,8 @@
 """
-pdf_cmap_fix.extractor
-======================
+Shared ToUnicode merge logic for tier-specific CLIs (gid / gname / gshape).
 
-Patches PDF ToUnicode CMaps using a GSUB-derived reverse mapping per font,
-extracts Unicode text, or returns merged CMap data without mutating the PDF.
-
-Supported font class
---------------------
-Type0 / CID / Identity-H fonts whose GID space is preserved in the PDF
-subset.  Runtime reads **font lookup** JSON files from ``data/font_lookup/`` (or a
-directory you pass as ``font_lookup_dir=`` / ``pdf-cmap-fix --font-lookup-dir``).
-Rebuild the tree with ``scripts/build_per_font_gid_maps.py`` or refresh one
-``<key>.json`` with ``scripts/update_font_lookup.py`` (see ``scripts/gid_map.py``
-for the GID→Unicode core).
-
-Public API
-----------
-    extract_pdf_text(pdf_path, ...) -> dict
-    patch_pdf(pdf_path, ...) -> dict
-    build_tounicode_dict(pdf_path, ...) -> dict
-    extract_all(doc) / patch_doc(doc, ...)  # lower-level
+``collect_font_merges(..., lookup_dir=..., tier=...)`` only uses JSON files whose
+``_meta.lookup_kind`` matches ``tier`` (``gid`` also accepts absent ``lookup_kind``).
 """
 from __future__ import annotations
 
@@ -28,12 +11,12 @@ import json
 import re
 import sys
 from pathlib import Path
-from typing import Any, Iterable, Optional
+from typing import Any, Iterable, Literal, Optional, Tuple
 
 import fitz
+from fontTools.ttLib import TTFont
 
-_DATA_DIR = Path(__file__).parent / "data"
-FONT_LOOKUP_DIR = _DATA_DIR / "font_lookup"
+LookupTier = Literal["gid", "gname", "gshape"]
 
 PREVIEW_LINES = 15
 PREVIEW_DIFF = 8
@@ -93,25 +76,88 @@ def _discover_lookup_keys(lookup_dir: Path) -> list[str]:
     )
 
 
-def _font_json_payload_to_gid_map(data: dict) -> dict[int, str]:
-    for k, v in data.items():
-        if k == "_meta":
-            continue
-        if not isinstance(v, dict) or not v:
-            continue
-        try:
-            return {int(g): u for g, u in v.items()}
-        except (ValueError, TypeError):
-            continue
-    return {}
-
-
-def _load_gid_map_file(path: Path) -> dict[int, str]:
+def _load_lookup_file(path: Path) -> Optional[Tuple[str, dict[str, str]]]:
+    """Load one lookup JSON. Returns ``(lookup_kind, inner)`` or ``None``."""
     try:
         data = json.loads(path.read_text(encoding="utf-8"))
     except (OSError, json.JSONDecodeError):
+        return None
+    meta = data.get("_meta")
+    if not isinstance(meta, dict):
+        meta = {}
+    kind = meta.get("lookup_kind", "gid")
+    if kind not in ("gid", "gname", "gshape"):
+        kind = "gid"
+    inner: Optional[dict[str, str]] = None
+    for k, v in data.items():
+        if k == "_meta" or not isinstance(v, dict) or not v:
+            continue
+        inner = {}
+        for k2, u in v.items():
+            if not isinstance(u, str):
+                continue
+            inner[str(k2)] = u
+        break
+    if not inner:
+        return None
+    return (kind, inner)
+
+
+def _gid_map_from_inner(inner: dict[str, str]) -> dict[int, str]:
+    out: dict[int, str] = {}
+    for g, u in inner.items():
+        try:
+            out[int(g)] = u
+        except (ValueError, TypeError):
+            continue
+    return out
+
+
+def _resolve_db_gid_map(
+    doc: fitz.Document,
+    font_xref: int,
+    lookup_kind: str,
+    inner: dict[str, str],
+) -> dict[int, str]:
+    """Map PDF GIDs to Unicode using embedded font + gname or gshape table."""
+    if lookup_kind == "gid":
+        return _gid_map_from_inner(inner)
+    ext_font: Optional[TTFont] = None
+    try:
+        try:
+            tup = doc.extract_font(font_xref)
+        except Exception:
+            return {}
+        if not tup or len(tup) < 4:
+            return {}
+        buf = tup[3]
+        if not buf or not isinstance(buf, (bytes, bytearray)):
+            return {}
+        ext_font = TTFont(io.BytesIO(bytes(buf)), lazy=False)
+        go = ext_font.getGlyphOrder()
+        resolved: dict[int, str] = {}
+        n = min(len(go), 0x10000)
+        if lookup_kind == "gshape":
+            from pdf_cmap_fix.glyph_fingerprint import fingerprint_glyph
+        for gid in range(n):
+            gname = go[gid]
+            if lookup_kind == "gname":
+                u = inner.get(gname)
+                if u:
+                    resolved[gid] = u
+            elif lookup_kind == "gshape":
+                h = fingerprint_glyph(ext_font, gname)
+                if h and h in inner:
+                    resolved[gid] = inner[h]
+        return resolved
+    except Exception:
         return {}
-    return _font_json_payload_to_gid_map(data)
+    finally:
+        if ext_font is not None:
+            try:
+                ext_font.close()
+            except Exception:
+                pass
 
 
 def _parse_tounicode(stream: bytes) -> dict:
@@ -194,20 +240,18 @@ def _overrides(existing: dict, merged: dict) -> dict:
 def collect_font_merges(
     doc: fitz.Document,
     *,
-    font_lookup_dir: Optional[Path] = None,
+    lookup_dir: Path,
+    tier: LookupTier,
     verbose: bool = False,
 ) -> tuple[list[dict[str, Any]], dict[str, int]]:
     """Scan Type0 fonts with ToUnicode; compute merged maps without writing PDF.
 
-    Loads GID maps from ``font_lookup_dir`` (default :data:`FONT_LOOKUP_DIR`):
-    one ``<key>.json`` per normalised font key (see ``scripts/update_font_lookup.py``).
-
-    Returns (records, stats). Each record has font_xref, to_unicode_xref,
-    pdf_font_name, db_key_matched, existing, merged, overrides, changed.
+    Only JSON whose ``_meta.lookup_kind`` matches ``tier`` is used (``gid`` tier
+    also accepts files with missing ``lookup_kind``). Merge output is always
+    GID → Unicode for the PDF cmap.
     """
-    cache: dict[str, dict[int, str]] = {}
+    cache: dict[tuple[str, str], Optional[Tuple[str, dict[str, str]]]] = {}
 
-    lookup_dir = Path(font_lookup_dir) if font_lookup_dir is not None else FONT_LOOKUP_DIR
     keys_disk = _discover_lookup_keys(lookup_dir)
     db_index = _build_db_index(keys_disk)
 
@@ -242,15 +286,36 @@ def collect_font_merges(
             existing = _parse_tounicode(tu_stream)
 
             picked = _pick_best_font_key(db_index, basename)
+            match_kind = ""
             if picked is None:
                 db_map, db_key = None, None
             else:
                 path = lookup_dir / f"{picked}.json"
                 if path.is_file():
-                    if picked not in cache:
-                        cache[picked] = _load_gid_map_file(path)
-                    db_map = cache[picked]
-                    db_key = picked if db_map else None
+                    cache_key = (str(path.resolve()), tier)
+                    if cache_key not in cache:
+                        raw = _load_lookup_file(path)
+                        if raw is not None and raw[0] == tier:
+                            cache[cache_key] = raw
+                        else:
+                            cache[cache_key] = None
+                    loaded = cache[cache_key]
+                    db_map = None
+                    db_key = None
+                    if loaded is not None:
+                        match_kind, inner = loaded
+                        if match_kind == "gid":
+                            db_map = _gid_map_from_inner(inner)
+                            if db_map:
+                                db_key = picked
+                            else:
+                                db_map = None
+                        else:
+                            db_map = _resolve_db_gid_map(doc, xref, match_kind, inner)
+                            if db_map:
+                                db_key = picked
+                            else:
+                                db_map = None
                 else:
                     db_map, db_key = None, None
             if not db_map:
@@ -269,7 +334,7 @@ def collect_font_merges(
                 norm = _normalise_name(basename)
                 if verbose and norm not in reported:
                     reported.add(norm)
-                    print(f"  [matched] {basename[:50]} -> {db_key}")
+                    print(f"  [matched] {basename[:50]} -> {db_key}  [{match_kind}]")
                 merged, changed = _merge(existing, db_map)
                 overrides = _overrides(existing, merged)
 
@@ -311,12 +376,14 @@ def apply_font_merges_to_doc(doc: fitz.Document, records: list[dict[str, Any]]) 
 def patch_doc(
     doc: fitz.Document,
     *,
-    font_lookup_dir: Optional[Path] = None,
+    lookup_dir: Path,
+    tier: LookupTier,
     verbose: bool = False,
 ) -> dict[str, int]:
     records, stats = collect_font_merges(
         doc,
-        font_lookup_dir=font_lookup_dir,
+        lookup_dir=lookup_dir,
+        tier=tier,
         verbose=verbose,
     )
     apply_font_merges_to_doc(doc, records)
@@ -337,29 +404,17 @@ def extract_all(doc: fitz.Document) -> str:
 def build_tounicode_dict(
     pdf_path,
     *,
-    font_lookup_dir: Optional[Path] = None,
+    lookup_dir: Path,
+    tier: LookupTier,
 ) -> dict[str, Any]:
-    """Return per-font ToUnicode maps (existing, merged, overrides) without patching.
-
-    Parameters
-    ----------
-    pdf_path : str or Path
-    font_lookup_dir : directory of ``<key>.json`` files (default: bundled lookup)
-
-    Returns
-    -------
-    dict with keys:
-        fonts : list of font records (see plan schema)
-        by_font_xref : dict[str, dict] — keys are stringified xrefs
-        stats : aggregate counters (fonts_seen, patched, upgrades, no_change, no_match)
-    """
     pdf_path = Path(pdf_path)
 
     doc = fitz.open(str(pdf_path))
     try:
         records, stats = collect_font_merges(
             doc,
-            font_lookup_dir=font_lookup_dir,
+            lookup_dir=lookup_dir,
+            tier=tier,
             verbose=False,
         )
     finally:
@@ -374,7 +429,8 @@ def patch_pdf(
     output_path=None,
     write_file: bool = True,
     *,
-    font_lookup_dir: Optional[Path] = None,
+    lookup_dir: Path,
+    tier: LookupTier,
     verbose: bool = False,
 ) -> dict:
     pdf_path = Path(pdf_path)
@@ -388,7 +444,8 @@ def patch_pdf(
     try:
         stats = patch_doc(
             doc,
-            font_lookup_dir=font_lookup_dir,
+            lookup_dir=lookup_dir,
+            tier=tier,
             verbose=verbose,
         )
         pdf_bytes = doc.tobytes(garbage=4, deflate=True)
@@ -406,7 +463,8 @@ def extract_pdf_text(
     output_dir=None,
     write_files: bool = True,
     *,
-    font_lookup_dir: Optional[Path] = None,
+    lookup_dir: Path,
+    tier: LookupTier,
     verbose: bool = False,
 ) -> dict:
     pdf_path = Path(pdf_path)
@@ -421,7 +479,8 @@ def extract_pdf_text(
     try:
         stats = patch_doc(
             doc_pat,
-            font_lookup_dir=font_lookup_dir,
+            lookup_dir=lookup_dir,
+            tier=tier,
             verbose=verbose,
         )
         patched_text = extract_all(doc_pat)
@@ -523,68 +582,67 @@ def _show_diff_sample(raw: str, patched: str, n: int = PREVIEW_DIFF) -> None:
         print(f"      PATCHED: {_printable(p)}")
 
 
-USAGE = (
-    "Usage:\n"
-    "  pdf-cmap-fix [--font-lookup-dir DIR] <pdf1> [pdf2] ...\n"
-    "      extract using JSON GID maps from DIR (default: bundled pdf_cmap_fix/data/font_lookup)\n"
-    "  pdf-cmap-fix [--font-lookup-dir DIR] --patch-pdf <pdf> ...\n"
-    "  pdf-cmap-fix [--font-lookup-dir DIR] --dump-cmap OUT.json <pdf> ...\n"
-)
+def cli_main(
+    argv: list[str],
+    *,
+    tier: LookupTier,
+    default_lookup_dir: Path,
+    usage_text: str,
+    program_label: str,
+) -> None:
+    """Shared argv parser and driver for tier CLIs."""
+    import io as io_mod
 
-
-def main() -> None:
-    # Windows consoles: UTF-8 for CLI only (not at import time — breaks pytest capture)
     if hasattr(sys.stdout, "buffer") and not isinstance(
-        sys.stdout, io.TextIOWrapper
+        sys.stdout, io_mod.TextIOWrapper
     ):
-        sys.stdout = io.TextIOWrapper(
+        sys.stdout = io_mod.TextIOWrapper(
             sys.stdout.buffer, encoding="utf-8", errors="replace"
         )
 
-    args = sys.argv[1:]
-    if not args:
-        sys.exit(USAGE)
-    if args[0] in ("-h", "--help"):
-        sys.stdout.write(USAGE)
+    if not argv:
+        sys.exit(usage_text)
+    if argv[0] in ("-h", "--help"):
+        sys.stdout.write(usage_text)
         sys.exit(0)
 
     font_lookup_cli: Optional[Path] = None
     i = 0
-    while i < len(args):
-        if args[i] == "--font-lookup-dir" and i + 1 < len(args):
-            font_lookup_cli = Path(args[i + 1])
+    while i < len(argv):
+        if argv[i] == "--font-lookup-dir" and i + 1 < len(argv):
+            font_lookup_cli = Path(argv[i + 1])
             i += 2
             continue
         break
-    args = args[i:]
+    argv = argv[i:]
 
     lookup_root = (
         font_lookup_cli.expanduser().resolve()
         if font_lookup_cli is not None
-        else FONT_LOOKUP_DIR
+        else default_lookup_dir.resolve()
     )
     if not lookup_root.is_dir():
-        flag = "--font-lookup-dir" if font_lookup_cli is not None else "bundled font_lookup"
+        flag = "--font-lookup-dir" if font_lookup_cli is not None else "default lookup dir"
         sys.exit(f"font lookup directory not found ({flag}): {lookup_root}")
 
     dump_cmap: Optional[str] = None
     patch_pdf_mode = False
-    rest = list(args)
+    rest = list(argv)
     if rest and rest[0] in ("--patch-pdf", "-p"):
         patch_pdf_mode = True
         rest = rest[1:]
     elif rest and rest[0] == "--dump-cmap":
         if len(rest) < 2:
-            sys.exit("pdf-cmap-fix --dump-cmap requires OUTPUT.json and at least one PDF")
+            sys.exit(f"{program_label} --dump-cmap requires OUTPUT.json and at least one PDF")
         dump_cmap = rest[1]
         rest = rest[2:]
 
     pdf_args = rest
     if not pdf_args:
-        sys.exit(USAGE)
+        sys.exit(usage_text)
 
     n_lookup = len(_discover_lookup_keys(lookup_root))
-    print("Loading font lookup ...")
+    print(f"Loading font lookup ({tier}) ...")
     print(f"  {n_lookup} font JSON files under {lookup_root}")
 
     for arg in pdf_args:
@@ -604,7 +662,8 @@ def main() -> None:
                 out_json = out_json.parent / f"{out_json.stem}_{pdf_path.stem}{out_json.suffix}"
             payload = build_tounicode_dict(
                 pdf_path,
-                font_lookup_dir=lookup_root,
+                lookup_dir=lookup_root,
+                tier=tier,
             )
             serial = _sanitise_json_utf8(_serialise_cmap_result(payload))
             out_json.parent.mkdir(parents=True, exist_ok=True)
@@ -621,7 +680,8 @@ def main() -> None:
             print("\n[Patch-only mode] Rewriting ToUnicode CMaps ...")
             result = patch_pdf(
                 pdf_path,
-                font_lookup_dir=lookup_root,
+                lookup_dir=lookup_root,
+                tier=tier,
                 verbose=True,
             )
             stats = result["stats"]
@@ -637,7 +697,8 @@ def main() -> None:
         print("\n[Phase 1] Raw extraction ...")
         result = extract_pdf_text(
             pdf_path,
-            font_lookup_dir=lookup_root,
+            lookup_dir=lookup_root,
+            tier=tier,
             verbose=True,
         )
         raw_text = result["raw"]
@@ -665,7 +726,3 @@ def main() -> None:
         _show_diff_sample(raw_text, patched_text)
 
     print("\nDone.")
-
-
-if __name__ == "__main__":
-    main()

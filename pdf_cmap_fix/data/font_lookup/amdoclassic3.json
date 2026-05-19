@@ -3049,6 +3049,7 @@
     "3069": "ལྠོ"
   },
   "_meta": {
+    "lookup_kind": "gid",
     "source": "tibetan-fonts-main.zip::tibetan-fonts-main/Unicode Font Families & Typefaces/Amdo Claasic/amdo_classic_3.ttf",
     "gids_mapped": 3047,
     "multi_char_stacks": 2492,

@@ -1,4 +1,4 @@
-"""Smoke tests for ``scripts/gid_map.py`` (``build_gid_map``, ``normalise_name``)."""
+"""Smoke tests for ``scripts/font_lookup_common/gid_map.py`` (``build_gid_map``, ``normalise_name``)."""
 from __future__ import annotations
 
 import sys
@@ -8,7 +8,8 @@ import pytest
 from fontTools.ttLib import TTFont
 
 REPO = Path(__file__).resolve().parents[1]
-SCRIPTS = REPO / "scripts"
+SCRIPTS_ROOT = REPO / "scripts"
+TIER_COMMON = SCRIPTS_ROOT / "font_lookup_common"
 
 
 def _system_ttf() -> Path | None:
@@ -24,8 +25,8 @@ def _system_ttf() -> Path | None:
 
 @pytest.mark.skipif(_system_ttf() is None, reason="no common system TTF found")
 def test_build_gid_map_smoke() -> None:
-    if str(SCRIPTS) not in sys.path:
-        sys.path.insert(0, str(SCRIPTS))
+    if str(TIER_COMMON) not in sys.path:
+        sys.path.insert(0, str(TIER_COMMON))
     import gid_map as gm
 
     font = TTFont(str(_system_ttf()), lazy=False)
@@ -35,24 +36,24 @@ def test_build_gid_map_smoke() -> None:
 
 
 def test_normalise_font_stem() -> None:
-    if str(SCRIPTS) not in sys.path:
-        sys.path.insert(0, str(SCRIPTS))
+    if str(TIER_COMMON) not in sys.path:
+        sys.path.insert(0, str(TIER_COMMON))
     import gid_map as gm
 
     assert gm.normalise_name("fonts/Monlam Uni OuChan2.ttf") == "monlamuniouchan2"
 
 
 @pytest.mark.skipif(
-    not (SCRIPTS / "MicrosoftHimalaya.ttf").is_file(),
+    not (SCRIPTS_ROOT / "MicrosoftHimalaya.ttf").is_file(),
     reason="scripts/MicrosoftHimalaya.ttf not present",
 )
 def test_build_gid_map_microsoft_himalaya_shapkyu_yata() -> None:
     """GSUB single + ligature must yield ka+vowel, not vowel alone."""
-    if str(SCRIPTS) not in sys.path:
-        sys.path.insert(0, str(SCRIPTS))
+    if str(TIER_COMMON) not in sys.path:
+        sys.path.insert(0, str(TIER_COMMON))
     import gid_map as gm
 
-    font = TTFont(str(SCRIPTS / "MicrosoftHimalaya.ttf"), lazy=False)
+    font = TTFont(str(SCRIPTS_ROOT / "MicrosoftHimalaya.ttf"), lazy=False)
     m = gm.build_gid_map(font)
     go = font.getGlyphOrder()
     gi_shap = go.index("tibKa_Shapkyu")

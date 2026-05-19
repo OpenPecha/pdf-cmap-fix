@@ -94,6 +94,7 @@
     "94": ""
   },
   "_meta": {
+    "lookup_kind": "gid",
     "source": "tibetan-fonts-main.zip::tibetan-fonts-main/Non-Unicode Fonts/Nitartha/Drutsa/Drutsa-c1.ttf",
     "gids_mapped": 92,
     "multi_char_stacks": 0,

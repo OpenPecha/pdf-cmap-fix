@@ -97,6 +97,7 @@
     "97": " "
   },
   "_meta": {
+    "lookup_kind": "gid",
     "source": "tibetan-fonts-main.zip::tibetan-fonts-main/Non-Unicode Fonts/SuzTib/SUZTIBRU.TTF",
     "gids_mapped": 95,
     "multi_char_stacks": 0,

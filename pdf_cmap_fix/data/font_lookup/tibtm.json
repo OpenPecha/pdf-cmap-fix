@@ -209,6 +209,7 @@
     "211": ""
   },
   "_meta": {
+    "lookup_kind": "gid",
     "source": "tibetan-fonts-main.zip::tibetan-fonts-main/Non-Unicode Fonts/PKTC/Modified_encoding/TIBTM___.TTF",
     "gids_mapped": 207,
     "multi_char_stacks": 0,

@@ -88,6 +88,7 @@
     "88": "Á"
   },
   "_meta": {
+    "lookup_kind": "gid",
     "source": "tibetan-fonts-main.zip::tibetan-fonts-main/Non-Unicode Fonts/DakiniScripts/u7233.ttf",
     "gids_mapped": 86,
     "multi_char_stacks": 0,

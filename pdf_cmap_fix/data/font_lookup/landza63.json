@@ -139,6 +139,7 @@
     "139": "ß"
   },
   "_meta": {
+    "lookup_kind": "gid",
     "source": "tibetan-fonts-main.zip::tibetan-fonts-main/Non-Unicode Fonts/Landza/landza63.ttf",
     "gids_mapped": 137,
     "multi_char_stacks": 0,

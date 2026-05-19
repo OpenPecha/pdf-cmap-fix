@@ -977,7 +977,7 @@ The keys below match **`font_lookup/<key>.json`** stems (same naming as the lega
 
 ### Build statistics (`font_lookup/`)
 
-Built by [`scripts/build_per_font_gid_maps.py`](../scripts/build_per_font_gid_maps.py) from the three font ZIPs documented in the root README. GSUB scope: cmap + types **1**, **2**, **4** with **type 7** wrappers unwrapped.
+Built by [`scripts/gid/build_per_font_gid_maps.py`](../scripts/gid/build_per_font_gid_maps.py) from the three font ZIPs documented in the root README. GSUB scope: cmap + types **1**, **2**, **4** with **type 7** wrappers unwrapped.
 
 | Property | Value |
 |----------|-------|
@@ -987,7 +987,7 @@ Built by [`scripts/build_per_font_gid_maps.py`](../scripts/build_per_font_gid_ma
 | **Read errors (corrupt cmap / GSUB Extension / mojibake names)** | 10 |
 | **Index file** | [`pdf_cmap_fix/data/font_lookup/_manifest.json`](../pdf_cmap_fix/data/font_lookup/_manifest.json) |
 
-The authoritative list of keys is **`_manifest.json`**. To use a freshly built **`<key>.json`**, either overwrite **`pdf_cmap_fix/data/font_lookup/<key>.json`** (for example with **[`scripts/update_font_lookup.py`](../scripts/update_font_lookup.py)**) or pass a directory that contains your file:
+The authoritative list of keys is **`_manifest.json`**. To use a freshly built **`<key>.json`**, either overwrite **`pdf_cmap_fix/data/font_lookup/<key>.json`** (for example with **[`scripts/gid/update_font_lookup.py`](../scripts/gid/update_font_lookup.py)**) or pass a directory that contains your file:
 
 ```bash
 pdf-cmap-fix --font-lookup-dir path/to/font_lookup your.pdf

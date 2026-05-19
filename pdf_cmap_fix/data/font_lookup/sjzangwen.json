@@ -204,6 +204,7 @@
     "212": "ཿ"
   },
   "_meta": {
+    "lookup_kind": "gid",
     "source": "tibetan-fonts-private-main.zip::tibetan-fonts-private-main/Sanji Tibetan/三极藏文.ttf",
     "gids_mapped": 202,
     "multi_char_stacks": 0,

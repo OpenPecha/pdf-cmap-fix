@@ -3085,6 +3085,7 @@
     "3083": "～"
   },
   "_meta": {
+    "lookup_kind": "gid",
     "source": "tibetan-fonts-main.zip::tibetan-fonts-main/Non-Unicode Fonts/Banzhida/BZDHT.ttf",
     "gids_mapped": 3083,
     "multi_char_stacks": 0,

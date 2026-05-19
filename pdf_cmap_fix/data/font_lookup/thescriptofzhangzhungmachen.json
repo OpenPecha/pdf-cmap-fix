@@ -1602,6 +1602,7 @@
     "1611": "ཧཱུ"
   },
   "_meta": {
+    "lookup_kind": "gid",
     "source": "tibetan-fonts-main.zip::tibetan-fonts-main/Unicode Font Families & Typefaces/The Script of Zhangzhung/The Script Of Zhangzhung Machen.ttf",
     "gids_mapped": 1600,
     "multi_char_stacks": 943,

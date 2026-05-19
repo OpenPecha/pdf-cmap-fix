@@ -1164,6 +1164,7 @@
     "1212": "ꡉ"
   },
   "_meta": {
+    "lookup_kind": "gid",
     "source": "tibetan-fonts-main.zip::tibetan-fonts-main/Unicode Font Families & Typefaces/BabelStone/BabelStonePhagspaBook_v2.ttf",
     "gids_mapped": 1162,
     "multi_char_stacks": 0,

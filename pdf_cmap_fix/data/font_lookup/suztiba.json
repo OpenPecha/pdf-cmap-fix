@@ -137,6 +137,7 @@
     "137": " "
   },
   "_meta": {
+    "lookup_kind": "gid",
     "source": "tibetan-fonts-main.zip::tibetan-fonts-main/Non-Unicode Fonts/SuzTib/SUZTIBA.TTF",
     "gids_mapped": 135,
     "multi_char_stacks": 0,

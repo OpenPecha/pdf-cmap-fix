@@ -1919,6 +1919,7 @@
     "1921": "ྱ"
   },
   "_meta": {
+    "lookup_kind": "gid",
     "source": "tibetan-fonts-main.zip::tibetan-fonts-main/Variable Fonts/MiSans Tibetan/MiSansTibetan-Light.ttf",
     "gids_mapped": 1917,
     "multi_char_stacks": 1453,

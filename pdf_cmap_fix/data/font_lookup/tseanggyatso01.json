@@ -3291,6 +3291,7 @@
     "3399": "ཏོ"
   },
   "_meta": {
+    "lookup_kind": "gid",
     "source": "tibetan-fonts-main.zip::tibetan-fonts-main/Unicode Font Families & Typefaces/Tsewang Gyatso Font Family/TseangGyatso.01.ttf",
     "gids_mapped": 3289,
     "multi_char_stacks": 1984,

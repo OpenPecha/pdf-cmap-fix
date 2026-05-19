@@ -34,6 +34,7 @@
     "34": ">"
   },
   "_meta": {
+    "lookup_kind": "gid",
     "source": "tibetan-fonts-main.zip::tibetan-fonts-main/Non-Unicode Fonts/Nitartha/Khamdris/Khamdris-k.ttf",
     "gids_mapped": 32,
     "multi_char_stacks": 0,

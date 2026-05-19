@@ -1,6 +1,7 @@
 {
   "esamb": {},
   "_meta": {
+    "lookup_kind": "gid",
     "source": "tibetan-fonts-main.zip::tibetan-fonts-main/Non-Unicode Fonts/Nitartha/Esam/ESAMB.TTF",
     "gids_mapped": 0,
     "multi_char_stacks": 0,

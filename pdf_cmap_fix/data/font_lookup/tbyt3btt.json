@@ -175,6 +175,7 @@
     "175": "í"
   },
   "_meta": {
+    "lookup_kind": "gid",
     "source": "tibetan-fonts-main.zip::tibetan-fonts-main/Non-Unicode Fonts/Youtso/TBYT3BTT.TTf",
     "gids_mapped": 173,
     "multi_char_stacks": 0,

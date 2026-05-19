@@ -3943,6 +3943,7 @@
     "4100": "ཪྱཱུ"
   },
   "_meta": {
+    "lookup_kind": "gid",
     "source": "tibetan-fonts-private-main.zip::tibetan-fonts-private-main/Sambhota Font Family/Sambhota-DenangSazhi.ttf",
     "gids_mapped": 3941,
     "multi_char_stacks": 3740,

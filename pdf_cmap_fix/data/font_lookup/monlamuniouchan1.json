@@ -2672,6 +2672,7 @@
     "2719": "ནྶྱ"
   },
   "_meta": {
+    "lookup_kind": "gid",
     "source": "tibetan-fonts-main.zip::tibetan-fonts-main/Unicode Font Families & Typefaces/Monlam Font Family/Monlam Unicode Font Family 3.0/Monlam Uni OuChan1.ttf",
     "gids_mapped": 2670,
     "multi_char_stacks": 2053,

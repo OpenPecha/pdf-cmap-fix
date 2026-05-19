@@ -1480,6 +1480,7 @@
     "1481": "ྸྲ"
   },
   "_meta": {
+    "lookup_kind": "gid",
     "source": "tibetan-fonts-main.zip::tibetan-fonts-main/Unicode Individual fonts/Microsoft Himalaya/himalaya_2.ttf",
     "gids_mapped": 1478,
     "multi_char_stacks": 833,

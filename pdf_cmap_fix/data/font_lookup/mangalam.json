@@ -314,6 +314,7 @@
     "342": "སྨྲུ"
   },
   "_meta": {
+    "lookup_kind": "gid",
     "source": "tibetan-fonts-main.zip::tibetan-fonts-main/Unicode Problematic:Outdated:ReExported:Incomplete fonts/Outdated fonts/Mangalam.otf",
     "gids_mapped": 312,
     "multi_char_stacks": 197,

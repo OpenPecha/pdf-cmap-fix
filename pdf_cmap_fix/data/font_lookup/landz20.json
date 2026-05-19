@@ -70,6 +70,7 @@
     "70": "ó"
   },
   "_meta": {
+    "lookup_kind": "gid",
     "source": "tibetan-fonts-main.zip::tibetan-fonts-main/Non-Unicode Fonts/Landza/landz20.ttf",
     "gids_mapped": 68,
     "multi_char_stacks": 0,

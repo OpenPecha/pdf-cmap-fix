@@ -1646,6 +1646,7 @@
     "1651": "ཙྃ"
   },
   "_meta": {
+    "lookup_kind": "gid",
     "source": "tibetan-fonts-main.zip::tibetan-fonts-main/Unicode Font Families & Typefaces/Shangshung Sgoba Typeface/SHANGSHUNG SGOBA-KHRACHEN1.TTF",
     "gids_mapped": 1644,
     "multi_char_stacks": 995,

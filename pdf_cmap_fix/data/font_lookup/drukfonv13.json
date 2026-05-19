@@ -4,6 +4,7 @@
     "2": "\r"
   },
   "_meta": {
+    "lookup_kind": "gid",
     "source": "tibetan-fonts-main.zip::tibetan-fonts-main/Non-Unicode Fonts/Druk/DrukV13-1991/DrukFonV13.ttf",
     "gids_mapped": 2,
     "multi_char_stacks": 0,

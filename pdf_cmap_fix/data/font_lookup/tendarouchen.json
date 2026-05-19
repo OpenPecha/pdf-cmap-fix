@@ -2686,6 +2686,7 @@
     "2718": "ནྶྱ"
   },
   "_meta": {
+    "lookup_kind": "gid",
     "source": "tibetan-fonts-main.zip::tibetan-fonts-main/Unicode Font Families & Typefaces/Tendar Font Family/Tendar Ouchen.ttf",
     "gids_mapped": 2684,
     "multi_char_stacks": 2067,

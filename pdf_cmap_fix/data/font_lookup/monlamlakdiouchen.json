@@ -1630,6 +1630,7 @@
     "1652": "ྮྱ"
   },
   "_meta": {
+    "lookup_kind": "gid",
     "source": "tibetan-fonts-main.zip::tibetan-fonts-main/Unicode Font Families & Typefaces/Monlam Font Family/Monlam Fonts 4.0 with three new fonts/Monlam Lakdi Ouchen.ttf",
     "gids_mapped": 1628,
     "multi_char_stacks": 974,

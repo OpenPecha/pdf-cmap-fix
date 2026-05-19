@@ -5,21 +5,21 @@ from pathlib import Path
 
 import pytest
 
-from pdf_cmap_fix.extractor import (
+from pdf_cmap_fix.gid.extractor import build_tounicode_dict
+from pdf_cmap_fix.tounicode_core import (
     _build_tounicode_type0,
     _merge,
     _normalise_name,
     _parse_tounicode,
     _sanitise_json_utf8,
     _serialise_cmap_result,
-    build_tounicode_dict,
 )
 
 REPO = Path(__file__).resolve().parents[1]
 TI1751 = REPO / "docs" / "examples" / "TI1751-01-001" / "TI1751-01-001.pdf"
 
 
-def test_normalise_name_subset_and_hex_escapes() -> None:
+def test_normalise_name_tag_prefix_and_hex_escapes() -> None:
     s = "FPFIFO+Monlam#2320Uni#2320OuChan2"
     assert _normalise_name(s) == "monlamuniouchan2"
 

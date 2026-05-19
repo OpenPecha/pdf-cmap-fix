@@ -1517,6 +1517,7 @@
     "1521": "࿚"
   },
   "_meta": {
+    "lookup_kind": "gid",
     "source": "tibetan-fonts-main.zip::tibetan-fonts-main/Unicode Problematic:Outdated:ReExported:Incomplete fonts/Outdated fonts/Yesang Karmo - Old name of Bhozuk/Yesang Karmo-Bhodor(02).otf",
     "gids_mapped": 1515,
     "multi_char_stacks": 833,

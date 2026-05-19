@@ -1559,6 +1559,7 @@
     "1557": "）"
   },
   "_meta": {
+    "lookup_kind": "gid",
     "source": "tibetan-fonts-main.zip::tibetan-fonts-main/Unicode Font Families & Typefaces/Rebod Font Family/Rebod tibetan Power(རེ་འབོད་སྟོབས་ལྡན་མ།).ttf",
     "gids_mapped": 1557,
     "multi_char_stacks": 910,

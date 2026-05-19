@@ -5556,6 +5556,7 @@
     "5573": "囔"
   },
   "_meta": {
+    "lookup_kind": "gid",
     "source": "tibetan-fonts-main.zip::tibetan-fonts-main/Non-Unicode Fonts/Banzhida/Bzdbt.ttf",
     "gids_mapped": 5554,
     "multi_char_stacks": 0,

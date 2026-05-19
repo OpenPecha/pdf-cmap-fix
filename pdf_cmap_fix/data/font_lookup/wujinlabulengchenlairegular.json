@@ -1559,6 +1559,7 @@
     "1557": "ཨཐྀྀི"
   },
   "_meta": {
+    "lookup_kind": "gid",
     "source": "tibetan-fonts-main.zip::tibetan-fonts-main/Unicode Individual fonts/WujinLabulengChenlai-Regular.ttf",
     "gids_mapped": 1557,
     "multi_char_stacks": 910,

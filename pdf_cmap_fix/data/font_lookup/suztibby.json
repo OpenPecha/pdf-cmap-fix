@@ -172,6 +172,7 @@
     "172": " "
   },
   "_meta": {
+    "lookup_kind": "gid",
     "source": "tibetan-fonts-main.zip::tibetan-fonts-main/Non-Unicode Fonts/SuzTib/SUZTIBBY.TTF",
     "gids_mapped": 170,
     "multi_char_stacks": 0,

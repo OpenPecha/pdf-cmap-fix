@@ -176,6 +176,7 @@
     "176": "ð"
   },
   "_meta": {
+    "lookup_kind": "gid",
     "source": "tibetan-fonts-main.zip::tibetan-fonts-main/Non-Unicode Fonts/Youtso/TBYT3NTT.TTf",
     "gids_mapped": 174,
     "multi_char_stacks": 0,

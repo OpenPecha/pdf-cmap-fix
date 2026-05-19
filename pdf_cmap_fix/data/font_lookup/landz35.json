@@ -117,6 +117,7 @@
     "117": "ÿ"
   },
   "_meta": {
+    "lookup_kind": "gid",
     "source": "tibetan-fonts-main.zip::tibetan-fonts-main/Non-Unicode Fonts/Landza/landz35.ttf",
     "gids_mapped": 115,
     "multi_char_stacks": 0,
