@@ -1570,6 +1570,7 @@
     "1583": "ཧྲཱ"
   },
   "_meta": {
+    "lookup_kind": "gid",
     "source": "tibetan-fonts-main.zip::tibetan-fonts-main/Unicode Font Families & Typefaces/Golog Dernang Sadri Typeface/GologDernangSadris-Drutsa.ttf",
     "gids_mapped": 1568,
     "multi_char_stacks": 916,

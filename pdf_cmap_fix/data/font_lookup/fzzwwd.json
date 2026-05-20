@@ -7495,6 +7495,7 @@
     "7493": "󱘤"
   },
   "_meta": {
+    "lookup_kind": "gid",
     "source": "tibetan-fonts-main.zip::tibetan-fonts-main/Unicode Individual fonts/FZZW_WD.TTF",
     "gids_mapped": 7493,
     "multi_char_stacks": 0,

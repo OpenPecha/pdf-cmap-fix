@@ -1530,6 +1530,7 @@
     "1539": "༝༝"
   },
   "_meta": {
+    "lookup_kind": "gid",
     "source": "tibetan-fonts-main.zip::tibetan-fonts-main/Unicode Font Families & Typefaces/Jamyang Font Family/JMY-MLCQT.otf",
     "gids_mapped": 1528,
     "multi_char_stacks": 846,

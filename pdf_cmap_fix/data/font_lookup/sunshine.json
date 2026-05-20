@@ -7596,6 +7596,7 @@
     "7594": ""
   },
   "_meta": {
+    "lookup_kind": "gid",
     "source": "tibetan-fonts-main.zip::tibetan-fonts-main/Non-Unicode Fonts/sunshine.ttf",
     "gids_mapped": 7594,
     "multi_char_stacks": 0,

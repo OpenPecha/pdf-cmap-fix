@@ -212,6 +212,7 @@
     "247": "‐"
   },
   "_meta": {
+    "lookup_kind": "gid",
     "source": "tibetan-fonts-main.zip::tibetan-fonts-main/Non-Unicode Fonts/Monlam/Monlam Tigma-choug 2.TTF",
     "gids_mapped": 210,
     "multi_char_stacks": 0,

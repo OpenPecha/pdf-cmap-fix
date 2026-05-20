@@ -3224,6 +3224,7 @@
     "3258": "Ÿ"
   },
   "_meta": {
+    "lookup_kind": "gid",
     "source": "tibetan-fonts-main.zip::tibetan-fonts-main/Unicode Font Families & Typefaces/Monlam Font Family/monlam_uni_paytsik.ttf",
     "gids_mapped": 3222,
     "multi_char_stacks": 1912,

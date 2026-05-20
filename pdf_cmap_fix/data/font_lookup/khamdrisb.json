@@ -99,6 +99,7 @@
     "99": ""
   },
   "_meta": {
+    "lookup_kind": "gid",
     "source": "tibetan-fonts-main.zip::tibetan-fonts-main/Non-Unicode Fonts/Nitartha/Khamdris/Khamdris-b.ttf",
     "gids_mapped": 97,
     "multi_char_stacks": 0,

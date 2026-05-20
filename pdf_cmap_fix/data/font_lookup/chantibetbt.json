@@ -21846,6 +21846,7 @@
     "21884": "千"
   },
   "_meta": {
+    "lookup_kind": "gid",
     "source": "tibetan-fonts-main.zip::tibetan-fonts-main/Non-Unicode Fonts/CHANTIBETBT.ttf",
     "gids_mapped": 21844,
     "multi_char_stacks": 0,

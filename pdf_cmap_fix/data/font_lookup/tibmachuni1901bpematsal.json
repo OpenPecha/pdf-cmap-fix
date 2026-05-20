@@ -4733,6 +4733,7 @@
     "5114": "ས྄"
   },
   "_meta": {
+    "lookup_kind": "gid",
     "source": "tibetan-fonts-main.zip::tibetan-fonts-main/Unicode Font Families & Typefaces/TibetanMachineUni/TibMachUni-1.901b_Pema_Tsal.ttf",
     "gids_mapped": 4731,
     "multi_char_stacks": 3443,

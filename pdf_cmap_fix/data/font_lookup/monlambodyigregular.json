@@ -437,6 +437,7 @@
     "439": "࿏"
   },
   "_meta": {
+    "lookup_kind": "gid",
     "source": "tibetan-fonts-main.zip::tibetan-fonts-main/Unicode Font Families & Typefaces/Monlam Font Family/Monlam Bodyig-Regular.ttf",
     "gids_mapped": 435,
     "multi_char_stacks": 0,

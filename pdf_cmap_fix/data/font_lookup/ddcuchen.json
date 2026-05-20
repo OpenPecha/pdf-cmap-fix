@@ -3031,6 +3031,7 @@
     "3192": "�"
   },
   "_meta": {
+    "lookup_kind": "gid",
     "source": "tibetan-fonts-main.zip::tibetan-fonts-main/Unicode Font Families & Typefaces/Dzongkha fonts/DDC/ddc_uchen.ttf",
     "gids_mapped": 3029,
     "multi_char_stacks": 590,

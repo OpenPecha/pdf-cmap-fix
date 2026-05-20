@@ -143,6 +143,7 @@
     "143": "ÿ"
   },
   "_meta": {
+    "lookup_kind": "gid",
     "source": "tibetan-fonts-main.zip::tibetan-fonts-main/Non-Unicode Fonts/Landza/landza5.ttf",
     "gids_mapped": 141,
     "multi_char_stacks": 0,

@@ -1723,6 +1723,7 @@
     "1721": "󱖽"
   },
   "_meta": {
+    "lookup_kind": "gid",
     "source": "tibetan-fonts-main.zip::tibetan-fonts-main/Unicode Font Families & Typefaces/FZZWZT-FounderType Tibetan Font Family/FZZWCTOT_Uni.ttf",
     "gids_mapped": 1721,
     "multi_char_stacks": 0,

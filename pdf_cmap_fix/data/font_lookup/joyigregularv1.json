@@ -1621,6 +1621,7 @@
     "1764": "ངྱ"
   },
   "_meta": {
+    "lookup_kind": "gid",
     "source": "tibetan-fonts-main.zip::tibetan-fonts-main/Unicode Font Families & Typefaces/Dzongkha fonts/Joyig_Regular_v1.ttf",
     "gids_mapped": 1619,
     "multi_char_stacks": 84,

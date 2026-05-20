@@ -3223,6 +3223,7 @@
     "3258": "Ÿ"
   },
   "_meta": {
+    "lookup_kind": "gid",
     "source": "tibetan-fonts-main.zip::tibetan-fonts-main/Unicode Individual fonts/Nyewo 6.ttf",
     "gids_mapped": 3221,
     "multi_char_stacks": 1912,

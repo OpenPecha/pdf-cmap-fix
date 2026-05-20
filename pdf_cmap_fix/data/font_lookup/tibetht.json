@@ -2901,6 +2901,7 @@
     "3023": "邏"
   },
   "_meta": {
+    "lookup_kind": "gid",
     "source": "tibetan-fonts-private-main.zip::tibetan-fonts-private-main/non-Unicode/Tibetht.ttf",
     "gids_mapped": 2899,
     "multi_char_stacks": 0,

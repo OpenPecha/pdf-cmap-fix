@@ -6,7 +6,7 @@ Read-only: prints stats only, does not touch any DB or JSON file.
 
 Usage::
 
-    python scripts/diagnose_contextual_gsub.py path/to/Font.ttf [--limit 20]
+    python scripts/misc/diagnose_contextual_gsub.py path/to/Font.ttf [--limit 20]
 
 Logic
 -----
@@ -52,9 +52,13 @@ try:
 except ImportError:
     sys.exit("pip install fonttools")
 
-SCRIPTS_DIR = Path(__file__).resolve().parent
-if str(SCRIPTS_DIR) not in sys.path:
-    sys.path.insert(0, str(SCRIPTS_DIR))
+_HERE = Path(__file__).resolve().parent
+_SCRIPTS = _HERE.parent
+REPO_ROOT = _SCRIPTS.parent
+_FONT_COMMON = _SCRIPTS / "font_lookup_common"
+for _d in (_FONT_COMMON,):
+    if str(_d) not in sys.path:
+        sys.path.insert(0, str(_d))
 
 from gid_map import (  # noqa: E402
     _iter_subtables,

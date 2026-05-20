@@ -1224,6 +1224,7 @@
     "1243": "ོོོ"
   },
   "_meta": {
+    "lookup_kind": "gid",
     "source": "tibetan-fonts-main.zip::tibetan-fonts-main/Unicode Font Families & Typefaces/Xenotype Tibetan/XenoType Tibetan New.ttf",
     "gids_mapped": 1222,
     "multi_char_stacks": 900,

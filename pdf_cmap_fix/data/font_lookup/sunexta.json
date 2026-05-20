@@ -50015,6 +50015,7 @@
     "50015": "㇣"
   },
   "_meta": {
+    "lookup_kind": "gid",
     "source": "tibetan-fonts-main.zip::tibetan-fonts-main/Unicode Problematic:Outdated:ReExported:Incomplete fonts/Sun-ExtA.ttf",
     "gids_mapped": 50013,
     "multi_char_stacks": 0,

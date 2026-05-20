@@ -1946,6 +1946,7 @@
     "1947": "༸"
   },
   "_meta": {
+    "lookup_kind": "gid",
     "source": "tibetan-fonts-main.zip::tibetan-fonts-main/Unicode Individual fonts/TibetYtA.ttf",
     "gids_mapped": 1944,
     "multi_char_stacks": 0,

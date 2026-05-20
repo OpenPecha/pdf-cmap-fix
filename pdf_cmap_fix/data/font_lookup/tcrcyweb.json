@@ -213,6 +213,7 @@
     "213": "ÿ"
   },
   "_meta": {
+    "lookup_kind": "gid",
     "source": "tibetan-fonts-main.zip::tibetan-fonts-main/Non-Unicode Fonts/TCRC/tcrcyweb.ttf",
     "gids_mapped": 211,
     "multi_char_stacks": 0,

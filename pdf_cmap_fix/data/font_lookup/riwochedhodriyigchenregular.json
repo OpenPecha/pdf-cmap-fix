@@ -1610,6 +1610,7 @@
     "1613": "࿐"
   },
   "_meta": {
+    "lookup_kind": "gid",
     "source": "tibetan-fonts-main.zip::tibetan-fonts-main/Unicode Font Families & Typefaces/Bero Tsana Type Foundry/Riwoche Dhodri Font Family/Riwoche Dhodri-Yigchen Regular.ttf",
     "gids_mapped": 1608,
     "multi_char_stacks": 953,

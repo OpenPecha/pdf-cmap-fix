@@ -1468,6 +1468,7 @@
     "1476": "ྷཱ"
   },
   "_meta": {
+    "lookup_kind": "gid",
     "source": "tibetan-fonts-main.zip::tibetan-fonts-main/Unicode Individual fonts/尼永-永字加尾-Yongzi_with_Tail.ttf",
     "gids_mapped": 1466,
     "multi_char_stacks": 822,

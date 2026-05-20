@@ -3915,6 +3915,7 @@
     "4030": "◌࿆"
   },
   "_meta": {
+    "lookup_kind": "gid",
     "source": "tibetan-fonts-main.zip::tibetan-fonts-main/Unicode Font Families & Typefaces/BabelStone/BabelStoneTibetan.ttf",
     "gids_mapped": 3913,
     "multi_char_stacks": 3566,

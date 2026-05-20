@@ -222,6 +222,7 @@
     "222": ""
   },
   "_meta": {
+    "lookup_kind": "gid",
     "source": "tibetan-fonts-main.zip::tibetan-fonts-main/Non-Unicode Fonts/LTibetan/Modified_encoding/LT______.TTF",
     "gids_mapped": 220,
     "multi_char_stacks": 0,

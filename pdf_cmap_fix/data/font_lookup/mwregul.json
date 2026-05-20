@@ -171,6 +171,7 @@
     "171": ""
   },
   "_meta": {
+    "lookup_kind": "gid",
     "source": "tibetan-fonts-main.zip::tibetan-fonts-main/Non-Unicode Fonts/Vedic/MW_REGUL.TTF",
     "gids_mapped": 169,
     "multi_char_stacks": 0,

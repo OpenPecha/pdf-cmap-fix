@@ -1728,6 +1728,7 @@
     "1733": "མཕནག"
   },
   "_meta": {
+    "lookup_kind": "gid",
     "source": "tibetan-fonts-main.zip::tibetan-fonts-main/Unicode Font Families & Typefaces/Minam Font Family/Minam Nangdri Norbuma.otf",
     "gids_mapped": 1726,
     "multi_char_stacks": 1078,

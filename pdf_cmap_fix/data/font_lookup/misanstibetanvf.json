@@ -1942,6 +1942,7 @@
     "1943": "རྫྷ"
   },
   "_meta": {
+    "lookup_kind": "gid",
     "source": "tibetan-fonts-main.zip::tibetan-fonts-main/Variable Fonts/MiSans Tibetan/MiSansTibetanVF.ttf",
     "gids_mapped": 1940,
     "multi_char_stacks": 1478,

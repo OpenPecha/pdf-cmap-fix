@@ -169,6 +169,7 @@
     "169": "ÿ"
   },
   "_meta": {
+    "lookup_kind": "gid",
     "source": "tibetan-fonts-main.zip::tibetan-fonts-main/Non-Unicode Fonts/Landza/landza16.ttf",
     "gids_mapped": 167,
     "multi_char_stacks": 0,

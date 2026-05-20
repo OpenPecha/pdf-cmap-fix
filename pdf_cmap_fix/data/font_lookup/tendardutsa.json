@@ -2550,6 +2550,7 @@
     "2558": "˜"
   },
   "_meta": {
+    "lookup_kind": "gid",
     "source": "tibetan-fonts-main.zip::tibetan-fonts-main/Unicode Font Families & Typefaces/Tendar Font Family/Tendar Dutsa.ttf",
     "gids_mapped": 2548,
     "multi_char_stacks": 1937,

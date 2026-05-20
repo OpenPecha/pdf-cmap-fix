@@ -11,6 +11,7 @@
     "11": "$"
   },
   "_meta": {
+    "lookup_kind": "gid",
     "source": "tibetan-fonts-main.zip::tibetan-fonts-main/Non-Unicode Fonts/Nitartha/Ededris/ededris-syma.ttf",
     "gids_mapped": 9,
     "multi_char_stacks": 0,

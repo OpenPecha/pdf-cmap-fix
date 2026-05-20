@@ -2655,6 +2655,7 @@
     "2656": "ལྷེ‍‍‍‍‍‍"
   },
   "_meta": {
+    "lookup_kind": "gid",
     "source": "tibetan-fonts-main.zip::tibetan-fonts-main/Unicode Font Families & Typefaces/DS Font Family/DS_TsekTong.ttf",
     "gids_mapped": 2653,
     "multi_char_stacks": 2079,

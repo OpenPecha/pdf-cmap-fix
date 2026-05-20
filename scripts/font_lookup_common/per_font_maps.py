@@ -1,39 +1,7 @@
 """
-Write one JSON per font with its GID -> Unicode map.
+Shared bulk builder: one JSON per font from ZIP archives and/or font directories.
 
-Reads ``.ttf`` / ``.otf`` from one or more zip archives and/or directories
-(recursively) using :mod:`font_sources`, builds the map with
-:func:`gid_map.build_gid_map` (which handles GSUB lookup types
-1, 2, 4 and Extension/7 wrappers), then writes a small per-font JSON file
-into the package data directory.
-
-File layout::
-
-    pdf_cmap_fix/data/font_lookup/<normalised_name>.json
-
-Each file is shaped like::
-
-    {
-      "<normalised_name>": { "gid_str": "unicode_str", ... },
-      "_meta": {
-          "source": "<archive_or_dir>::<member_path>",
-          "gids_mapped": <int>,
-          "multi_char_stacks": <int>,
-          "gsub_lookup_counts": {"1": ..., "2": ..., "4": ..., "7": ...}
-      }
-    }
-
-The ``_meta`` block is ignored by the extractor when resolving GIDs; runtime
-loads ``<key>.json`` and uses the font-key → gid-map entry.
-
-Usage::
-
-    python scripts/build_per_font_gid_maps.py \\
-        --zip scripts/bodyig.zip \\
-        --zip scripts/tibetan-fonts-main.zip \\
-        --zip scripts/tibetan-fonts-private-main.zip
-    python scripts/build_per_font_gid_maps.py --fonts-dir scripts
-    python scripts/build_per_font_gid_maps.py --zip a.zip -o other_dir/font_lookup
+Used by tier bulk scripts under ``scripts/gid/``, ``scripts/gname/``, and ``scripts/gshape/`` with a fixed ``lookup_kind``.
 """
 from __future__ import annotations
 
@@ -44,31 +12,32 @@ import json
 import sys
 from dataclasses import dataclass, field
 from pathlib import Path
-from typing import Any
+from typing import Any, Callable
 
 try:
     from fontTools.ttLib import TTFont
 except ImportError:
     sys.exit("pip install fonttools")
 
-SCRIPTS_DIR = Path(__file__).resolve().parent
-if str(SCRIPTS_DIR) not in sys.path:
-    sys.path.insert(0, str(SCRIPTS_DIR))
+_HERE = Path(__file__).resolve().parent
+_SCRIPTS = _HERE.parent
+REPO_ROOT = _SCRIPTS.parent
+if str(_HERE) not in sys.path:
+    sys.path.insert(0, str(_HERE))
 
 from gid_map import (  # noqa: E402
     build_gid_map,
     gsub_lookup_type_counts,
     normalise_name,
 )
+from font_lookup_payload import build_lookup_json_payload  # noqa: E402
 from font_sources import iter_fonts_from_dir, iter_fonts_from_zip  # noqa: E402
-
-REPO_ROOT = SCRIPTS_DIR.parent
-DEFAULT_OUT = REPO_ROOT / "pdf_cmap_fix" / "data" / "font_lookup"
 
 
 @dataclass
 class Manifest:
     out_dir: Path
+    lookup_kind: str = "gid"
     fonts_written: list[str] = field(default_factory=list)
     duplicates: list[tuple[str, str, str]] = field(default_factory=list)
     errors: list[tuple[str, str]] = field(default_factory=list)
@@ -77,6 +46,7 @@ class Manifest:
         path = self.out_dir / "_manifest.json"
         unique = sorted(set(self.fonts_written))
         payload = {
+            "lookup_kind": self.lookup_kind,
             "fonts_written": unique,
             "count": len(unique),
             "attempts": len(self.fonts_written),
@@ -111,13 +81,7 @@ def _font_internal_names(font: TTFont) -> list[str]:
 
 
 def _resolve_font_key(label: str, font: TTFont) -> str:
-    """Pick a non-empty, filesystem-safe key for *label* / *font*.
-
-    Strategy:
-      1. ``normalise_name(label)`` (matches the merged-export / font_lookup key when ASCII).
-      2. ``normalise_name`` of any font internal name (PostScript / Full / Family).
-      3. ``font_<sha1[:10]>`` of the original label as a last resort.
-    """
+    """Pick a non-empty, filesystem-safe key for *label* / *font*."""
     key = normalise_name(label)
     if key:
         return key
@@ -132,11 +96,7 @@ def _resolve_font_key(label: str, font: TTFont) -> str:
 def _build_gid_map_safe(
     font: TTFont, source_id: str
 ) -> tuple[dict[int, str], dict[str, int], list[str]]:
-    """Run :func:`build_gid_map` with a graceful retry if GSUB is corrupt.
-
-    Returns ``(gid_map, gsub_counts, warnings)``. On the first failure we drop
-    the GSUB table from the in-memory font and retry with cmap-only.
-    """
+    """Run :func:`build_gid_map` with a graceful retry if GSUB is corrupt."""
     warnings: list[str] = []
     try:
         gid_map = build_gid_map(font)
@@ -160,6 +120,9 @@ def _process_font(
     out_dir: Path,
     seen: dict[str, str],
     manifest: Manifest,
+    *,
+    kind: str = "gid",
+    pua_postprocess_fn: "Callable[[dict], int] | None" = None,
 ) -> None:
     key = _resolve_font_key(label, font)
     if key in seen:
@@ -174,25 +137,30 @@ def _process_font(
         for w in warnings:
             print(f"\n    WARN {w}")
             manifest.errors.append((source_id, w))
-        multi = sum(1 for v in gid_map.values() if len(v) > 1)
-        counts = {str(k): v for k, v in counts_int.items()}
-        payload: dict[str, Any] = {
-            key: {str(g): u for g, u in gid_map.items()},
-            "_meta": {
-                "source": source_id,
-                "gids_mapped": len(gid_map),
-                "multi_char_stacks": multi,
-                "gsub_lookup_counts": counts,
-            },
-        }
+        payload = build_lookup_json_payload(
+            font=font,
+            key=key,
+            gid_map=gid_map,
+            counts_int=counts_int,
+            kind=kind,
+            source_id=source_id,
+        )
+        if pua_postprocess_fn is not None:
+            pua_rows = pua_postprocess_fn(payload)
+        else:
+            pua_rows = 0
+        inner = payload[key]
+        multi = payload["_meta"]["multi_char_stacks"]
+        counts = payload["_meta"]["gsub_lookup_counts"]
         out_path = out_dir / f"{key}.json"
         out_path.write_text(
             json.dumps(payload, ensure_ascii=False, indent=2), encoding="utf-8"
         )
         manifest.fonts_written.append(key)
+        pua_note = f", pua_rewritten={pua_rows}" if pua_rows else ""
         print(
-            f"{len(gid_map)} GIDs, {multi} multi-char, "
-            f"GSUB={counts or '{}'}, wrote {out_path.name}"
+            f"{len(gid_map)} GIDs, inner={len(inner)}, {multi} multi-char, "
+            f"GSUB={counts or '{}'}{pua_note}, wrote {out_path.name}"
         )
     except Exception as exc:
         manifest.errors.append((source_id, str(exc)))
@@ -200,10 +168,15 @@ def _process_font(
 
 
 def build_per_font(
-    zips: list[Path], font_dirs: list[Path], out_dir: Path
+    zips: list[Path],
+    font_dirs: list[Path],
+    out_dir: Path,
+    *,
+    kind: str = "gid",
+    pua_postprocess_fn: "Callable[[dict], int] | None" = None,
 ) -> Manifest:
     out_dir.mkdir(parents=True, exist_ok=True)
-    manifest = Manifest(out_dir=out_dir)
+    manifest = Manifest(out_dir=out_dir, lookup_kind=kind)
     seen: dict[str, str] = {}
 
     for zp in zips:
@@ -219,7 +192,13 @@ def build_per_font(
                 print(f"  ERROR opening {entry}: {exc}")
                 manifest.errors.append((source_id, str(exc)))
                 continue
-            _process_font(entry, source_id, font, out_dir, seen, manifest)
+            try:
+                _process_font(
+                    entry, source_id, font, out_dir, seen, manifest,
+                    kind=kind, pua_postprocess_fn=pua_postprocess_fn,
+                )
+            finally:
+                font.close()
 
     for d in font_dirs:
         if not d.is_dir():
@@ -234,17 +213,34 @@ def build_per_font(
                 print(f"  ERROR opening {path}: {exc}")
                 manifest.errors.append((source_id, str(exc)))
                 continue
-            _process_font(str(path), source_id, font, out_dir, seen, manifest)
+            try:
+                _process_font(
+                    str(path), source_id, font, out_dir, seen, manifest,
+                    kind=kind, pua_postprocess_fn=pua_postprocess_fn,
+                )
+            finally:
+                font.close()
 
     return manifest
 
 
-def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
+def run_per_font_cli(
+    argv: list[str] | None,
+    *,
+    kind: str,
+    default_out: Path,
+    description: str,
+    example_invocation: str,
+    pua_postprocess_fn: "Callable[[dict], int] | None" = None,
+) -> None:
+    """Run the per-font bulk builder CLI.
+
+    ``pua_postprocess_fn`` — if provided, called on each payload dict *before*
+    writing.  Should mutate the dict in-place and return the number of rows
+    changed.  Used by PUA-free gname bulk scripts.
+    """
     p = argparse.ArgumentParser(
-        description=(
-            "Write one JSON per font (GID -> Unicode) under "
-            "pdf_cmap_fix/data/font_lookup/. GSUB types handled: 1, 2, 4 (and 7 wrappers)."
-        )
+        description=description,
     )
     p.add_argument(
         "--zip",
@@ -266,24 +262,21 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
         "-o",
         "--output-dir",
         type=Path,
-        default=DEFAULT_OUT,
+        default=None,
         metavar="DIR",
-        help=f"Output directory for per-font JSON (default: {DEFAULT_OUT})",
+        help="Output directory for per-font JSON (default: tier-specific under pdf_cmap_fix/data/).",
     )
-    return p.parse_args(argv)
-
-
-def main(argv: list[str] | None = None) -> None:
-    args = parse_args(argv)
+    args = p.parse_args(argv)
     zips: list[Path] = list(args.zip)
     font_dirs: list[Path] = list(args.fonts_dir)
     if not zips and not font_dirs:
         sys.exit(
-            "Provide at least one --zip or --fonts-dir. Example:\n"
-            "  python scripts/build_per_font_gid_maps.py --zip scripts/bodyig.zip"
+            "Provide at least one --zip or --fonts-dir. Example:\n  " + example_invocation
         )
 
-    manifest = build_per_font(zips, font_dirs, args.output_dir)
+    out_dir = (args.output_dir or default_out).resolve()
+
+    manifest = build_per_font(zips, font_dirs, out_dir, kind=kind, pua_postprocess_fn=pua_postprocess_fn)
     manifest.write()
     unique_count = len(set(manifest.fonts_written))
     print(
@@ -294,7 +287,3 @@ def main(argv: list[str] | None = None) -> None:
         print(f"Duplicates (later won): {len(manifest.duplicates)}")
     if manifest.errors:
         print(f"Errors / warnings: {len(manifest.errors)}")
-
-
-if __name__ == "__main__":
-    main()

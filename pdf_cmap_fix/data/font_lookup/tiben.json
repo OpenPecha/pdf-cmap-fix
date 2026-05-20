@@ -236,6 +236,7 @@
     "239": ""
   },
   "_meta": {
+    "lookup_kind": "gid",
     "source": "tibetan-fonts-main.zip::tibetan-fonts-main/Non-Unicode Fonts/tiben___.ttf",
     "gids_mapped": 234,
     "multi_char_stacks": 0,

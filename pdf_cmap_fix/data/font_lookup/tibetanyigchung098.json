@@ -599,6 +599,7 @@
     "597": "ﬄ"
   },
   "_meta": {
+    "lookup_kind": "gid",
     "source": "tibetan-fonts-main.zip::tibetan-fonts-main/Unicode Problematic:Outdated:ReExported:Incomplete fonts/tibetanyigchung098.otf",
     "gids_mapped": 597,
     "multi_char_stacks": 0,

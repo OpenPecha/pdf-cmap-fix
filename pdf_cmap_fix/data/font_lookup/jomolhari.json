@@ -3165,6 +3165,7 @@
     "3331": ""
   },
   "_meta": {
+    "lookup_kind": "gid",
     "source": "tibetan-fonts-main.zip::tibetan-fonts-main/Unicode Font Families & Typefaces/Dzongkha fonts/Jomolhari/jomolhari.ttf",
     "gids_mapped": 3163,
     "multi_char_stacks": 368,

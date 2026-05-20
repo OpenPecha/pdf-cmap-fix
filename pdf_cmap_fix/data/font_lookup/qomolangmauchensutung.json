@@ -1444,6 +1444,7 @@
     "1452": "ཚྪ"
   },
   "_meta": {
+    "lookup_kind": "gid",
     "source": "tibetan-fonts-main.zip::tibetan-fonts-main/Unicode Font Families & Typefaces/Qomolangma Font Family/Qomolangma-UchenSutung.ttf",
     "gids_mapped": 1442,
     "multi_char_stacks": 799,

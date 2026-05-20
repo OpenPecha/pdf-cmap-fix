@@ -14228,6 +14228,7 @@
     "14228": "󲜯"
   },
   "_meta": {
+    "lookup_kind": "gid",
     "source": "tibetan-fonts-main.zip::tibetan-fonts-main/Unicode Font Families & Typefaces/Yagpo Tibetan Font Family/YagpoTibetanSambhotaUni-YzXvy.ttf",
     "gids_mapped": 14226,
     "multi_char_stacks": 0,

@@ -67,6 +67,7 @@
     "65": " "
   },
   "_meta": {
+    "lookup_kind": "gid",
     "source": "tibetan-fonts-main.zip::tibetan-fonts-main/Unicode Problematic:Outdated:ReExported:Incomplete fonts/Tibetan-Number.otf",
     "gids_mapped": 65,
     "multi_char_stacks": 0,

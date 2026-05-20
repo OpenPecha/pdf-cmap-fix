@@ -1560,6 +1560,7 @@
     "1565": "ད"
   },
   "_meta": {
+    "lookup_kind": "gid",
     "source": "tibetan-fonts-main.zip::tibetan-fonts-main/Unicode Font Families & Typefaces/Calligraphy_of_Thönmi Font Family/TnonMivi PhyagRgyun-Tembangma Chungbris.ttf",
     "gids_mapped": 1558,
     "multi_char_stacks": 912,

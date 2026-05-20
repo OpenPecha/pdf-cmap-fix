@@ -294,6 +294,7 @@
     "298": "ཪ"
   },
   "_meta": {
+    "lookup_kind": "gid",
     "source": "tibetan-fonts-main.zip::tibetan-fonts-main/Unicode Problematic:Outdated:ReExported:Incomplete fonts/utibetan.ttf",
     "gids_mapped": 292,
     "multi_char_stacks": 0,

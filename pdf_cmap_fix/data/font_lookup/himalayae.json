@@ -1396,6 +1396,7 @@
     "1403": "ཀྲཱུ"
   },
   "_meta": {
+    "lookup_kind": "gid",
     "source": "tibetan-fonts-main.zip::tibetan-fonts-main/Unicode Problematic:Outdated:ReExported:Incomplete fonts/Himalaya/Himalaya-E.ttf",
     "gids_mapped": 1394,
     "multi_char_stacks": 751,

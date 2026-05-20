@@ -1663,6 +1663,7 @@
     "1672": "ཀྵུ"
   },
   "_meta": {
+    "lookup_kind": "gid",
     "source": "tibetan-fonts-main.zip::tibetan-fonts-main/Unicode Individual fonts/雪莲花-Snow_Lotus.ttf",
     "gids_mapped": 1661,
     "multi_char_stacks": 1007,

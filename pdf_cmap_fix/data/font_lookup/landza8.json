@@ -128,6 +128,7 @@
     "128": "ÿ"
   },
   "_meta": {
+    "lookup_kind": "gid",
     "source": "tibetan-fonts-main.zip::tibetan-fonts-main/Non-Unicode Fonts/Landza/landza8.ttf",
     "gids_mapped": 126,
     "multi_char_stacks": 0,

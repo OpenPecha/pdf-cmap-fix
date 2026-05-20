@@ -118,6 +118,7 @@
     "118": "¯"
   },
   "_meta": {
+    "lookup_kind": "gid",
     "source": "tibetan-fonts-main.zip::tibetan-fonts-main/Non-Unicode Fonts/Landza/landza64.ttf",
     "gids_mapped": 116,
     "multi_char_stacks": 0,

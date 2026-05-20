@@ -3412,6 +3412,7 @@
     "3410": "￥"
   },
   "_meta": {
+    "lookup_kind": "gid",
     "source": "tibetan-fonts-private-main.zip::tibetan-fonts-private-main/non-Unicode/HuaGuang/JBHGZWHZ.TTF",
     "gids_mapped": 3410,
     "multi_char_stacks": 0,

@@ -85,6 +85,7 @@
     "88": "&"
   },
   "_meta": {
+    "lookup_kind": "gid",
     "source": "tibetan-fonts-main.zip::tibetan-fonts-main/Non-Unicode Fonts/Nitartha/Khamdris/Khamdris-vowa.ttf",
     "gids_mapped": 83,
     "multi_char_stacks": 0,

@@ -33,6 +33,7 @@
     "33": "r"
   },
   "_meta": {
+    "lookup_kind": "gid",
     "source": "tibetan-fonts-main.zip::tibetan-fonts-main/Non-Unicode Fonts/TNRDia/TDIA3.TTF",
     "gids_mapped": 31,
     "multi_char_stacks": 0,

@@ -85,6 +85,7 @@
     "85": "Ñ"
   },
   "_meta": {
+    "lookup_kind": "gid",
     "source": "tibetan-fonts-main.zip::tibetan-fonts-main/Non-Unicode Fonts/Landza/landron.ttf",
     "gids_mapped": 83,
     "multi_char_stacks": 0,

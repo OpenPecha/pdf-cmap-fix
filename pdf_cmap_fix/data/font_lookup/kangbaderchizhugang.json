@@ -1674,6 +1674,7 @@
     "1673": "ནྡྷ"
   },
   "_meta": {
+    "lookup_kind": "gid",
     "source": "tibetan-fonts-main.zip::tibetan-fonts-main/Unicode Problematic:Outdated:ReExported:Incomplete fonts/Outdated fonts/Old versions of Khampa Dedri/Kangba Derchi-Zhugang.ttf",
     "gids_mapped": 1672,
     "multi_char_stacks": 1019,

@@ -1594,6 +1594,7 @@
     "1592": "་།"
   },
   "_meta": {
+    "lookup_kind": "gid",
     "source": "tibetan-fonts-main.zip::tibetan-fonts-main/Unicode Font Families & Typefaces/Bero Tsana Type Foundry/Sadri Typeface/Sadri Yigchung Regular.ttf",
     "gids_mapped": 1592,
     "multi_char_stacks": 938,

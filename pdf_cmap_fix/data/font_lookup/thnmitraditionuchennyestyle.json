@@ -1560,6 +1560,7 @@
     "1565": "ད"
   },
   "_meta": {
+    "lookup_kind": "gid",
     "source": "tibetan-fonts-main.zip::tibetan-fonts-main/Unicode Font Families & Typefaces/Calligraphy_of_Thönmi Font Family/Thönmi_Tradition_Uchen_Nye_Style.ttf",
     "gids_mapped": 1558,
     "multi_char_stacks": 912,

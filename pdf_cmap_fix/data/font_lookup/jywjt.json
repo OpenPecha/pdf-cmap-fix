@@ -2311,6 +2311,7 @@
     "2318": "སྼ"
   },
   "_meta": {
+    "lookup_kind": "gid",
     "source": "tibetan-fonts-main.zip::tibetan-fonts-main/Unicode Individual fonts/JYWJT.ttf",
     "gids_mapped": 2309,
     "multi_char_stacks": 1930,

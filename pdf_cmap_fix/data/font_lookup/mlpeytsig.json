@@ -1286,6 +1286,7 @@
     "1285": "῿"
   },
   "_meta": {
+    "lookup_kind": "gid",
     "source": "tibetan-fonts-main.zip::tibetan-fonts-main/Unicode Font Families & Typefaces/Monlam Font Family/ML Peytsig.ttf",
     "gids_mapped": 1284,
     "multi_char_stacks": 0,

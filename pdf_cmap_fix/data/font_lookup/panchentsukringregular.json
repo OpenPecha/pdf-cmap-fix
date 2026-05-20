@@ -1580,6 +1580,7 @@
     "1578": "ཤཱཀྱ"
   },
   "_meta": {
+    "lookup_kind": "gid",
     "source": "tibetan-fonts-main.zip::tibetan-fonts-main/Unicode Font Families & Typefaces/Bero Tsana Type Foundry/Panchen Tsukring Regular.ttf",
     "gids_mapped": 1578,
     "multi_char_stacks": 932,

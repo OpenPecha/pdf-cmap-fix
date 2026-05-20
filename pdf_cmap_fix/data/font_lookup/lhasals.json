@@ -233,6 +233,7 @@
     "255": "Ÿ"
   },
   "_meta": {
+    "lookup_kind": "gid",
     "source": "tibetan-fonts-private-main.zip::tibetan-fonts-private-main/LaserTibetan/ttf/Lhasals.ttf",
     "gids_mapped": 231,
     "multi_char_stacks": 0,

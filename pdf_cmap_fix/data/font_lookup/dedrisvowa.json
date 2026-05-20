@@ -90,6 +90,7 @@
     "90": "*"
   },
   "_meta": {
+    "lookup_kind": "gid",
     "source": "tibetan-fonts-main.zip::tibetan-fonts-main/Non-Unicode Fonts/Nitartha/Dedris/dedris-vowa.ttf",
     "gids_mapped": 88,
     "multi_char_stacks": 0,

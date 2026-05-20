@@ -1710,6 +1710,7 @@
     "1718": "སྤྱི་"
   },
   "_meta": {
+    "lookup_kind": "gid",
     "source": "tibetan-fonts-main.zip::tibetan-fonts-main/Unicode Font Families & Typefaces/Calligraphy_of_Thönmi Font Family/Calligraphy_of_Thonmi-SlevuBris_VkhyugsYig.ttf",
     "gids_mapped": 1708,
     "multi_char_stacks": 1062,

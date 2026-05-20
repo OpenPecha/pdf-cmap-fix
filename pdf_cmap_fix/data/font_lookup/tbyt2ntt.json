@@ -207,6 +207,7 @@
     "207": "ù"
   },
   "_meta": {
+    "lookup_kind": "gid",
     "source": "tibetan-fonts-main.zip::tibetan-fonts-main/Non-Unicode Fonts/Youtso/TBYT2NTT.TTf",
     "gids_mapped": 205,
     "multi_char_stacks": 0,

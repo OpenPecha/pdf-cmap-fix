@@ -21,7 +21,9 @@ dev = [
 ]
 
 [project.scripts]
-pdf-cmap-fix = "pdf_cmap_fix.extractor:main"
+pdf-cmap-fix = "pdf_cmap_fix.gid.extractor:main"
+pdf-cmap-fix-gname = "pdf_cmap_fix.gname.extractor:main"
+pdf-cmap-fix-gshape = "pdf_cmap_fix.gshape.extractor:main"
 
 [project.urls]
 Repository = "https://github.com/OpenPecha/pdf-cmap-fix"

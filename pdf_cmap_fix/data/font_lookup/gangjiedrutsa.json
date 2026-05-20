@@ -1559,6 +1559,7 @@
     "1564": "ངོ"
   },
   "_meta": {
+    "lookup_kind": "gid",
     "source": "tibetan-fonts-main.zip::tibetan-fonts-main/Unicode Font Families & Typefaces/Gangjie Font Family/GangJie-Drutsa.ttf",
     "gids_mapped": 1557,
     "multi_char_stacks": 910,

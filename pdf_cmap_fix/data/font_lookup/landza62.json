@@ -153,6 +153,7 @@
     "153": "ÿ"
   },
   "_meta": {
+    "lookup_kind": "gid",
     "source": "tibetan-fonts-main.zip::tibetan-fonts-main/Non-Unicode Fonts/Landza/landza62.ttf",
     "gids_mapped": 151,
     "multi_char_stacks": 0,

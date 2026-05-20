@@ -586,6 +586,7 @@
     "639": "ཎཱླེ"
   },
   "_meta": {
+    "lookup_kind": "gid",
     "source": "tibetan-fonts-main.zip::tibetan-fonts-main/Unicode Individual fonts/TanviDev/Tibetanmanistones-Regular.otf",
     "gids_mapped": 584,
     "multi_char_stacks": 303,

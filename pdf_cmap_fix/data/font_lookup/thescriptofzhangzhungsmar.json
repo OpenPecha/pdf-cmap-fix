@@ -1564,6 +1564,7 @@
     "1569": "ལྷྲུ"
   },
   "_meta": {
+    "lookup_kind": "gid",
     "source": "tibetan-fonts-main.zip::tibetan-fonts-main/Unicode Font Families & Typefaces/The Script of Zhangzhung/the_script_of_zhangzhung_smar.ttf",
     "gids_mapped": 1562,
     "multi_char_stacks": 917,

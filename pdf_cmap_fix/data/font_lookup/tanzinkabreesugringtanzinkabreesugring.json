@@ -1569,6 +1569,7 @@
     "1568": "ᗆ"
   },
   "_meta": {
+    "lookup_kind": "gid",
     "source": "tibetan-fonts-main.zip::tibetan-fonts-main/Unicode Font Families & Typefaces/Tanzin Kabree Font Family/Tanzin Kabree Sug ring Tanzin Kabree Sug ring.ttf",
     "gids_mapped": 1567,
     "multi_char_stacks": 911,

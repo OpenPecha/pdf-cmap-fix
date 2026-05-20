@@ -1833,6 +1833,7 @@
     "1833": "A"
   },
   "_meta": {
+    "lookup_kind": "gid",
     "source": "tibetan-fonts-main.zip::tibetan-fonts-main/Unicode Individual fonts/TibetSkA.ttf",
     "gids_mapped": 1831,
     "multi_char_stacks": 0,

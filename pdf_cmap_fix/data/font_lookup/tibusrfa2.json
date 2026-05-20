@@ -987,6 +987,7 @@
     "1016": "ཥྚྲྱ"
   },
   "_meta": {
+    "lookup_kind": "gid",
     "source": "tibetan-fonts-main.zip::tibetan-fonts-main/Unicode Problematic:Outdated:ReExported:Incomplete fonts/tibusrfa2.ttf",
     "gids_mapped": 985,
     "multi_char_stacks": 487,

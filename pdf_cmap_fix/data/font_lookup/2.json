@@ -1544,6 +1544,7 @@
     "1546": "ོ་"
   },
   "_meta": {
+    "lookup_kind": "gid",
     "source": "tibetan-fonts-main.zip::tibetan-fonts-main/Unicode Font Families & Typefaces/Jamyang Font Family/嘉木杨-聂智体2.otf",
     "gids_mapped": 1542,
     "multi_char_stacks": 897,

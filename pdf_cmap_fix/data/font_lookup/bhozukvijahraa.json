@@ -1142,6 +1142,7 @@
     "1150": "ཧྲཱི"
   },
   "_meta": {
+    "lookup_kind": "gid",
     "source": "tibetan-fonts-main.zip::tibetan-fonts-main/Unicode Font Families & Typefaces/Bhod Dhorchang's Fonts/Bhozuk Vijahāra/Bhozuk Vijahāra (A).ttf",
     "gids_mapped": 1140,
     "multi_char_stacks": 551,

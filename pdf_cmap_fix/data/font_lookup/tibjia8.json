@@ -226,6 +226,7 @@
     "226": ""
   },
   "_meta": {
+    "lookup_kind": "gid",
     "source": "tibetan-fonts-private-main.zip::tibetan-fonts-private-main/non-Unicode/UT/tibjia8.ttf",
     "gids_mapped": 224,
     "multi_char_stacks": 0,

@@ -1556,6 +1556,7 @@
     "1560": "ྸྲ"
   },
   "_meta": {
+    "lookup_kind": "gid",
     "source": "tibetan-fonts-main.zip::tibetan-fonts-main/Unicode Font Families & Typefaces/Rebod Font Family/Rebod-端智嘉手写体དོན་གྲུབ་རྒྱལ་ཕྱག་བྲིས་མ།.ttf",
     "gids_mapped": 1554,
     "multi_char_stacks": 908,

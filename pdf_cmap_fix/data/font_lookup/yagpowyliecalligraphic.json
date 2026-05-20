@@ -1576,6 +1576,7 @@
     "1788": "khro'i"
   },
   "_meta": {
+    "lookup_kind": "gid",
     "source": "tibetan-fonts-main.zip::tibetan-fonts-main/Non-Unicode Fonts/YagpoWylieCalligraphic.ttf",
     "gids_mapped": 1574,
     "multi_char_stacks": 353,

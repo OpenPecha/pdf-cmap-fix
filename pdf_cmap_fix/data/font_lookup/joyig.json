@@ -1543,6 +1543,7 @@
     "2105": "⁄"
   },
   "_meta": {
+    "lookup_kind": "gid",
     "source": "bodyig.zip::fonts/Dzongkha Fonts/Joyig.ttf",
     "gids_mapped": 1541,
     "multi_char_stacks": 1060,

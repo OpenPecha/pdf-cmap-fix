@@ -1689,6 +1689,7 @@
     "1694": "ཧཱུཾ"
   },
   "_meta": {
+    "lookup_kind": "gid",
     "source": "tibetan-fonts-main.zip::tibetan-fonts-main/Unicode Font Families & Typefaces/Calligraphy_of_Thönmi Font Family/TnonMivi_PhyagRgyun-Bribris_Dbetshugs.ttf",
     "gids_mapped": 1687,
     "multi_char_stacks": 1032,

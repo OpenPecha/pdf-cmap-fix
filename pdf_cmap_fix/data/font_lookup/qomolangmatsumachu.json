@@ -1489,6 +1489,7 @@
     "1501": "ཀྲཱུ"
   },
   "_meta": {
+    "lookup_kind": "gid",
     "source": "tibetan-fonts-main.zip::tibetan-fonts-main/Unicode Font Families & Typefaces/Qomolangma Font Family/Qomolangma-Tsumachu.ttf",
     "gids_mapped": 1487,
     "multi_char_stacks": 844,

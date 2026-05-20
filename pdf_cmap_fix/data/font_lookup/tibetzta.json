@@ -1949,6 +1949,7 @@
     "1949": "*"
   },
   "_meta": {
+    "lookup_kind": "gid",
     "source": "tibetan-fonts-main.zip::tibetan-fonts-main/Unicode Individual fonts/TibetZtA.ttf",
     "gids_mapped": 1947,
     "multi_char_stacks": 0,

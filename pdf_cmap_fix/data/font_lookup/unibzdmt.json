@@ -2493,6 +2493,7 @@
     "2527": "�"
   },
   "_meta": {
+    "lookup_kind": "gid",
     "source": "tibetan-fonts-main.zip::tibetan-fonts-main/Unicode Problematic:Outdated:ReExported:Incomplete fonts/uni-bzdmt.ttf",
     "gids_mapped": 2491,
     "multi_char_stacks": 323,

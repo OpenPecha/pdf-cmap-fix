@@ -2692,6 +2692,7 @@
     "2697": "࿎"
   },
   "_meta": {
+    "lookup_kind": "gid",
     "source": "tibetan-fonts-main.zip::tibetan-fonts-main/Unicode Font Families & Typefaces/Jamyang Font Family/JMYZK--LZT.ttf",
     "gids_mapped": 2690,
     "multi_char_stacks": 807,

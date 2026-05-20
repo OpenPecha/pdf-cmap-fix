@@ -3939,6 +3939,7 @@
     "4096": "࿔"
   },
   "_meta": {
+    "lookup_kind": "gid",
     "source": "tibetan-fonts-main.zip::tibetan-fonts-main/Unicode Problematic:Outdated:ReExported:Incomplete fonts/Unfinished_MonlamAI_Derge.ttf",
     "gids_mapped": 3937,
     "multi_char_stacks": 3736,

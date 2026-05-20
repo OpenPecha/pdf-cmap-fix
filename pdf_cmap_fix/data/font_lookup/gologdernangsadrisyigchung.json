@@ -1586,6 +1586,7 @@
     "1599": "གས་"
   },
   "_meta": {
+    "lookup_kind": "gid",
     "source": "tibetan-fonts-main.zip::tibetan-fonts-main/Unicode Font Families & Typefaces/Golog Dernang Sadri Typeface/GologDernangSadris-Yigchung.ttf",
     "gids_mapped": 1584,
     "multi_char_stacks": 932,

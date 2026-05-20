@@ -1,6 +1,7 @@
 {
   "samc": {},
   "_meta": {
+    "lookup_kind": "gid",
     "source": "tibetan-fonts-main.zip::tibetan-fonts-main/Non-Unicode Fonts/Nitartha/Sam/SAMC.TTF",
     "gids_mapped": 0,
     "multi_char_stacks": 0,

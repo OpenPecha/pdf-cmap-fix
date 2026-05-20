@@ -1667,6 +1667,7 @@
     "1669": "ོའི"
   },
   "_meta": {
+    "lookup_kind": "gid",
     "source": "tibetan-fonts-main.zip::tibetan-fonts-main/Unicode Font Families & Typefaces/Bero Tsana Type Foundry/Sadri Typeface/Sadri Drutsa Regular.ttf",
     "gids_mapped": 1665,
     "multi_char_stacks": 1011,

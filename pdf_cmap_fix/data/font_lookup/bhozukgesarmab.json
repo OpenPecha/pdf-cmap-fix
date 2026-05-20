@@ -1515,6 +1515,7 @@
     "1524": "࿚"
   },
   "_meta": {
+    "lookup_kind": "gid",
     "source": "tibetan-fonts-main.zip::tibetan-fonts-main/Unicode Font Families & Typefaces/Bhod Dhorchang's Fonts/Bhozuk Gesarma/Bhozuk Gesarma (B).ttf",
     "gids_mapped": 1513,
     "multi_char_stacks": 833,
