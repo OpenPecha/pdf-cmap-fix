@@ -1,0 +1,26 @@
+{
+  "dedrissyma": {
+    "w500": " ",
+    "cfa409249d89e2f920c47ba39871fee7b43096d16422417cc98ae2382c01945fd3aed9bd3336c9b05ff673337217dc0fa782034f32951942ac10073d12c20434": "{",
+    "f180f2039f28d54fa3a7b495328c718bf3435cb49292ba3a8327e5c0c638bc8030cfbac3840834ea95ece971a12751f865af07a53a748f45e24383a4ee05d5ed": "}",
+    "03b6d8c64cc8a65dc35494e6e96471abdb87b936b271e77ac1b41378812f47e1f56dab81bb753ff6e3da550e5bc7946c25be5a41f0f7e4085e6e8fc8da340899": "[",
+    "2ed5c4def676b652eb31ac460a99713261add258b759fd926a4a4ba44c13245ce8553ad484d63224ff70227eb42e98831f1d810706ccc8fdde0d2d4b5ef69bcc": "]",
+    "038d7c3f38148a0ff7319872ece203ea880a3951589a3e5549927712178bfee52c048f23bc138a425c4598b7bd08bf3759dafe0d429f79d07117715a01436b47": "#",
+    "07d54ff4939b02844e7e519b8378152e2b2a4b50d79a111d761e223b5d503d80024c3dcc5fd963ed5b2438de1dc86e9d2f83f92dead5b37a195655e75f9da3b2": "$",
+    "c77d1f482ba5daf53815f8b8f75b86b42f260e215fb6bbbafa1e612e4f9259808224dd9961e44fd56750b825d52b46ecc8e089f428c96bde5510644803bb84ee": "(",
+    "44d22d24506f6d6e4ac407f92dee34b5a7f39734362c9c5a101bfb5464048470d61b0324ece13c371c274247c3c042a5a20685ff4b4941f0df7262267d196e82": ")"
+  },
+  "_meta": {
+    "lookup_kind": "gshape",
+    "source": "tibetan-fonts-main.zip::tibetan-fonts-main/Non-Unicode Fonts/Nitartha/Dedris/dedris-syma.ttf",
+    "gids_mapped": 9,
+    "multi_char_stacks": 0,
+    "gsub_lookup_counts": {},
+    "entries": 9,
+    "fingerprint_method": "HashPointPen+RoundingPointPen(floatToFixedToFloat 14-bit)",
+    "gshape_rows_patched_from_public_gname": 0,
+    "gshape_patch_skipped_no_hash_to_gname": 1,
+    "gshape_patch_skipped_no_pua_in_value": 8,
+    "gshape_patch_font_hash_collisions": 4
+  }
+}

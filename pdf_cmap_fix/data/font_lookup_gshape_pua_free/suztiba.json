@@ -1,0 +1,586 @@
+{
+  "suztiba": {
+    "w412": " ",
+    "ae0a1af22e201ecb7a6a04ba4f0416f276795316b6aec753eb56eba6c0e3fe7480fefca2db6b42d40add5e653fd977b3995627cd12bb0ecb202375d5e24d6576": "!",
+    "3f4ab22e424f5b56a4f6c16d86e8736c8a50077db4a5ead942b51a8e52bc7ef180a11267bf8c30a70d7c15b1e93c3be84f4cd6f9e003703ba3f9dda4ed7a986e": "'",
+    "w252l200+726l127+558l49+726|": "‐",
+    "w300l240+726o236+693q216+442o210+383q203+249l193-271l157-271l148+249o147+285q134+442o129+529q110+726|": "/",
+    "e23bf7445589498395358ddf523de9f9fc4d47576fb01b778be319161477236312cff3657287dfd371e4f18e0b53e380730ee7ede1452b2a8eceb802e9818a62": "0",
+    "93e418c15f9c05852ffa91efa9e53fdab9c8e5d000c05614412b120ebaae34a287c1ddc080acac5e810c7426d87aefdf25d62d3bf636bdbfdcdd8eb9b26a31a9": "1",
+    "0b02f358d4106c6452c53b6f4eccbada793484e178b9c16f3e7afe8475d517f5ccebb02e2fbeae591004142a6fabe2a9e6be6979d960c3401892cf136e4a637e": "2",
+    "5599509fa74cee9a60e2b1240e9b2f9aa38253342acb6cba3bf0d1deef02247def421bc2a61c0a4f6d26a4eabaa17aca7a7e14c0a445931d87d08e46b3da110b": "3",
+    "1eb7aff3a75217c0e208140350521bfaf0427b887d646c4acf199b92a8693b823af41c4fae74a4630b336c8e797cc493d1bc6e7e3281054f8d1328c0c2b17b98": "4",
+    "3134797da8dbefd28a97f6ca3fc4a9cbb8877562e3213dd3e8a7659a8563b8c104601178423100a7cdf1e8fdfb04f35e0fde3b7e141f08c4e5d5204f44ff6d47": "5",
+    "90cabb72198c71ca3db29f9033be08a9f8348a6756c5a9294205c7c7cd23dc155a33acb8cf6fc7479b4575e83e26ba28b2203d244e50cfde4c1c31fa8c6ab0b5": "6",
+    "c1e5eec7686a7f729b0d55126155da4b76ee713e15ab24a876f140d9d01b03f186be57ec4ab46677f0a3ae19064c55345f63121aa9f77b7fccfc28ca46923903": "7",
+    "92779904424d9d26181c2330e39cd7b1a09110d65fbe111a5383a754d7ccdc276c4698e318b302bbda883f53835879aed6695c5e05c61daa406953d593184dbd": "8",
+    "3ae579494dd4561a8d81e638ae8f71b28e906a139854da9645f6ef5a54b688521340fbda25023e8580765208d871c08370bd7a66624883c40b5b76d0d8a24710": "9",
+    "bfa4408b8e28c6f0a9367aa891034a3d069180ec4214c9b3d097cd61dccbeff34410c15611d3f91d70c61caa509244d4ce17eeb33caa8917cfb15a2cbea9cbd6": ";",
+    "5c2ae72656190941327f794fad97a3e0078922663e7202e3dadd4e7eac19ffc9d5f2e033bebcbe4569374dc0142c033cfdce8207da4d68537a84600a8d2fd42d": "<",
+    "951c3654cee8d3c252f30be39c443b206783d04ebea729ebed2fa954e74fc83724dd34707a9fa7c2e57bbb18425c7a337fb6327c7aa23d7579e8867f13b735ab": "=",
+    "ce7ea1471d10cfc5a8ace389b6b19bed57a6d5f4cef51db05c26f751a533d1ede31ca0a926ffd9fc59b458248e40517a63dc39b73e9d481e3212c9a193a3248e": ">",
+    "474e4b81e9ba8b2db8dd8b5906ecfe3b18d8974572e3b64aefe383375e9c708446cda89c5d154a15b71253b57d2ef7ff5dc40dd831aeb81206543ca6824f6153": "A",
+    "dc5e03220f109eea72a1505924cbd3fa7c89b139b5358481ee0b75258007bba46eed84438ac940532eb9ad992ac36f31db3fb8cd2985118f62e03a3983de670d": "B",
+    "43fc2df02ce11a1ecaa49c93fec2bfbf0edf96afd92f1a87c634146a2ec4552f2848bb4010b1504dafbed541309cedc8898359101d7d83077295c73182ac57a5": "D",
+    "eb8e83d4f427ef69c80edb5d8b715c8e4f699c47c13b0dc9d337527d5787484cb2212a89b4b468013077cef26d0faa6f7a196ebc5764784611cbab2c42aae85f": "G",
+    "bb6911a103a9160af97a3a655a663c413934de253a77d6cb6fd7a1d6b464e9eb3594444e11c93d3dd9478b6fe95908d7a14b08bf42993bd2abf7e69ad6a95b01": "H",
+    "0a223d2681290336d427e8edf599819325d6ddfecf8397826b5127cd4a8344293053fbc49e27527b7c83778eb14266bbf05c3d6533283cfbb64a0670923a6c0e": "I",
+    "28e98a802a8852d745a348d0d18a86aa5c5ec4921e7c0ea1e6a1d378002094a3f77b3cd486377e2dcaaa90366d8abf2fe581e1755570023e15d8e38108b8ebc7": "J",
+    "4ac0c952574ddbf9f5a88fa26cdf38f1b101629cc3eac9368624a356e39ec5291b67b274874a649bc418247bb38459268376af87e2602add64af3e227bbfadaa": "L",
+    "59766f05a7a5c4dddc47b5dc642e4b3082c9a747eca3f1f01334b986cd171f85ff29a4c7c8a9c7c9983da64800e9e85181b0ead358108a7a6e297fbb41f72776": "M",
+    "5545f3601fa0cf6232d5626e2f19bc226444f5368bee03503cc7ef3ebdd90d8c950b152e4d4cbb112375b65519b3a18a48a581f12771cf9a53be6344edffd5c0": "N",
+    "25dfc01c6d95a56e30f8489626bcbe279f799a5ea335964c1d050d72205bfcb28b9420a428a298572082f5526b738937fcd81c8b321828aab6abef7aa3c4115a": "Q",
+    "b4ddea8cec984fa56526cd6ca254f1490685a9478950aa0c2556bb75c054bb4d871f15655abc829d64a37f895269a28203377b7d76f5a22ab11d2a6629716f6c": "R",
+    "2158f50947de9d27925eff2716377e3ffdef7313a162d6ddf16c4c12f6ba3e9373a0b3c4ceaec4022dcc921e2ec1fdf342e84f1c6856af8fe6cd95cd62446707": "S",
+    "fdddf92765e1aaaba25d7ef6dfe79daaa0ecb6d9602340c830b70d1f867dc8c2a22e06cf0daef3704a3cef15fb1dba1050afd95ad25bd962185e4b7ad9c06d7a": "T",
+    "8ba7b111813e12ea52e1412830190343809c561cc57d88f532888cb4b85ae861d066392b5bb07b2639df2130afe408ea747c61d528fd97c1600420500d8aaa4c": "U",
+    "8d1b164b15b37a0a7ebc66e6138871e4f56a309e936d1ccd5c749f2673eb854fc86788a596da5a6aba26b59df5b88cf750aa0a592debed51c467a2d31e3e8511": "X",
+    "07cd5b58fd60e9a12c07ab7d7250adb54914b5dcfa13446c5ea2876e3ecbba6b3ba4d0eb331d5ceb88920aef31d8e3364e5e65605b4f41f4e359b49535c715cb": "Z",
+    "w444l377+645l73+645l73+726l377+726|l300+513l161+513l161+593l300+593|l263+418l254-271l203-271l194+418|": "[",
+    "567ddf1495cd83923a36246c52aed69bf38424d51d3e3f1bf99532b6206d3cd517baa116f2ed94823cc07ed02d1cf2f0f7992883e2a49037c5f3a307302aa8d6": "\\",
+    "w373l310+635l70+635l70+726l310+726|l310+372l70+372l70+463l310+463|l310+109l70+109l70+200l310+200|": "]",
+    "w0": "a",
+    "b637b849e22911e9efe36905101f3b798015c942e04bc65d0e4f8ac08d51722f13d010f3dc87e729a1cc0615f6fccf341a5f342b75099b64a4e27147dd48c81e": "b",
+    "0980c1542126c0a2995310a404273bce63d9b3ff28df81c7933f730d0bb3418331f17f99e9fe227ac6d455390c9d4201bcf12b3d9734f56031941c3e925a81a7": "c",
+    "50a889167e871406d2e544dfec758ce8150ab8bd50c10ed5cd5c1a9adfad0aec1ae9ae2f48e786788935e5f3bb3eb87b128c31b360887c231dd2da6fa67cda94": "d",
+    "84ffaaa52b964568994a43638094bf63871877c9e9b2632dfbc34216027e68807ec9f018556d5f22ae8293c5225a96c962a7faf8633e4589e25bd567bde88f42": "e",
+    "81e76590d6ee57e0550e23a76ea734496650209d6ce53e77fc7bdf5196649a6ade29d4d9385ea8564bc9f2f212b2c30ff41eb821c6ecf01299ba9bc9e5aaf5cd": "g",
+    "b2cafc763a183c8313708f19dd9682dc9deb23157facf58fa0515e11dc46783dc2157adf3598c0cc8e2b6952ec40ea27ef5f7bf1f09efda0f6bf56675c53e387": "h",
+    "380c0995c86fcd5fdffec0336aa3ab0a2a02ca75418e05cd96a8c2825b1031618dad80d52d7ef8912df734f695d0a75c0890764ff8662c7b073a51e6ed1883f9": "i",
+    "33e9880b7e328ef7b548591a46463b845050a90b4a6b4e079d59fe6056b481f6f23e35cc75b81955b7e3378101e747573185b95689f4241ae7f8aa66d15f82a5": "j",
+    "98e19154ce1f65cfc639dcb966baf5f5f00dd5f7112f29503b20415bff50bf2cb29bc213bc5b3f35edb6d8d1dc7de46d94ea94f961850e5d3985fd9fd23c4bea": "k",
+    "a218a7da895ff9a55f6d06850a98294c0a8aa5aa5ca11ba7768a3e2f6179259d3e9641bc23a9e2f9e13304c576d045960dcd8c7b918830111ac4875e6937c5e3": "l",
+    "3cf3942f82aa9ffaa184e508e43c7b38ea9ac5638878cdef5b8244b79a7a2b3b2bac89db9a966a4271201cc4a7ab82a07788c295cebd3d0150eeda76c5002313": "m",
+    "a2d2281d0e001932a19b3e6974fd6cb04ff9697ef4986c74b4c091c109bb90e324bd48a612d751252230d31a3a8d5ccf5fc3da3fa697826dee4048f64220029e": "n",
+    "0f02b4a0f5f776b25d50de33acbb88fcf124bd26e2346e77096c838e26f662cf371f9521073aeda8a3bfd05e9128e6c0626a568b5b186e0a1f768132247e23dd": "o",
+    "47824664584a1322c08ed1f4d59e8768b21b46194c239206743e34566e3d6241a220251b9f29350c9eb9688fb69992c4de36ca68163eac69182f59a228f29576": "p",
+    "ea9c8ba52ff41f8597fabea0dd9ad9d8de58fb12dded2afb0f8bac199f331994e1662b498c671a45f905b0cb95ea1cdc21e3aaf5c1b7bbec55e1bd5dfbb61102": "r",
+    "f564163281119f04a52e015cc3746c3f3709d80bb98de029c148d6e7cc0ec3b9fcb3184261cefd244f9a51ce1e3fb9ef0ef09f34b35f6c973912ca714db6cde1": "s",
+    "dd9da62e31b3f10a779ae9b3369d97fbfaabd3b1d6f2d5bdb56e4b77fe771ffb141a7ea597251ad0d52b02ed38caf0d799712c9654c2184cf41aa94fe6be4ffc": "t",
+    "cb5b85bbdf429375bcc93bedfdaa37c27246cc36d9f06ca8e7e567dc1e08695a1c3dd6c25c3658133db1f768d10b8469fc5c385b44fd5650f4428e823ef2d4a9": "u",
+    "w0l-97-329l-417-157l-137-5l-137+73l-97+63|l-137-252l-137-84l-291-162|": "w",
+    "c7d44e436db28181dcc80f78e7b74d47a3e84f0c926145b22e4a2d59502877d59c87085ecf22ed0b2891f4adc0bd1cce3d33167f48db7cea70976dd1b8f6adaf": "y",
+    "f1d9454d364e5e00525d6dc81a57dd987c24c1a91f36d2de8a9d15fd4e4f345ea71fa6f715557c489df5d8a5e50253b17d0b6651c253b888c921ae566fed027e": "z",
+    "f9c6f56a6f8971de0917d01aa27db86118bc80635d0691cf1e3ced809c6b8c6c4f06794f60fc1336c11ad27516a7f0485321b36c3674306dc051e90361f9f994": "¶",
+    "w215": " "
+  },
+  "_meta": {
+    "lookup_kind": "gshape",
+    "source": "tibetan-fonts-main.zip::tibetan-fonts-main/Non-Unicode Fonts/SuzTib/SUZTIBA.TTF",
+    "gids_mapped": 135,
+    "multi_char_stacks": 0,
+    "gsub_lookup_counts": {},
+    "entries": 63,
+    "fingerprint_method": "HashPointPen+RoundingPointPen(floatToFixedToFloat 14-bit)",
+    "hash_collisions": [
+      {
+        "fingerprint": "ae0a1af22e201ecb7a6a04ba4f0416f276795316b6aec753eb56eba6c0e3fe7480fefca2db6b42d40add5e653fd977b3995627cd12bb0ecb202375d5e24d6576",
+        "kept_unicode": "!",
+        "skipped_gid": 5,
+        "skipped_glyph_name": "quotedbl",
+        "skipped_unicode": "\""
+      },
+      {
+        "fingerprint": "ae0a1af22e201ecb7a6a04ba4f0416f276795316b6aec753eb56eba6c0e3fe7480fefca2db6b42d40add5e653fd977b3995627cd12bb0ecb202375d5e24d6576",
+        "kept_unicode": "!",
+        "skipped_gid": 6,
+        "skipped_glyph_name": "numbersign",
+        "skipped_unicode": "#"
+      },
+      {
+        "fingerprint": "ae0a1af22e201ecb7a6a04ba4f0416f276795316b6aec753eb56eba6c0e3fe7480fefca2db6b42d40add5e653fd977b3995627cd12bb0ecb202375d5e24d6576",
+        "kept_unicode": "!",
+        "skipped_gid": 7,
+        "skipped_glyph_name": "dollar",
+        "skipped_unicode": "$"
+      },
+      {
+        "fingerprint": "ae0a1af22e201ecb7a6a04ba4f0416f276795316b6aec753eb56eba6c0e3fe7480fefca2db6b42d40add5e653fd977b3995627cd12bb0ecb202375d5e24d6576",
+        "kept_unicode": "!",
+        "skipped_gid": 8,
+        "skipped_glyph_name": "percent",
+        "skipped_unicode": "%"
+      },
+      {
+        "fingerprint": "ae0a1af22e201ecb7a6a04ba4f0416f276795316b6aec753eb56eba6c0e3fe7480fefca2db6b42d40add5e653fd977b3995627cd12bb0ecb202375d5e24d6576",
+        "kept_unicode": "!",
+        "skipped_gid": 9,
+        "skipped_glyph_name": "ampersand",
+        "skipped_unicode": "&"
+      },
+      {
+        "fingerprint": "ae0a1af22e201ecb7a6a04ba4f0416f276795316b6aec753eb56eba6c0e3fe7480fefca2db6b42d40add5e653fd977b3995627cd12bb0ecb202375d5e24d6576",
+        "kept_unicode": "!",
+        "skipped_gid": 11,
+        "skipped_glyph_name": "parenleft",
+        "skipped_unicode": "("
+      },
+      {
+        "fingerprint": "ae0a1af22e201ecb7a6a04ba4f0416f276795316b6aec753eb56eba6c0e3fe7480fefca2db6b42d40add5e653fd977b3995627cd12bb0ecb202375d5e24d6576",
+        "kept_unicode": "!",
+        "skipped_gid": 12,
+        "skipped_glyph_name": "parenright",
+        "skipped_unicode": ")"
+      },
+      {
+        "fingerprint": "ae0a1af22e201ecb7a6a04ba4f0416f276795316b6aec753eb56eba6c0e3fe7480fefca2db6b42d40add5e653fd977b3995627cd12bb0ecb202375d5e24d6576",
+        "kept_unicode": "!",
+        "skipped_gid": 13,
+        "skipped_glyph_name": "asterisk",
+        "skipped_unicode": "*"
+      },
+      {
+        "fingerprint": "ae0a1af22e201ecb7a6a04ba4f0416f276795316b6aec753eb56eba6c0e3fe7480fefca2db6b42d40add5e653fd977b3995627cd12bb0ecb202375d5e24d6576",
+        "kept_unicode": "!",
+        "skipped_gid": 14,
+        "skipped_glyph_name": "plus",
+        "skipped_unicode": "+"
+      },
+      {
+        "fingerprint": "ae0a1af22e201ecb7a6a04ba4f0416f276795316b6aec753eb56eba6c0e3fe7480fefca2db6b42d40add5e653fd977b3995627cd12bb0ecb202375d5e24d6576",
+        "kept_unicode": "!",
+        "skipped_gid": 15,
+        "skipped_glyph_name": "comma",
+        "skipped_unicode": ","
+      },
+      {
+        "fingerprint": "ae0a1af22e201ecb7a6a04ba4f0416f276795316b6aec753eb56eba6c0e3fe7480fefca2db6b42d40add5e653fd977b3995627cd12bb0ecb202375d5e24d6576",
+        "kept_unicode": "!",
+        "skipped_gid": 17,
+        "skipped_glyph_name": "period",
+        "skipped_unicode": "."
+      },
+      {
+        "fingerprint": "ae0a1af22e201ecb7a6a04ba4f0416f276795316b6aec753eb56eba6c0e3fe7480fefca2db6b42d40add5e653fd977b3995627cd12bb0ecb202375d5e24d6576",
+        "kept_unicode": "!",
+        "skipped_gid": 29,
+        "skipped_glyph_name": "colon",
+        "skipped_unicode": ":"
+      },
+      {
+        "fingerprint": "ae0a1af22e201ecb7a6a04ba4f0416f276795316b6aec753eb56eba6c0e3fe7480fefca2db6b42d40add5e653fd977b3995627cd12bb0ecb202375d5e24d6576",
+        "kept_unicode": "!",
+        "skipped_gid": 34,
+        "skipped_glyph_name": "question",
+        "skipped_unicode": "?"
+      },
+      {
+        "fingerprint": "ae0a1af22e201ecb7a6a04ba4f0416f276795316b6aec753eb56eba6c0e3fe7480fefca2db6b42d40add5e653fd977b3995627cd12bb0ecb202375d5e24d6576",
+        "kept_unicode": "!",
+        "skipped_gid": 35,
+        "skipped_glyph_name": "at",
+        "skipped_unicode": "@"
+      },
+      {
+        "fingerprint": "ae0a1af22e201ecb7a6a04ba4f0416f276795316b6aec753eb56eba6c0e3fe7480fefca2db6b42d40add5e653fd977b3995627cd12bb0ecb202375d5e24d6576",
+        "kept_unicode": "!",
+        "skipped_gid": 38,
+        "skipped_glyph_name": "C",
+        "skipped_unicode": "C"
+      },
+      {
+        "fingerprint": "ae0a1af22e201ecb7a6a04ba4f0416f276795316b6aec753eb56eba6c0e3fe7480fefca2db6b42d40add5e653fd977b3995627cd12bb0ecb202375d5e24d6576",
+        "kept_unicode": "!",
+        "skipped_gid": 40,
+        "skipped_glyph_name": "E",
+        "skipped_unicode": "E"
+      },
+      {
+        "fingerprint": "3f4ab22e424f5b56a4f6c16d86e8736c8a50077db4a5ead942b51a8e52bc7ef180a11267bf8c30a70d7c15b1e93c3be84f4cd6f9e003703ba3f9dda4ed7a986e",
+        "kept_unicode": "'",
+        "skipped_gid": 41,
+        "skipped_glyph_name": "F",
+        "skipped_unicode": "F"
+      },
+      {
+        "fingerprint": "ae0a1af22e201ecb7a6a04ba4f0416f276795316b6aec753eb56eba6c0e3fe7480fefca2db6b42d40add5e653fd977b3995627cd12bb0ecb202375d5e24d6576",
+        "kept_unicode": "!",
+        "skipped_gid": 46,
+        "skipped_glyph_name": "K",
+        "skipped_unicode": "K"
+      },
+      {
+        "fingerprint": "ae0a1af22e201ecb7a6a04ba4f0416f276795316b6aec753eb56eba6c0e3fe7480fefca2db6b42d40add5e653fd977b3995627cd12bb0ecb202375d5e24d6576",
+        "kept_unicode": "!",
+        "skipped_gid": 50,
+        "skipped_glyph_name": "O",
+        "skipped_unicode": "O"
+      },
+      {
+        "fingerprint": "ae0a1af22e201ecb7a6a04ba4f0416f276795316b6aec753eb56eba6c0e3fe7480fefca2db6b42d40add5e653fd977b3995627cd12bb0ecb202375d5e24d6576",
+        "kept_unicode": "!",
+        "skipped_gid": 51,
+        "skipped_glyph_name": "P",
+        "skipped_unicode": "P"
+      },
+      {
+        "fingerprint": "ae0a1af22e201ecb7a6a04ba4f0416f276795316b6aec753eb56eba6c0e3fe7480fefca2db6b42d40add5e653fd977b3995627cd12bb0ecb202375d5e24d6576",
+        "kept_unicode": "!",
+        "skipped_gid": 57,
+        "skipped_glyph_name": "V",
+        "skipped_unicode": "V"
+      },
+      {
+        "fingerprint": "ae0a1af22e201ecb7a6a04ba4f0416f276795316b6aec753eb56eba6c0e3fe7480fefca2db6b42d40add5e653fd977b3995627cd12bb0ecb202375d5e24d6576",
+        "kept_unicode": "!",
+        "skipped_gid": 58,
+        "skipped_glyph_name": "W",
+        "skipped_unicode": "W"
+      },
+      {
+        "fingerprint": "ae0a1af22e201ecb7a6a04ba4f0416f276795316b6aec753eb56eba6c0e3fe7480fefca2db6b42d40add5e653fd977b3995627cd12bb0ecb202375d5e24d6576",
+        "kept_unicode": "!",
+        "skipped_gid": 60,
+        "skipped_glyph_name": "Y",
+        "skipped_unicode": "Y"
+      },
+      {
+        "fingerprint": "ae0a1af22e201ecb7a6a04ba4f0416f276795316b6aec753eb56eba6c0e3fe7480fefca2db6b42d40add5e653fd977b3995627cd12bb0ecb202375d5e24d6576",
+        "kept_unicode": "!",
+        "skipped_gid": 65,
+        "skipped_glyph_name": "asciicircum",
+        "skipped_unicode": "^"
+      },
+      {
+        "fingerprint": "ae0a1af22e201ecb7a6a04ba4f0416f276795316b6aec753eb56eba6c0e3fe7480fefca2db6b42d40add5e653fd977b3995627cd12bb0ecb202375d5e24d6576",
+        "kept_unicode": "!",
+        "skipped_gid": 66,
+        "skipped_glyph_name": "underscore",
+        "skipped_unicode": "_"
+      },
+      {
+        "fingerprint": "ae0a1af22e201ecb7a6a04ba4f0416f276795316b6aec753eb56eba6c0e3fe7480fefca2db6b42d40add5e653fd977b3995627cd12bb0ecb202375d5e24d6576",
+        "kept_unicode": "!",
+        "skipped_gid": 67,
+        "skipped_glyph_name": "grave",
+        "skipped_unicode": "`"
+      },
+      {
+        "fingerprint": "ae0a1af22e201ecb7a6a04ba4f0416f276795316b6aec753eb56eba6c0e3fe7480fefca2db6b42d40add5e653fd977b3995627cd12bb0ecb202375d5e24d6576",
+        "kept_unicode": "!",
+        "skipped_gid": 73,
+        "skipped_glyph_name": "f",
+        "skipped_unicode": "f"
+      },
+      {
+        "fingerprint": "ae0a1af22e201ecb7a6a04ba4f0416f276795316b6aec753eb56eba6c0e3fe7480fefca2db6b42d40add5e653fd977b3995627cd12bb0ecb202375d5e24d6576",
+        "kept_unicode": "!",
+        "skipped_gid": 84,
+        "skipped_glyph_name": "q",
+        "skipped_unicode": "q"
+      },
+      {
+        "fingerprint": "ae0a1af22e201ecb7a6a04ba4f0416f276795316b6aec753eb56eba6c0e3fe7480fefca2db6b42d40add5e653fd977b3995627cd12bb0ecb202375d5e24d6576",
+        "kept_unicode": "!",
+        "skipped_gid": 89,
+        "skipped_glyph_name": "v",
+        "skipped_unicode": "v"
+      },
+      {
+        "fingerprint": "ae0a1af22e201ecb7a6a04ba4f0416f276795316b6aec753eb56eba6c0e3fe7480fefca2db6b42d40add5e653fd977b3995627cd12bb0ecb202375d5e24d6576",
+        "kept_unicode": "!",
+        "skipped_gid": 91,
+        "skipped_glyph_name": "x",
+        "skipped_unicode": "x"
+      },
+      {
+        "fingerprint": "ae0a1af22e201ecb7a6a04ba4f0416f276795316b6aec753eb56eba6c0e3fe7480fefca2db6b42d40add5e653fd977b3995627cd12bb0ecb202375d5e24d6576",
+        "kept_unicode": "!",
+        "skipped_gid": 94,
+        "skipped_glyph_name": "braceleft",
+        "skipped_unicode": "{"
+      },
+      {
+        "fingerprint": "ae0a1af22e201ecb7a6a04ba4f0416f276795316b6aec753eb56eba6c0e3fe7480fefca2db6b42d40add5e653fd977b3995627cd12bb0ecb202375d5e24d6576",
+        "kept_unicode": "!",
+        "skipped_gid": 95,
+        "skipped_glyph_name": "bar",
+        "skipped_unicode": "|"
+      },
+      {
+        "fingerprint": "ae0a1af22e201ecb7a6a04ba4f0416f276795316b6aec753eb56eba6c0e3fe7480fefca2db6b42d40add5e653fd977b3995627cd12bb0ecb202375d5e24d6576",
+        "kept_unicode": "!",
+        "skipped_gid": 96,
+        "skipped_glyph_name": "braceright",
+        "skipped_unicode": "}"
+      },
+      {
+        "fingerprint": "ae0a1af22e201ecb7a6a04ba4f0416f276795316b6aec753eb56eba6c0e3fe7480fefca2db6b42d40add5e653fd977b3995627cd12bb0ecb202375d5e24d6576",
+        "kept_unicode": "!",
+        "skipped_gid": 97,
+        "skipped_glyph_name": "asciitilde",
+        "skipped_unicode": "~"
+      },
+      {
+        "fingerprint": "ae0a1af22e201ecb7a6a04ba4f0416f276795316b6aec753eb56eba6c0e3fe7480fefca2db6b42d40add5e653fd977b3995627cd12bb0ecb202375d5e24d6576",
+        "kept_unicode": "!",
+        "skipped_gid": 98,
+        "skipped_glyph_name": "Adieresis",
+        "skipped_unicode": "Ä"
+      },
+      {
+        "fingerprint": "ae0a1af22e201ecb7a6a04ba4f0416f276795316b6aec753eb56eba6c0e3fe7480fefca2db6b42d40add5e653fd977b3995627cd12bb0ecb202375d5e24d6576",
+        "kept_unicode": "!",
+        "skipped_gid": 99,
+        "skipped_glyph_name": "Aring",
+        "skipped_unicode": "Å"
+      },
+      {
+        "fingerprint": "ae0a1af22e201ecb7a6a04ba4f0416f276795316b6aec753eb56eba6c0e3fe7480fefca2db6b42d40add5e653fd977b3995627cd12bb0ecb202375d5e24d6576",
+        "kept_unicode": "!",
+        "skipped_gid": 100,
+        "skipped_glyph_name": "Ccedilla",
+        "skipped_unicode": "Ç"
+      },
+      {
+        "fingerprint": "ae0a1af22e201ecb7a6a04ba4f0416f276795316b6aec753eb56eba6c0e3fe7480fefca2db6b42d40add5e653fd977b3995627cd12bb0ecb202375d5e24d6576",
+        "kept_unicode": "!",
+        "skipped_gid": 101,
+        "skipped_glyph_name": "Eacute",
+        "skipped_unicode": "É"
+      },
+      {
+        "fingerprint": "ae0a1af22e201ecb7a6a04ba4f0416f276795316b6aec753eb56eba6c0e3fe7480fefca2db6b42d40add5e653fd977b3995627cd12bb0ecb202375d5e24d6576",
+        "kept_unicode": "!",
+        "skipped_gid": 102,
+        "skipped_glyph_name": "Ntilde",
+        "skipped_unicode": "Ñ"
+      },
+      {
+        "fingerprint": "ae0a1af22e201ecb7a6a04ba4f0416f276795316b6aec753eb56eba6c0e3fe7480fefca2db6b42d40add5e653fd977b3995627cd12bb0ecb202375d5e24d6576",
+        "kept_unicode": "!",
+        "skipped_gid": 103,
+        "skipped_glyph_name": "Odieresis",
+        "skipped_unicode": "Ö"
+      },
+      {
+        "fingerprint": "ae0a1af22e201ecb7a6a04ba4f0416f276795316b6aec753eb56eba6c0e3fe7480fefca2db6b42d40add5e653fd977b3995627cd12bb0ecb202375d5e24d6576",
+        "kept_unicode": "!",
+        "skipped_gid": 104,
+        "skipped_glyph_name": "Udieresis",
+        "skipped_unicode": "Ü"
+      },
+      {
+        "fingerprint": "ae0a1af22e201ecb7a6a04ba4f0416f276795316b6aec753eb56eba6c0e3fe7480fefca2db6b42d40add5e653fd977b3995627cd12bb0ecb202375d5e24d6576",
+        "kept_unicode": "!",
+        "skipped_gid": 105,
+        "skipped_glyph_name": "aacute",
+        "skipped_unicode": "á"
+      },
+      {
+        "fingerprint": "ae0a1af22e201ecb7a6a04ba4f0416f276795316b6aec753eb56eba6c0e3fe7480fefca2db6b42d40add5e653fd977b3995627cd12bb0ecb202375d5e24d6576",
+        "kept_unicode": "!",
+        "skipped_gid": 106,
+        "skipped_glyph_name": "agrave",
+        "skipped_unicode": "à"
+      },
+      {
+        "fingerprint": "ae0a1af22e201ecb7a6a04ba4f0416f276795316b6aec753eb56eba6c0e3fe7480fefca2db6b42d40add5e653fd977b3995627cd12bb0ecb202375d5e24d6576",
+        "kept_unicode": "!",
+        "skipped_gid": 107,
+        "skipped_glyph_name": "acircumflex",
+        "skipped_unicode": "â"
+      },
+      {
+        "fingerprint": "ae0a1af22e201ecb7a6a04ba4f0416f276795316b6aec753eb56eba6c0e3fe7480fefca2db6b42d40add5e653fd977b3995627cd12bb0ecb202375d5e24d6576",
+        "kept_unicode": "!",
+        "skipped_gid": 108,
+        "skipped_glyph_name": "adieresis",
+        "skipped_unicode": "ä"
+      },
+      {
+        "fingerprint": "ae0a1af22e201ecb7a6a04ba4f0416f276795316b6aec753eb56eba6c0e3fe7480fefca2db6b42d40add5e653fd977b3995627cd12bb0ecb202375d5e24d6576",
+        "kept_unicode": "!",
+        "skipped_gid": 109,
+        "skipped_glyph_name": "atilde",
+        "skipped_unicode": "ã"
+      },
+      {
+        "fingerprint": "ae0a1af22e201ecb7a6a04ba4f0416f276795316b6aec753eb56eba6c0e3fe7480fefca2db6b42d40add5e653fd977b3995627cd12bb0ecb202375d5e24d6576",
+        "kept_unicode": "!",
+        "skipped_gid": 110,
+        "skipped_glyph_name": "aring",
+        "skipped_unicode": "å"
+      },
+      {
+        "fingerprint": "ae0a1af22e201ecb7a6a04ba4f0416f276795316b6aec753eb56eba6c0e3fe7480fefca2db6b42d40add5e653fd977b3995627cd12bb0ecb202375d5e24d6576",
+        "kept_unicode": "!",
+        "skipped_gid": 111,
+        "skipped_glyph_name": "ccedilla",
+        "skipped_unicode": "ç"
+      },
+      {
+        "fingerprint": "ae0a1af22e201ecb7a6a04ba4f0416f276795316b6aec753eb56eba6c0e3fe7480fefca2db6b42d40add5e653fd977b3995627cd12bb0ecb202375d5e24d6576",
+        "kept_unicode": "!",
+        "skipped_gid": 112,
+        "skipped_glyph_name": "eacute",
+        "skipped_unicode": "é"
+      },
+      {
+        "fingerprint": "ae0a1af22e201ecb7a6a04ba4f0416f276795316b6aec753eb56eba6c0e3fe7480fefca2db6b42d40add5e653fd977b3995627cd12bb0ecb202375d5e24d6576",
+        "kept_unicode": "!",
+        "skipped_gid": 113,
+        "skipped_glyph_name": "egrave",
+        "skipped_unicode": "è"
+      },
+      {
+        "fingerprint": "ae0a1af22e201ecb7a6a04ba4f0416f276795316b6aec753eb56eba6c0e3fe7480fefca2db6b42d40add5e653fd977b3995627cd12bb0ecb202375d5e24d6576",
+        "kept_unicode": "!",
+        "skipped_gid": 114,
+        "skipped_glyph_name": "ecircumflex",
+        "skipped_unicode": "ê"
+      },
+      {
+        "fingerprint": "ae0a1af22e201ecb7a6a04ba4f0416f276795316b6aec753eb56eba6c0e3fe7480fefca2db6b42d40add5e653fd977b3995627cd12bb0ecb202375d5e24d6576",
+        "kept_unicode": "!",
+        "skipped_gid": 115,
+        "skipped_glyph_name": "edieresis",
+        "skipped_unicode": "ë"
+      },
+      {
+        "fingerprint": "ae0a1af22e201ecb7a6a04ba4f0416f276795316b6aec753eb56eba6c0e3fe7480fefca2db6b42d40add5e653fd977b3995627cd12bb0ecb202375d5e24d6576",
+        "kept_unicode": "!",
+        "skipped_gid": 116,
+        "skipped_glyph_name": "iacute",
+        "skipped_unicode": "í"
+      },
+      {
+        "fingerprint": "ae0a1af22e201ecb7a6a04ba4f0416f276795316b6aec753eb56eba6c0e3fe7480fefca2db6b42d40add5e653fd977b3995627cd12bb0ecb202375d5e24d6576",
+        "kept_unicode": "!",
+        "skipped_gid": 117,
+        "skipped_glyph_name": "igrave",
+        "skipped_unicode": "ì"
+      },
+      {
+        "fingerprint": "ae0a1af22e201ecb7a6a04ba4f0416f276795316b6aec753eb56eba6c0e3fe7480fefca2db6b42d40add5e653fd977b3995627cd12bb0ecb202375d5e24d6576",
+        "kept_unicode": "!",
+        "skipped_gid": 118,
+        "skipped_glyph_name": "icircumflex",
+        "skipped_unicode": "î"
+      },
+      {
+        "fingerprint": "ae0a1af22e201ecb7a6a04ba4f0416f276795316b6aec753eb56eba6c0e3fe7480fefca2db6b42d40add5e653fd977b3995627cd12bb0ecb202375d5e24d6576",
+        "kept_unicode": "!",
+        "skipped_gid": 119,
+        "skipped_glyph_name": "idieresis",
+        "skipped_unicode": "ï"
+      },
+      {
+        "fingerprint": "ae0a1af22e201ecb7a6a04ba4f0416f276795316b6aec753eb56eba6c0e3fe7480fefca2db6b42d40add5e653fd977b3995627cd12bb0ecb202375d5e24d6576",
+        "kept_unicode": "!",
+        "skipped_gid": 120,
+        "skipped_glyph_name": "ntilde",
+        "skipped_unicode": "ñ"
+      },
+      {
+        "fingerprint": "ae0a1af22e201ecb7a6a04ba4f0416f276795316b6aec753eb56eba6c0e3fe7480fefca2db6b42d40add5e653fd977b3995627cd12bb0ecb202375d5e24d6576",
+        "kept_unicode": "!",
+        "skipped_gid": 121,
+        "skipped_glyph_name": "oacute",
+        "skipped_unicode": "ó"
+      },
+      {
+        "fingerprint": "ae0a1af22e201ecb7a6a04ba4f0416f276795316b6aec753eb56eba6c0e3fe7480fefca2db6b42d40add5e653fd977b3995627cd12bb0ecb202375d5e24d6576",
+        "kept_unicode": "!",
+        "skipped_gid": 122,
+        "skipped_glyph_name": "ograve",
+        "skipped_unicode": "ò"
+      },
+      {
+        "fingerprint": "ae0a1af22e201ecb7a6a04ba4f0416f276795316b6aec753eb56eba6c0e3fe7480fefca2db6b42d40add5e653fd977b3995627cd12bb0ecb202375d5e24d6576",
+        "kept_unicode": "!",
+        "skipped_gid": 123,
+        "skipped_glyph_name": "ocircumflex",
+        "skipped_unicode": "ô"
+      },
+      {
+        "fingerprint": "ae0a1af22e201ecb7a6a04ba4f0416f276795316b6aec753eb56eba6c0e3fe7480fefca2db6b42d40add5e653fd977b3995627cd12bb0ecb202375d5e24d6576",
+        "kept_unicode": "!",
+        "skipped_gid": 124,
+        "skipped_glyph_name": "odieresis",
+        "skipped_unicode": "ö"
+      },
+      {
+        "fingerprint": "ae0a1af22e201ecb7a6a04ba4f0416f276795316b6aec753eb56eba6c0e3fe7480fefca2db6b42d40add5e653fd977b3995627cd12bb0ecb202375d5e24d6576",
+        "kept_unicode": "!",
+        "skipped_gid": 125,
+        "skipped_glyph_name": "otilde",
+        "skipped_unicode": "õ"
+      },
+      {
+        "fingerprint": "ae0a1af22e201ecb7a6a04ba4f0416f276795316b6aec753eb56eba6c0e3fe7480fefca2db6b42d40add5e653fd977b3995627cd12bb0ecb202375d5e24d6576",
+        "kept_unicode": "!",
+        "skipped_gid": 126,
+        "skipped_glyph_name": "uacute",
+        "skipped_unicode": "ú"
+      },
+      {
+        "fingerprint": "ae0a1af22e201ecb7a6a04ba4f0416f276795316b6aec753eb56eba6c0e3fe7480fefca2db6b42d40add5e653fd977b3995627cd12bb0ecb202375d5e24d6576",
+        "kept_unicode": "!",
+        "skipped_gid": 127,
+        "skipped_glyph_name": "ugrave",
+        "skipped_unicode": "ù"
+      },
+      {
+        "fingerprint": "ae0a1af22e201ecb7a6a04ba4f0416f276795316b6aec753eb56eba6c0e3fe7480fefca2db6b42d40add5e653fd977b3995627cd12bb0ecb202375d5e24d6576",
+        "kept_unicode": "!",
+        "skipped_gid": 128,
+        "skipped_glyph_name": "ucircumflex",
+        "skipped_unicode": "û"
+      },
+      {
+        "fingerprint": "ae0a1af22e201ecb7a6a04ba4f0416f276795316b6aec753eb56eba6c0e3fe7480fefca2db6b42d40add5e653fd977b3995627cd12bb0ecb202375d5e24d6576",
+        "kept_unicode": "!",
+        "skipped_gid": 129,
+        "skipped_glyph_name": "udieresis",
+        "skipped_unicode": "ü"
+      },
+      {
+        "fingerprint": "ae0a1af22e201ecb7a6a04ba4f0416f276795316b6aec753eb56eba6c0e3fe7480fefca2db6b42d40add5e653fd977b3995627cd12bb0ecb202375d5e24d6576",
+        "kept_unicode": "!",
+        "skipped_gid": 130,
+        "skipped_glyph_name": "dagger",
+        "skipped_unicode": "†"
+      },
+      {
+        "fingerprint": "ae0a1af22e201ecb7a6a04ba4f0416f276795316b6aec753eb56eba6c0e3fe7480fefca2db6b42d40add5e653fd977b3995627cd12bb0ecb202375d5e24d6576",
+        "kept_unicode": "!",
+        "skipped_gid": 131,
+        "skipped_glyph_name": "degree",
+        "skipped_unicode": "°"
+      },
+      {
+        "fingerprint": "ae0a1af22e201ecb7a6a04ba4f0416f276795316b6aec753eb56eba6c0e3fe7480fefca2db6b42d40add5e653fd977b3995627cd12bb0ecb202375d5e24d6576",
+        "kept_unicode": "!",
+        "skipped_gid": 132,
+        "skipped_glyph_name": "cent",
+        "skipped_unicode": "¢"
+      },
+      {
+        "fingerprint": "ae0a1af22e201ecb7a6a04ba4f0416f276795316b6aec753eb56eba6c0e3fe7480fefca2db6b42d40add5e653fd977b3995627cd12bb0ecb202375d5e24d6576",
+        "kept_unicode": "!",
+        "skipped_gid": 133,
+        "skipped_glyph_name": "sterling",
+        "skipped_unicode": "£"
+      },
+      {
+        "fingerprint": "ae0a1af22e201ecb7a6a04ba4f0416f276795316b6aec753eb56eba6c0e3fe7480fefca2db6b42d40add5e653fd977b3995627cd12bb0ecb202375d5e24d6576",
+        "kept_unicode": "!",
+        "skipped_gid": 134,
+        "skipped_glyph_name": "section",
+        "skipped_unicode": "§"
+      },
+      {
+        "fingerprint": "ae0a1af22e201ecb7a6a04ba4f0416f276795316b6aec753eb56eba6c0e3fe7480fefca2db6b42d40add5e653fd977b3995627cd12bb0ecb202375d5e24d6576",
+        "kept_unicode": "!",
+        "skipped_gid": 135,
+        "skipped_glyph_name": "bullet",
+        "skipped_unicode": "•"
+      }
+    ],
+    "gshape_rows_patched_from_public_gname": 0,
+    "gshape_patch_skipped_no_hash_to_gname": 1,
+    "gshape_patch_skipped_no_pua_in_value": 62,
+    "gshape_patch_font_hash_collisions": 75
+  }
+}

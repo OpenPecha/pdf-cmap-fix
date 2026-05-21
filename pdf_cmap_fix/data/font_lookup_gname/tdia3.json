@@ -1,0 +1,43 @@
+{
+  "tdia3": {
+    "visiblespace": " ",
+    "H": "H",
+    "L": "L",
+    "M": "M",
+    "N": "N",
+    "T": "T",
+    "d": "d",
+    "h": "h",
+    "l": "l",
+    "m": "m",
+    "n": "n",
+    "t": "t",
+    "S": "S",
+    "s": "s",
+    "A": "A",
+    "a": "a",
+    "I": "I",
+    "i": "i",
+    "U": "U",
+    "u": "u",
+    "D": "D",
+    "K": "K",
+    "k": "k",
+    "o": "o",
+    "O": "O",
+    "P": "P",
+    "Q": "Q",
+    "p": "p",
+    "q": "q",
+    "R": "R",
+    "r": "r"
+  },
+  "_meta": {
+    "lookup_kind": "gname",
+    "source": "tibetan-fonts-main.zip::tibetan-fonts-main/Non-Unicode Fonts/TNRDia/TDIA3.TTF",
+    "gids_mapped": 31,
+    "multi_char_stacks": 0,
+    "gsub_lookup_counts": {},
+    "entries": 31
+  }
+}

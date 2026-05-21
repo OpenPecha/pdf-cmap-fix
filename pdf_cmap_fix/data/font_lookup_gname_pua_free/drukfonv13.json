@@ -1,0 +1,16 @@
+{
+  "drukfonv13": {
+    "uni0000": "\u0000",
+    "uni000D": "\r"
+  },
+  "_meta": {
+    "lookup_kind": "gname",
+    "source": "tibetan-fonts-main.zip::tibetan-fonts-main/Non-Unicode Fonts/Druk/DrukV13-1991/DrukFonV13.ttf",
+    "gids_mapped": 2,
+    "multi_char_stacks": 0,
+    "gsub_lookup_counts": {},
+    "entries": 2,
+    "pua_to_unicode_from_uni_names": true,
+    "pua_rows_rewritten": 0
+  }
+}

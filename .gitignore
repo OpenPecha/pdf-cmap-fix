@@ -15,14 +15,8 @@ scripts/per_font_build.log
 # Optional shape DB (placeholder; regenerate locally if you ever need it)
 pdf_cmap_fix/data/shape_db.json
 
-# Tier 2 / tier 3 lookup trees (regenerate: scripts/gname/update_font_lookup.py / scripts/gshape/update_font_lookup.py)
-pdf_cmap_fix/data/font_lookup_gname/
-pdf_cmap_fix/data/font_lookup_gshape/
-
-# PUA-free sibling trees (regenerate: scripts/lookup_pua/run_pua_free_lookup_rebuild.py)
-pdf_cmap_fix/data/font_lookup_gname_pua_free/
-pdf_cmap_fix/data/font_lookup_gshape_pua_free/
-pdf_cmap_fix/data/font_lookup_gid_pua_free/
+# Tier 2 / tier 3 and PUA-free lookup trees are tracked under pdf_cmap_fix/data/
+# (regenerate with scripts/gname/, scripts/gshape/, scripts/pua/ — see README)
 
 # Huge optional dumps from pdf-cmap-fix --dump-cmap (debugging only)
 *.cmap-dump.json

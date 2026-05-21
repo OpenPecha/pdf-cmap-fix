@@ -1,0 +1,22 @@
+{
+  "ededrissyma": {
+    "3": " ",
+    "4": "(",
+    "5": ")",
+    "6": "[",
+    "7": "]",
+    "8": "{",
+    "9": "}",
+    "10": "#",
+    "11": "$"
+  },
+  "_meta": {
+    "lookup_kind": "gid",
+    "source": "tibetan-fonts-main.zip::tibetan-fonts-main/Non-Unicode Fonts/Nitartha/Ededris/ededris-syma.ttf",
+    "gids_mapped": 9,
+    "multi_char_stacks": 0,
+    "gsub_lookup_counts": {},
+    "gid_rows_patched_from_gname_json": 0,
+    "gid_patch_missing_gname_entries": 0
+  }
+}
