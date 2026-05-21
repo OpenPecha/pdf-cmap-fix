@@ -1,0 +1,4 @@
+PDF:           sample.pdf
+Lines changed: 0
+Char delta:    +0
+

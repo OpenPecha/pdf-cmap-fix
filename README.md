@@ -231,7 +231,7 @@ See [docs/workflows/pua-free-font-lookups.md](docs/workflows/pua-free-font-looku
 
 ## Worked examples
 
-Reference PDFs and their raw/patched/diff outputs live in [docs/examples/](docs/examples/).
+Reference PDFs live in [docs/examples/](docs/examples/). Each example includes **CLI-RUNS.md** and **cli-results/** showing the same PDF processed with all six bundled lookup trees (`font_lookup`, `font_lookup_gname`, `font_lookup_gshape`, and PUA-free siblings). Re-run: `.\scripts\docs\run_examples_all_tiers.ps1` from the repo root.
 
 | Example | Producer | Pages | Font |
 |---------|----------|-------|------|

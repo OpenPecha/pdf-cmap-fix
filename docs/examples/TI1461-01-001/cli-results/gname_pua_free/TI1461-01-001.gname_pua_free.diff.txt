@@ -1,0 +1,14 @@
+PDF:           TI1461-01-001.pdf
+Lines changed: 2
+Char delta:    -2
+
+--- line 3 RAW:
+གནས་དང་པོ་ཁམས་བསྟན་པ། 
++++ line 3 PATCHED:
+གནས་དང་པོ་ཁམས་བ�ན་པ། 
+
+--- line 19 RAW:
+བ�འ་བསྟན་�ི་ག�ང་།
++++ line 19 PATCHED:
+བ�འ་བ�ན་�ི་ག�ང་།
+
