@@ -19,10 +19,12 @@ python scripts/misc/run_local_gshape_jomolhari_pipeline.py --pdf docs/examples/s
 This script:
 
 1. Discovers **Jomolhari** (`*jomol*` under per-user Fonts, then `%WINDIR%\Fonts`).
-2. Builds **gshape** JSON for Jomolhari + `cambria.ttc` into `docs/examples/sample/font_lookup_gshape_local/`.
-3. Writes **public gname** Unicode from bundled `pdf_cmap_fix/data/font_lookup_gname/jomolhari.json` via `scripts/misc/inspect_pua_gname.py --rewrite-lookup` → `docs/examples/sample/jomolhari_gname_public_unicode.json`.
+2. Builds **gshape** JSON for Jomolhari + `cambria.ttc` into `scripts/misc/out/font_lookup_gshape_local/` (override with `--out-dir`).
+3. Writes **public gname** Unicode from bundled `pdf_cmap_fix/data/font_lookup_gname/jomolhari.json` via `scripts/misc/inspect_pua_gname.py --rewrite-lookup` → `scripts/misc/out/jomolhari_gname_public_unicode.json` (override with `--public-gname-out`).
 4. Rebuilds the Jomolhari gshape lookup from the TTF and patches PUA values via `scripts/pua/gshape/update_pua_free_gshape.py --gname-json`.
-5. Optionally runs `python -m pdf_cmap_fix …` on each `--pdf` path.
+5. Optionally runs `python -m pdf_cmap_fix …` on each `--pdf` path with `--font-lookup-dir` set to the local gshape directory.
+
+`scripts/misc/out/` is gitignored; only [`docs/examples/sample/sample.pdf`](../examples/sample/sample.pdf) lives under the examples tree.
 
 ## Manual equivalents
 

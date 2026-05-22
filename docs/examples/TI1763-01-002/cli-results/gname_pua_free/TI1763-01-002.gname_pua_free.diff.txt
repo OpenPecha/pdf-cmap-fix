@@ -1,0 +1,9 @@
+PDF:           TI1763-01-002.pdf
+Lines changed: 1
+Char delta:    +0
+
+--- line 2 RAW:
+b  
++++ line 2 PATCHED:
+
+

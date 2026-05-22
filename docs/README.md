@@ -10,4 +10,4 @@
 | [approach.md](approach.md) | How ToUnicode patching, GSUB-based GID→Unicode construction (types 1, 2, 4 + Extension 7), and font matching work; whitespace caveat |
 | [glossary-and-json.md](glossary-and-json.md) | Terms (Type0, GID, ToUnicode, CMap, GSUB, …) and JSON shapes (`font_lookup/*.json`, `font_lookup_gname/`, `font_lookup_gshape/`, API outputs) |
 | [font-inventory.md](font-inventory.md) | Keys shipped under `pdf_cmap_fix/data/font_lookup/` (~968) |
-| [examples/](examples/) | Sample PDFs + reference outputs (`.raw.txt` / `.patched.txt` / `.diff.txt` / `.patched.pdf` / `.cmap-dump.json`); narrative in [approach.md § Worked examples](approach.md#worked-examples) |
+| [examples/](examples/) | Sample PDFs; **six-tier CLI matrix** under each example's `cli-results/` plus [CLI-RUNS.md](examples/README.md) per folder; narrative in [approach.md § Worked examples](approach.md#worked-examples) |

@@ -234,53 +234,45 @@ Fonts **not** yet supported (TrueType simple encoding):
 
 ## Worked examples
 
-Sample PDFs and reference outputs live under **[`docs/examples/`](examples/)** (one subdirectory per document). Each folder ships:
+Sample PDFs and reference outputs live under **[`docs/examples/`](examples/)** (one subdirectory per document). Each folder contains:
 
-- **`*.pdf`** — original input.
-- **`*.raw.txt`** — text extracted **before** patching (broken Unicode as the PDF exposes it today).
-- **`*.patched.txt`** — text after the `/ToUnicode` merge.
-- **`*.diff.txt`** — line-by-line raw vs patched; the first lines record **`Lines changed`** and **`Char delta`**.
-- **`*.patched.pdf`** — same document with corrected `/ToUnicode` streams (`pdf-cmap-fix -p`); glyphs on the page are unchanged.
-- **`*.cmap-dump.json`** — per-font merged ToUnicode as JSON (`pdf-cmap-fix --dump-cmap`).
+- **`*.pdf`** — original input (not `*.patched.pdf`; patch with `-p` locally if needed).
+- **[`CLI-RUNS.md`](examples/TI1055-01-001/CLI-RUNS.md)** — commands and a results table for all six bundled lookup tiers.
+- **`cli-results/<tier>/`** — `console.txt` plus tier-prefixed `*.raw.txt`, `*.patched.txt`, and `*.diff.txt` (large PDFs may commit diff + console only; see [examples README](examples/README.md)).
 
-All five examples were generated with the bundled **`pdf_cmap_fix/data/font_lookup/*.json`**. If your maps differ from the committed reference outputs, refresh **`font_lookup/<key>.json`** (e.g. **`scripts/gid/update_font_lookup.py`**) or pass **`--font-lookup-dir`**.
+Re-run the full matrix from the repo root: `.\scripts\docs\run_examples_all_tiers.ps1`. Reference outputs use bundled **`pdf_cmap_fix/data/font_lookup*`** trees. If your maps differ, refresh JSON under `pdf_cmap_fix/data/` or pass **`--font-lookup-dir`**.
 
 ### Index
 
+Metrics below are from **gid** tier (`cli-results/gid/*.gid.diff.txt` headers) unless noted. See each folder’s **CLI-RUNS.md** for all six tiers.
+
 | Example | Producer | Pages | Lines changed | Char delta | Notable fonts |
 |---------|----------|------:|--------------:|-----------:|---------------|
+| [`sample/`](examples/sample/) | Mixed | — | 16 | (see diff header) | Jomolhari, Cambria |
 | [`TI1055-01-001/`](examples/TI1055-01-001/) | MS Word | 528 | **10,205** | **−23,725** | Monlam Uni OuChan 2, Calibri, Cambria |
 | [`TI1751-01-001/`](examples/TI1751-01-001/) | InDesign | 528 | **2,545** | **+9,969** | Monlam Uni OuChan 2, Dedris‑*, Microsoft Himalaya, Jomolhari |
 | [`TI803-01-001/`](examples/TI803-01-001/) | MS Word | 398 | **9,356** | **−23,922** | Microsoft Himalaya, Calibri, Cambria |
 | [`TI1461-01-001/`](examples/TI1461-01-001/) | InDesign | 1 | 25 | **+30** | Qomolangma‑Uchen‑Sarchen/Sarchung, Monlam Uni OuChan 1/5 |
 | [`TI1763-01-002/`](examples/TI1763-01-002/) | MS Word | 1 | 17 | +127 | Monlam Uni OuChan 2 |
 
-`Lines changed` and `Char delta` come from the header of each `*.diff.txt`.
-
 ### Reproduce
 
 From the repository root, after `pip install -e .`:
 
 ```bash
-# Default extract + diff (uses bundled font_lookup/*.json)
-pdf-cmap-fix docs/examples/TI1055-01-001/TI1055-01-001.pdf
-pdf-cmap-fix -p docs/examples/TI1055-01-001/TI1055-01-001.pdf
-pdf-cmap-fix --dump-cmap docs/examples/TI1055-01-001/TI1055-01-001.cmap-dump.json \
-    docs/examples/TI1055-01-001/TI1055-01-001.pdf
+# Single tier (gid + bundled font_lookup)
+pdf-cmap-fix --font-lookup-dir pdf_cmap_fix/data/font_lookup \
+  docs/examples/TI1055-01-001/TI1055-01-001.pdf
+# Outputs are copied to docs/examples/TI1055-01-001/cli-results/gid/ by the examples harness, or written
+# next to the PDF during a manual run (gitignored until copied).
+
+# All six tiers on every example PDF
+# PowerShell: .\scripts\docs\run_examples_all_tiers.ps1
 ```
 
-For PDFs that use **Microsoft Himalaya**, ensure **`microsofthimalaya.json`** reflects the GSUB type **1/2/4/7** walk (refresh with **`scripts/gid/update_font_lookup.py`** if needed), then:
+For PDFs that use **Microsoft Himalaya**, ensure **`microsofthimalaya.json`** reflects the GSUB type **1/2/4/7** walk (refresh with **`scripts/gid/update_font_lookup.py`** if needed), then run as above on [`TI803-01-001.pdf`](examples/TI803-01-001/TI803-01-001.pdf).
 
-```bash
-pdf-cmap-fix docs/examples/TI803-01-001/TI803-01-001.pdf
-pdf-cmap-fix -p docs/examples/TI803-01-001/TI803-01-001.pdf
-```
-
-**TI1763** (Monlam Uni OuChan 2; lookup key **`monlamuniouchan2`**):
-
-```bash
-pdf-cmap-fix docs/examples/TI1763-01-002/TI1763-01-002.pdf
-```
+**TI1763** (Monlam Uni OuChan 2; lookup key **`monlamuniouchan2`**): same pattern on [`TI1763-01-002.pdf`](examples/TI1763-01-002/TI1763-01-002.pdf).
 
 ### What each example illustrates
 
@@ -314,7 +306,7 @@ Single‑page sample from a multi‑font InDesign export. The patcher resolves s
 
 Smallest end‑to‑end read. With an up‑to‑date **`monlamuniouchan2.json`**, patched text has **no residual `U+FFFD`**; an older map alone may leave a few.
 
-> Spaces inside Tibetan stacks (e.g. `སྤྱ  ོད`) come from PyMuPDF and PDF kerning; they appear in `*.raw.txt` too. See [Whitespace and PDF positioning](#whitespace-and-pdf-positioning).
+> Spaces inside Tibetan stacks (e.g. `སྤྱ  ོད`) come from PyMuPDF and PDF kerning; they appear in tier `*.raw.txt` under `cli-results/` too. See [Whitespace and PDF positioning](#whitespace-and-pdf-positioning).
 
 ### Extended metrics: TI1751-01-001 (InDesign, 528 pages)
 
