@@ -20,7 +20,6 @@ pdf_cmap_fix/data/shape_db.json
 
 # Huge optional dumps from pdf-cmap-fix --dump-cmap (debugging only)
 *.cmap-dump.json
-!docs/examples/sample/sample.custom.cmap-dump.json
 
 # Generated text extraction outputs (re-run pdf-cmap-fix to regenerate)
 *.raw.txt
@@ -30,17 +29,10 @@ pdf_cmap_fix/data/shape_db.json
 # Generated forum export (copy-paste only; regenerate: python scripts/misc/build_openpecha_forum_post.py)
 docs/openpecha-forum-post.md
 
-# Custom per-PDF font_lookup JSON (regenerate with update_font_lookup.py)
-docs/examples/sample/font_lookup/*.json
+# Local misc pipeline outputs (regenerate: scripts/misc/run_local_gshape_jomolhari_pipeline.py)
+scripts/misc/out/
 
-# Per-machine gshape lookup from update_font_lookup.py (regenerate locally)
-docs/examples/sample/font_lookup_gshape_local/*.json
-
-# PUA→Unicode table from pua_map_from_gname_lookup.py --write-map (regenerate locally)
-docs/examples/sample/pua_map_*.json
-docs/examples/sample/jomolhari_gname_public_unicode.json
-
-# Keep the example outputs in docs/
+# Keep tier-prefixed example outputs under cli-results/
 !docs/examples/**/*.raw.txt
 !docs/examples/**/*.patched.txt
 !docs/examples/**/*.diff.txt

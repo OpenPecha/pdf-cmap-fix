@@ -80,5 +80,3 @@ Outputs copied to `docs/examples/TI1055-01-001/cli-results/gid_pua_free/`.
 pdf-cmap-fix --font-lookup-dir pdf_cmap_fix/data/font_lookup docs/examples/TI1055-01-001/TI1055-01-001.pdf -p
 ```
 
-Legacy tier-1 outputs at the example folder root (`*.raw.txt` without tier prefix) are from earlier single-tier runs.
-

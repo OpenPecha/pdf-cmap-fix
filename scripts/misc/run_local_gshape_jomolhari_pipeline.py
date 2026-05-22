@@ -33,12 +33,12 @@ def main(argv: list[str] | None = None) -> int:
     p.add_argument(
         "--out-dir",
         type=Path,
-        default=REPO_ROOT / "docs" / "examples" / "sample" / "font_lookup_gshape_local",
+        default=REPO_ROOT / "scripts" / "misc" / "out" / "font_lookup_gshape_local",
     )
     p.add_argument(
         "--public-gname-out",
         type=Path,
-        default=REPO_ROOT / "docs" / "examples" / "sample" / "jomolhari_gname_public_unicode.json",
+        default=REPO_ROOT / "scripts" / "misc" / "out" / "jomolhari_gname_public_unicode.json",
     )
     p.add_argument("--pdf", type=Path, nargs="*", default=None, help="Run pdf-cmap-fix on these PDFs last")
     p.add_argument("--skip-gshape-build", action="store_true")

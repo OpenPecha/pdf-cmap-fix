@@ -16,7 +16,7 @@ Usage (repo root)::
 
     # Preview 30 rows + write full map (PUA string → standard string) as JSON
     python scripts/misc/inspect_pua_gname.py pdf_cmap_fix/data/font_lookup_gname/jomolhari.json \\
-        --preview 30 --write-map docs/examples/sample/pua_map_jomolhari.json
+        --preview 30 --write-map scripts/misc/out/pua_map_jomolhari.json
 
     # Write a **new** gname JSON where PUA values are replaced by Unicode from ``uni…`` names
     python scripts/misc/inspect_pua_gname.py pdf_cmap_fix/data/font_lookup_gname/jomolhari.json \\

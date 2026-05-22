@@ -45,7 +45,7 @@ docs/examples/<example-id>/
     gid_pua_free/
 ```
 
-Files at the example folder root (`*.raw.txt`, `*.patched.txt` without a tier prefix) are **legacy** single-tier (usually gid + default lookup) outputs kept for older docs.
+Each example folder contains only the **PDF**, **CLI-RUNS.md**, and **cli-results/**. All tier text outputs live under `cli-results/<tier>/`.
 
 **Repo size:** TI803, TI1055, and TI1751 store `console.txt` and `*.diff.txt` under `cli-results/` in git (not tier-prefixed `*.raw.txt` / `*.patched.txt`, which are multi‑MB per tier). Re-run the harness locally to regenerate full text extracts for those PDFs.
 

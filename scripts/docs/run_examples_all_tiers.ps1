@@ -169,8 +169,6 @@ function Write-CliRunsMarkdown {
         '```powershell',
         "pdf-cmap-fix --font-lookup-dir pdf_cmap_fix/data/font_lookup $pdfPath -p",
         '```',
-        "",
-        "Legacy tier-1 outputs at the example folder root (``*.raw.txt`` without tier prefix) are from earlier single-tier runs.",
         ""
     )
 

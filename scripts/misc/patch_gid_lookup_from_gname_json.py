@@ -12,10 +12,10 @@ Example::
 
     python scripts/misc/patch_gid_lookup_from_gname_json.py \\
       --font \"$env:LOCALAPPDATA\\\\Microsoft\\\\Windows\\\\Fonts\\\\Jomolhari-Regular.ttf\" \\
-      --gid-json docs/examples/sample/font_lookup_local_windows/jomolhariregular.json \\
-      --gname-json docs/examples/sample/jomolhari_gname_public_unicode.json \\
+      --gid-json scripts/misc/out/jomolhariregular.json \\
+      --gname-json scripts/misc/out/jomolhari_gname_public_unicode.json \\
       --out-key jomolhari \\
-      --out docs/examples/sample/font_lookup_local_windows/jomolhari.json
+      --out scripts/misc/out/jomolhari_gid_patched.json
 """
 from __future__ import annotations
 
