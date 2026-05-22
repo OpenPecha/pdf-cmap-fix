@@ -1,0 +1,43 @@
+{
+  "khamdrisk1": {
+    "space": " ",
+    "FL007Eh": "!",
+    "ampersand": "#",
+    "parenleft": "$",
+    "plus": "%",
+    "numbersign": "&",
+    "quotesingle": "'",
+    "parenright": "(",
+    "asterisk": ")",
+    "FL002Ah": "*",
+    "dollar": "+",
+    "comma": ",",
+    "FLW45": "-",
+    "FL002Eh": ".",
+    "percent": "/",
+    "FL002Dh": "0",
+    "FL0031h": "1",
+    "FL0032h": "2",
+    "FL0033h": "3",
+    "one": "4",
+    "two": "5",
+    "three": "6",
+    "FL0037h": "7",
+    "FL0038h": "8",
+    "nine": "9",
+    "four": ":",
+    "semicolon": ";",
+    "less": "<",
+    "equal": "=",
+    "FLW160": " ",
+    "FLW257": ""
+  },
+  "_meta": {
+    "lookup_kind": "gname",
+    "source": "tibetan-fonts-main.zip::tibetan-fonts-main/Non-Unicode Fonts/Nitartha/Khamdris/Khamdris-k1.ttf",
+    "gids_mapped": 31,
+    "multi_char_stacks": 0,
+    "gsub_lookup_counts": {},
+    "entries": 31
+  }
+}

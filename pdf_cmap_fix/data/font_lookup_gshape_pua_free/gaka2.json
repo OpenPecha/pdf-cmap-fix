@@ -1,0 +1,16 @@
+{
+  "gaka2": {},
+  "_meta": {
+    "lookup_kind": "gshape",
+    "source": "tibetan-fonts-main.zip::tibetan-fonts-main/Non-Unicode Fonts/GPLTibetan/gaka2.ttf",
+    "gids_mapped": 0,
+    "multi_char_stacks": 0,
+    "gsub_lookup_counts": {},
+    "entries": 0,
+    "fingerprint_method": "HashPointPen+RoundingPointPen(floatToFixedToFloat 14-bit)",
+    "gshape_rows_patched_from_public_gname": 0,
+    "gshape_patch_skipped_no_hash_to_gname": 0,
+    "gshape_patch_skipped_no_pua_in_value": 0,
+    "gshape_patch_font_hash_collisions": 1
+  }
+}

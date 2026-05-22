@@ -58,19 +58,88 @@ pdf-cmap-fix --font-lookup-dir path/to/font_lookup document.pdf
 
 Windows note: prefix with `$env:PYTHONUTF8 = "1"` if the console raises encoding errors.
 
+### CLI by lookup tier
+
+There are **three CLI entrypoints** (not one command with a tier flag). Each reads only JSON files whose `_meta.lookup_kind` matches that tier. Pass **`--font-lookup-dir`** to use a custom tree (built under `scripts/` or your own path); omit the flag to use the default directory for that CLI.
+
+| Lookup kind | CLI | Default `--font-lookup-dir` | Inner JSON keys |
+|-------------|-----|----------------------------|-----------------|
+| **gid** (tier 1) | `pdf-cmap-fix` | `pdf_cmap_fix/data/font_lookup/` | GID decimal strings |
+| **gname** (tier 2) | `pdf-cmap-fix-gname` | `pdf_cmap_fix/data/font_lookup_gname/` | PostScript glyph names |
+| **gshape** (tier 3) | `pdf-cmap-fix-gshape` | `pdf_cmap_fix/data/font_lookup_gshape/` | Outline fingerprints |
+| **gid PUA-free** | `pdf-cmap-fix` | `pdf_cmap_fix/data/font_lookup_gid_pua_free/` | Same as gid (PUA values patched) |
+| **gname PUA-free** | `pdf-cmap-fix-gname` | `pdf_cmap_fix/data/font_lookup_gname_pua_free/` | Same as gname |
+| **gshape PUA-free** | `pdf-cmap-fix-gshape` | `pdf_cmap_fix/data/font_lookup_gshape_pua_free/` | Same as gshape |
+
+PUA-free directories are **not** shipped in the wheel by default; build them with [§ PUA-free variants](#pua-free-variants-optional) below.
+
+**Tier 1 — GID** (`pdf-cmap-fix`):
+
+```bash
+pdf-cmap-fix document.pdf
+pdf-cmap-fix --font-lookup-dir path/to/font_lookup document.pdf
+pdf-cmap-fix --font-lookup-dir path/to/font_lookup -p document.pdf
+pdf-cmap-fix --font-lookup-dir path/to/font_lookup --dump-cmap out.json document.pdf
+```
+
+**Tier 2 — glyph name** (`pdf-cmap-fix-gname`):
+
+```bash
+pdf-cmap-fix-gname document.pdf
+pdf-cmap-fix-gname --font-lookup-dir path/to/font_lookup_gname document.pdf
+pdf-cmap-fix-gname --font-lookup-dir path/to/font_lookup_gname -p document.pdf
+pdf-cmap-fix-gname --font-lookup-dir path/to/font_lookup_gname --dump-cmap out.json document.pdf
+```
+
+**Tier 3 — outline shape** (`pdf-cmap-fix-gshape`):
+
+```bash
+pdf-cmap-fix-gshape document.pdf
+pdf-cmap-fix-gshape --font-lookup-dir path/to/font_lookup_gshape document.pdf
+pdf-cmap-fix-gshape --font-lookup-dir path/to/font_lookup_gshape -p document.pdf
+pdf-cmap-fix-gshape --font-lookup-dir path/to/font_lookup_gshape --dump-cmap out.json document.pdf
+```
+
+**PUA-free** (same CLIs as above, different directory):
+
+```bash
+pdf-cmap-fix --font-lookup-dir path/to/font_lookup_gid_pua_free document.pdf
+pdf-cmap-fix-gname --font-lookup-dir path/to/font_lookup_gname_pua_free document.pdf
+pdf-cmap-fix-gshape --font-lookup-dir path/to/font_lookup_gshape_pua_free document.pdf
+```
+
+Any directory of `<key>.json` files produced by `scripts/gid/update_font_lookup.py`, `scripts/gname/update_font_lookup.py`, `scripts/gshape/update_font_lookup.py`, or the matching `scripts/pua/*/update_*.py` tools can be passed as `--font-lookup-dir`. JSON schema and `_meta` fields: [docs/font-lookup-tiers-2-3.md](docs/font-lookup-tiers-2-3.md).
+
 ---
 
 ## Python API
 
+Tier 1 is exposed from the top-level package; tiers 2 and 3 use the same functions on their extractor modules:
+
 ```python
 from pdf_cmap_fix import extract_pdf_text, patch_pdf, build_tounicode_dict
 
-result  = extract_pdf_text("document.pdf")   # raw / patched / diff metadata
-patch_pdf("document.pdf")                    # writes document.patched.pdf
-cmap    = build_tounicode_dict("document.pdf")
-
-# Use a custom lookup directory with any API call
+# Tier 1 (gid) — default: pdf_cmap_fix/data/font_lookup/
+result = extract_pdf_text("document.pdf")
+patch_pdf("document.pdf")
+cmap = build_tounicode_dict("document.pdf")
 result = extract_pdf_text("document.pdf", font_lookup_dir="path/to/font_lookup")
+
+# Tier 2 (gname) — default: pdf_cmap_fix/data/font_lookup_gname/
+from pdf_cmap_fix.gname.extractor import extract_pdf_text as extract_gname
+from pdf_cmap_fix.gname.extractor import patch_pdf as patch_gname
+
+extract_gname("document.pdf", font_lookup_dir="path/to/font_lookup_gname")
+
+# Tier 3 (gshape) — default: pdf_cmap_fix/data/font_lookup_gshape/
+from pdf_cmap_fix.gshape.extractor import extract_pdf_text as extract_gshape
+
+extract_gshape("document.pdf", font_lookup_dir="path/to/font_lookup_gshape")
+
+# PUA-free: same functions, point font_lookup_dir at the *_pua_free/ tree
+extract_pdf_text("document.pdf", font_lookup_dir="path/to/font_lookup_gid_pua_free")
+extract_gname("document.pdf", font_lookup_dir="path/to/font_lookup_gname_pua_free")
+extract_gshape("document.pdf", font_lookup_dir="path/to/font_lookup_gshape_pua_free")
 ```
 
 ---
@@ -79,15 +148,14 @@ result = extract_pdf_text("document.pdf", font_lookup_dir="path/to/font_lookup")
 
 The default tier (GID) works for most PDFs. Try higher tiers when a font is not in the bundled data or when GIDs do not align.
 
-| Tier | Inner key | Default data directory | Rebuild CLI |
-|------|-----------|------------------------|-------------|
-| **1** (default) | GID as decimal string | `pdf_cmap_fix/data/font_lookup/` | `scripts/gid/build_per_font_gid_maps.py` |
-| **2** | PostScript glyph name | `pdf_cmap_fix/data/font_lookup_gname/` | `scripts/gname/build_per_font_gname_maps.py` |
-| **3** | Outline fingerprint | `pdf_cmap_fix/data/font_lookup_gshape/` | `scripts/gshape/build_per_font_gshape_maps.py` |
+| Tier | Inner key | Default data directory | Run with | Rebuild CLI |
+|------|-----------|------------------------|----------|-------------|
+| **1** (default) | GID as decimal string | `pdf_cmap_fix/data/font_lookup/` | `pdf-cmap-fix` | `scripts/gid/build_per_font_gid_maps.py` |
+| **2** | PostScript glyph name | `pdf_cmap_fix/data/font_lookup_gname/` | `pdf-cmap-fix-gname` | `scripts/gname/build_per_font_gname_maps.py` |
+| **3** | Outline fingerprint | `pdf_cmap_fix/data/font_lookup_gshape/` | `pdf-cmap-fix-gshape` | `scripts/gshape/build_per_font_gshape_maps.py` |
 
-Each tier also has a **PUA-free sibling** (`font_lookup_gname_pua_free/`, etc.) produced by `scripts/pua/`.
+Each tier also has a **PUA-free sibling** (`font_lookup_gname_pua_free/`, etc.) produced by `scripts/pua/`. Use the **same CLI** as the base tier with `--font-lookup-dir` pointing at the PUA-free directory (see [CLI by lookup tier](#cli-by-lookup-tier) above).
 
-Entrypoint CLIs per tier: `pdf-cmap-fix` (tier 1), `pdf-cmap-fix-gname` (tier 2), `pdf-cmap-fix-gshape` (tier 3).  
 See [docs/font-lookup-tiers-2-3.md](docs/font-lookup-tiers-2-3.md) and [docs/tiers/README.md](docs/tiers/README.md) for full details.
 
 ---

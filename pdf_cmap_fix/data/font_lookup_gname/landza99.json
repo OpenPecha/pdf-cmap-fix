@@ -1,0 +1,41 @@
+{
+  "landza99": {
+    "space": " ",
+    "zero": "0",
+    "at": "@",
+    "P": "P",
+    "grave": "`",
+    "degree": "°",
+    "plusminus": "±",
+    "twosuperior": "²",
+    "threesuperior": "³",
+    "acute": "´",
+    "mu": "µ",
+    "ordmasculine": "º",
+    "guillemotright": "»",
+    "onequarter": "¼",
+    "onehalf": "½",
+    "threequarters": "¾",
+    "questiondown": "¿",
+    "Agrave": "À",
+    "Aacute": "Á",
+    "Acircumflex": "Â",
+    "Atilde": "Ã",
+    "Adieresis": "Ä",
+    "Aring": "Å",
+    "Ecircumflex": "Ê",
+    "Edieresis": "Ë",
+    "Igrave": "Ì",
+    "Iacute": "Í",
+    "Icircumflex": "Î",
+    "Idieresis": "Ï"
+  },
+  "_meta": {
+    "lookup_kind": "gname",
+    "source": "tibetan-fonts-main.zip::tibetan-fonts-main/Non-Unicode Fonts/Landza/landza99.ttf",
+    "gids_mapped": 29,
+    "multi_char_stacks": 0,
+    "gsub_lookup_counts": {},
+    "entries": 29
+  }
+}

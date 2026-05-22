@@ -1,0 +1,361 @@
+{
+  "landza98": {
+    "w500": " ",
+    "4bfde06053bf4758f78678364fc8f987076d59233d3c0a3774a102900e8ef8f4162369d0228cf2eb6ee83f069acffe0f233edeecfa72b8b833cb9fb22415b473": "0",
+    "606bc6d8e86b48f9f040e599d10781662b650568ba8c52034f84037fb352bbc6d7a34d5ab678e94c9638bb01e15848bd6feb2d54800b19c5a7806c684a0e23f7": "@",
+    "0625748e3c7facad44031e82429057a61e1d18e5e04d975b26571b0005339938bc758c0e5ecbfd1e98295d7f53b9326bead92a42624fe4af47ebe2733b756ea1": "P",
+    "7ed3ab4def67c78c3eefc19a1a0608239351717d3af9e3fcc45cb3b6b0a60a61154a4d5117e34a098510a3c9e7a1dbcaca901c8d4c07a3a463b560fc49864052": "`",
+    "w4400": "p",
+    "w3317": "q",
+    "w3852": "",
+    "w3864": "",
+    "w3281": "‚",
+    "w2323": "ƒ",
+    "w2254": "„",
+    "w2461": "…",
+    "w2919": "†",
+    "w2754": "ˆ",
+    "w2226": "‰",
+    "w3107": "Š",
+    "w2340": "Œ",
+    "w3300": "",
+    "w2354": "",
+    "w2960": "",
+    "w2940": "‘",
+    "w3380": "’",
+    "e1b53ff804ea489dd9ef46cfc972bd787bfd36c38610f488126325d75144c73c86cf2970a6b73baa07d185773ea365025df13bc98d350772048e3ebac1626fa8": "°"
+  },
+  "_meta": {
+    "lookup_kind": "gshape",
+    "source": "tibetan-fonts-main.zip::tibetan-fonts-main/Non-Unicode Fonts/Landza/landza98.ttf",
+    "gids_mapped": 70,
+    "multi_char_stacks": 0,
+    "gsub_lookup_counts": {},
+    "entries": 24,
+    "fingerprint_method": "HashPointPen+RoundingPointPen(floatToFixedToFloat 14-bit)",
+    "hash_collisions": [
+      {
+        "fingerprint": "w3317",
+        "kept_unicode": "q",
+        "skipped_gid": 10,
+        "skipped_glyph_name": "r",
+        "skipped_unicode": "r"
+      },
+      {
+        "fingerprint": "w3317",
+        "kept_unicode": "q",
+        "skipped_gid": 11,
+        "skipped_glyph_name": "s",
+        "skipped_unicode": "s"
+      },
+      {
+        "fingerprint": "w3317",
+        "kept_unicode": "q",
+        "skipped_gid": 12,
+        "skipped_glyph_name": "t",
+        "skipped_unicode": "t"
+      },
+      {
+        "fingerprint": "w3317",
+        "kept_unicode": "q",
+        "skipped_gid": 13,
+        "skipped_glyph_name": "u",
+        "skipped_unicode": "u"
+      },
+      {
+        "fingerprint": "w3317",
+        "kept_unicode": "q",
+        "skipped_gid": 14,
+        "skipped_glyph_name": "v",
+        "skipped_unicode": "v"
+      },
+      {
+        "fingerprint": "w3317",
+        "kept_unicode": "q",
+        "skipped_gid": 15,
+        "skipped_glyph_name": "w",
+        "skipped_unicode": "w"
+      },
+      {
+        "fingerprint": "w3317",
+        "kept_unicode": "q",
+        "skipped_gid": 16,
+        "skipped_glyph_name": "x",
+        "skipped_unicode": "x"
+      },
+      {
+        "fingerprint": "w3317",
+        "kept_unicode": "q",
+        "skipped_gid": 17,
+        "skipped_glyph_name": "y",
+        "skipped_unicode": "y"
+      },
+      {
+        "fingerprint": "w3317",
+        "kept_unicode": "q",
+        "skipped_gid": 18,
+        "skipped_glyph_name": "z",
+        "skipped_unicode": "z"
+      },
+      {
+        "fingerprint": "w3317",
+        "kept_unicode": "q",
+        "skipped_gid": 19,
+        "skipped_glyph_name": "braceleft",
+        "skipped_unicode": "{"
+      },
+      {
+        "fingerprint": "w3317",
+        "kept_unicode": "q",
+        "skipped_gid": 20,
+        "skipped_glyph_name": "bar",
+        "skipped_unicode": "|"
+      },
+      {
+        "fingerprint": "w3317",
+        "kept_unicode": "q",
+        "skipped_gid": 21,
+        "skipped_glyph_name": "braceright",
+        "skipped_unicode": "}"
+      },
+      {
+        "fingerprint": "w3317",
+        "kept_unicode": "q",
+        "skipped_gid": 22,
+        "skipped_glyph_name": "asciitilde",
+        "skipped_unicode": "~"
+      },
+      {
+        "fingerprint": "w3317",
+        "kept_unicode": "q",
+        "skipped_gid": 23,
+        "skipped_glyph_name": "DEL",
+        "skipped_unicode": ""
+      },
+      {
+        "fingerprint": "w2919",
+        "kept_unicode": "†",
+        "skipped_gid": 31,
+        "skipped_glyph_name": "daggerdbl",
+        "skipped_unicode": "‡"
+      },
+      {
+        "fingerprint": "w3852",
+        "kept_unicode": "",
+        "skipped_gid": 35,
+        "skipped_glyph_name": "guilsinglleft",
+        "skipped_unicode": "‹"
+      },
+      {
+        "fingerprint": "w3317",
+        "kept_unicode": "q",
+        "skipped_gid": 39,
+        "skipped_glyph_name": "c143",
+        "skipped_unicode": ""
+      },
+      {
+        "fingerprint": "w3300",
+        "kept_unicode": "",
+        "skipped_gid": 43,
+        "skipped_glyph_name": "quotedblleft",
+        "skipped_unicode": "“"
+      },
+      {
+        "fingerprint": "w2354",
+        "kept_unicode": "",
+        "skipped_gid": 44,
+        "skipped_glyph_name": "quotedblright",
+        "skipped_unicode": "”"
+      },
+      {
+        "fingerprint": "w3317",
+        "kept_unicode": "q",
+        "skipped_gid": 45,
+        "skipped_glyph_name": "bullet",
+        "skipped_unicode": "•"
+      },
+      {
+        "fingerprint": "w3317",
+        "kept_unicode": "q",
+        "skipped_gid": 46,
+        "skipped_glyph_name": "endash",
+        "skipped_unicode": "–"
+      },
+      {
+        "fingerprint": "w3317",
+        "kept_unicode": "q",
+        "skipped_gid": 47,
+        "skipped_glyph_name": "emdash",
+        "skipped_unicode": "—"
+      },
+      {
+        "fingerprint": "w3317",
+        "kept_unicode": "q",
+        "skipped_gid": 48,
+        "skipped_glyph_name": "tilde",
+        "skipped_unicode": "˜"
+      },
+      {
+        "fingerprint": "w3317",
+        "kept_unicode": "q",
+        "skipped_gid": 49,
+        "skipped_glyph_name": "trademark",
+        "skipped_unicode": "™"
+      },
+      {
+        "fingerprint": "w3317",
+        "kept_unicode": "q",
+        "skipped_gid": 50,
+        "skipped_glyph_name": "scaron",
+        "skipped_unicode": "š"
+      },
+      {
+        "fingerprint": "w3317",
+        "kept_unicode": "q",
+        "skipped_gid": 51,
+        "skipped_glyph_name": "guilsinglright",
+        "skipped_unicode": "›"
+      },
+      {
+        "fingerprint": "w3317",
+        "kept_unicode": "q",
+        "skipped_gid": 52,
+        "skipped_glyph_name": "oe",
+        "skipped_unicode": "œ"
+      },
+      {
+        "fingerprint": "w3317",
+        "kept_unicode": "q",
+        "skipped_gid": 53,
+        "skipped_glyph_name": "c157",
+        "skipped_unicode": ""
+      },
+      {
+        "fingerprint": "w3317",
+        "kept_unicode": "q",
+        "skipped_gid": 54,
+        "skipped_glyph_name": "c158",
+        "skipped_unicode": ""
+      },
+      {
+        "fingerprint": "w3317",
+        "kept_unicode": "q",
+        "skipped_gid": 55,
+        "skipped_glyph_name": "Ydieresis",
+        "skipped_unicode": "Ÿ"
+      },
+      {
+        "fingerprint": "w3317",
+        "kept_unicode": "q",
+        "skipped_gid": 56,
+        "skipped_glyph_name": "nonbreakingspace",
+        "skipped_unicode": " "
+      },
+      {
+        "fingerprint": "w3317",
+        "kept_unicode": "q",
+        "skipped_gid": 57,
+        "skipped_glyph_name": "exclamdown",
+        "skipped_unicode": "¡"
+      },
+      {
+        "fingerprint": "w3317",
+        "kept_unicode": "q",
+        "skipped_gid": 58,
+        "skipped_glyph_name": "cent",
+        "skipped_unicode": "¢"
+      },
+      {
+        "fingerprint": "w3317",
+        "kept_unicode": "q",
+        "skipped_gid": 59,
+        "skipped_glyph_name": "sterling",
+        "skipped_unicode": "£"
+      },
+      {
+        "fingerprint": "w3317",
+        "kept_unicode": "q",
+        "skipped_gid": 60,
+        "skipped_glyph_name": "currency",
+        "skipped_unicode": "¤"
+      },
+      {
+        "fingerprint": "w3317",
+        "kept_unicode": "q",
+        "skipped_gid": 61,
+        "skipped_glyph_name": "yen",
+        "skipped_unicode": "¥"
+      },
+      {
+        "fingerprint": "w3317",
+        "kept_unicode": "q",
+        "skipped_gid": 62,
+        "skipped_glyph_name": "brokenbar",
+        "skipped_unicode": "¦"
+      },
+      {
+        "fingerprint": "w3317",
+        "kept_unicode": "q",
+        "skipped_gid": 63,
+        "skipped_glyph_name": "section",
+        "skipped_unicode": "§"
+      },
+      {
+        "fingerprint": "w3317",
+        "kept_unicode": "q",
+        "skipped_gid": 64,
+        "skipped_glyph_name": "dieresis",
+        "skipped_unicode": "¨"
+      },
+      {
+        "fingerprint": "w3317",
+        "kept_unicode": "q",
+        "skipped_gid": 65,
+        "skipped_glyph_name": "copyright",
+        "skipped_unicode": "©"
+      },
+      {
+        "fingerprint": "w3317",
+        "kept_unicode": "q",
+        "skipped_gid": 66,
+        "skipped_glyph_name": "ordfeminine",
+        "skipped_unicode": "ª"
+      },
+      {
+        "fingerprint": "w3317",
+        "kept_unicode": "q",
+        "skipped_gid": 67,
+        "skipped_glyph_name": "guillemotleft",
+        "skipped_unicode": "«"
+      },
+      {
+        "fingerprint": "w3317",
+        "kept_unicode": "q",
+        "skipped_gid": 68,
+        "skipped_glyph_name": "logicalnot",
+        "skipped_unicode": "¬"
+      },
+      {
+        "fingerprint": "w3317",
+        "kept_unicode": "q",
+        "skipped_gid": 69,
+        "skipped_glyph_name": "minus",
+        "skipped_unicode": "­"
+      },
+      {
+        "fingerprint": "w3317",
+        "kept_unicode": "q",
+        "skipped_gid": 70,
+        "skipped_glyph_name": "registered",
+        "skipped_unicode": "®"
+      },
+      {
+        "fingerprint": "w3317",
+        "kept_unicode": "q",
+        "skipped_gid": 71,
+        "skipped_glyph_name": "macron",
+        "skipped_unicode": "¯"
+      }
+    ]
+  }
+}

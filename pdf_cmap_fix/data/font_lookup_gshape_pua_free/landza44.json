@@ -1,0 +1,503 @@
+{
+  "landza44": {
+    "w500": " ",
+    "81d78b23061826cade2d4b4b98249df8a49b05931f5100f2da8168f8f08994d050da024f61667fa489aa6f6d908ac221fdaf01d88658dfe6e211d4276cd87665": "!",
+    "a0a40649201360ddbcb556d159a417a260406cbc31ba81762553912deb4e7031b0fc9cc544abf87b780f5838de88919a8d3e0d060420300e96a5e60abfb14186": "\"",
+    "5f82a6e34720b8a66fb02578f694a894749bf8236ab8cc8633e10ee575f408839e5746dad33793ae3d1a66fcb7d7c13075af11981d09a91f7aafe4a29e7d4a36": "#",
+    "3df8af5cb1df0f4aab0d1059867972efda21d87e284ba4eac93ce1af3f5ab8c86e03616303f012db87390c4d67649ece8bf2d6a9116015891d3c8968629caa57": "0",
+    "4dec24cb859cc4aa6f0d82f89acf4c89a0cf7dd32c1aa7b592cc208219a89862a71c946ae3d4a32b2ab2c11fd0d93c5b9bf7b1b03c92c25e3c82f9c4f1292a34": "1",
+    "349d81557ad9529aa91a5cd5ed6aedb5dd28893b3cb8184987e48044e54f57572a89b7c2ccc91d3bda705c1a0d720e3bc37d0faaba797492203ac99c6cdebd22": "2",
+    "a1e627067524553c67c33e0664a0a05a1cec48128a8bddb7a627fc3e8ad5f7c2000e7d845c30c7533d541836553dfbc35a13e762ffbc7234f6179cc20a86a7c8": "3",
+    "ef7f100f045712aaf24afe838c921d363c623ac026867130e8482e9773e66c4808f08bc7c9f52972a94a778833ff5fedc72eb122fdf371540ecb4e251ca1650f": "4",
+    "b2fcdabc8e748a8d9bf7b10bab23cc0c187fa39e717b4d9c9c16d2b89d380cfd65f9f02b0b4d8ea624adafd6f619c43a373fb6b82322cfc876d0fffd0bb08d62": "5",
+    "76211403ee9c75c81d99316cc03fd1ae9f5ca089debbd0b97779d8cc89fb9b39f3988ec174c1304f42cc3248ebe26374b3fa56e03f1ddbac3cdc795b8cf8d48b": ":",
+    "22dea6c4e304b334b397fdadd6e837b038f7b02c8ff712f181ad86362981854957a130978cfe95c3fcc09274b1fc71b4386361c6aaebd57aac450b0d301d7093": ";",
+    "f4a4663bf1a8064992c1cb8bb96fdd0a8c4c4f39aae728901b572db18afed0fd29f8e7774d464a1f03d74d1e89a7636dc15f867eda2c3396812811f0966c0795": "<",
+    "d6f24ae21523d3fe82ddcfb9a12ccdb16e04d662cb0f52eb33b4e4e7611415104d35d748577a8ca9b67316ff5461f0bdc4e9e70174fd97720a0d8b17c4a0f20c": "=",
+    "80ec0fb776f098c10db24785251bd933edb4063152e3cb3ab4cd31826e5c9fc431eb98b019ed37842a54b2a55a86298f1b58ae5f95ba9d9e4b086911dadf55f5": "?",
+    "0d57f57c97c09bc85c0c02d32b3979be24e33665a722fab2f667d4012c3b2cf3f7f3041ae6d8298e6be8acf77e33f6b8cc5d0f8f8471c5fbb1fe8d9d93f17b9c": "@",
+    "5210529f822a6fd538752c753699e7e8ce4b545f085daddaa129f1562f094b315c31d88a21dd64c4e77071d3b6a2f1da5ef8bae0e0452e9de8f31db5cad9c4d4": "A",
+    "3847fff38b94be288412f9214f7acffbe99c3593296ffbb330ca533cf851bd5c976fbb14fc33d9e8e25ef04aef8b244527b9c60a5068edd84a29b41591a4f0af": "B",
+    "3f92a0ce9619a5d9cdc2663eb2bec812eb1de8fad75246d0fbf95de91b0508336dfd7ffe60d2f010d100f717e3ac58a01b2a38c84f7544530a1418dce2fc9790": "C",
+    "025935cb12a45154aede30ba96eb1416caf83c89a57e0787ccc551ff27f2f41bf1d8c7a47938a511b54740d05cf5c15e3b302be91bd1a3bdee0c0b8326385f0d": "D",
+    "7fd812f339b379ee046f78e6f9c97b6971b52207ffbdf58b48f710c751bc5319855f315fd77bd8628d077070b156c2443d4dc1ed9b233df3f6a2c30fdc6b4141": "E",
+    "bf44b83b4fab278dd0fdef1a2ca8cf90c3c6586ff765a898f431b138e27bb9132bf45813e58a01559440a0e7d5f36c07600598e0c088fbb049febff9c8dbc16d": "J",
+    "77930034d623b3f35b176c4da54d35a80ba61c84c76c3908e659bedfdf2aaf330c4aa1014a1367d971c025864625ddd7ce8831ee2f7325c8aedcf1fd366f7362": "K",
+    "29b42436a862476d4f03b8df3a6829b778fe57be137c1cbecd182cd79f37b9c7e7a8a5a1f62365cb36156c45dba5cedfdaa9370e4cd2847c0319a3e67205e3a4": "L",
+    "4d6c41e20aa37aec302bea6e6a41b2696fdcdb9673d5d384dcb98bfdfe6f112c901214fdd1cbde7d065bb998ca64054844cd8e8249702351575ee0e4fa19a673": "M",
+    "e9c8bfc1c89af9327cc37f706ce3934883118e6bf0132a8ddbb0c191e44e6384b4f0b06b02eb25b2fa08b80d6916b7302e0732ef86f463361e91073b885f9fd0": "N",
+    "c9e5c31e29febc450c1c17c2a8f62d877809ad917a55ffd81d0b96638059632c5f162e8d4c360392e4fc5753041443a10f39fad8d7533e0fdb8dbc606e57fb39": "O",
+    "3c9c7c10df08612f104382ff4bdcd9b6ea6f8258d8488ec866ca024802f6c4b799e7f04c2420481b043bd70c2e16dfb80c7d3fa56992373fdf11568c0462e52d": "P",
+    "6bf97a8551afbb6764fbecadc86aff28514c1253ca395bbadfd815b38111f7b278336072c1f18bc337e8f814af9fc116b44770867d399068f9609bd6973286d2": "Q",
+    "3d5e6081149d409d313640d4b1bd21d5b61a60adfd69d7b66a40200b53d85866294541adbb425d29f117ff7d3381565452a37316adad0597bb1b51c8eef4fa56": "R",
+    "44b97f64625d87bf9c20e3d8264d1ac8172e437cc9eecb9a875ac435f0a2dbf4434b64c8bc4a2c0778819de3340c42b86cd77672a52eda9fa50803456c0fcb58": "S",
+    "dcec50c1e7a8535472ee6e31941fca539a011a8399a9c211fb58973487faea24d2c4a33fc0e9c6c209426134adb67f805f1327d62cf638712644a3ea15d4b099": "T",
+    "6bb83d3dc9fb61f2eabe8a959ec1c955cef42f56e4d33de487b476c283c38e211f352d306df07baa29cf4ce0aab4d3226d98a4cd73952b01dd03c341302f35bf": "U",
+    "b4f9f68d6c82131575f572f53af60ee26c9363917cb308e635eb0f27c6e61e87f10c38903b5665f7c304e08da95d0f40690cdac0770972b4302ddd620d14a34c": "Z",
+    "f0bd12c53f0d0d63daccadacd097e69ce55347d9177581ad97265adbfd5f08fcb027186ba3cf0fdce06f25a96fea72ea7668b65a44cb7cf2407b6fcfb2cf4cc3": "[",
+    "330f313e3c3a55acb1a14c27518740c3cc2e78488d391b3cd4bafa6312de45fdce6feb42ce1ffeca8054d31416c866f6c027ec4426a52b02bf27e25559616a25": "\\",
+    "53ba9a8cfdd3eaf8e45c4c67739bc117f5d9953ce78a077dc265bb37c3d4ada47c2eb471c8f38b4e1c3752751d1a9a6796c532f1bb7766d3be1c13d2f6a22de9": "]",
+    "9aaff762cb81758d7eb17434b58d1d445d4322a1545c09ac617c8c6e1e928f661fef9031338e78d7f071367d780611b09433a2876e6ba2dd3117e89a27f0bf64": "^",
+    "77c85c53896cb77c0c9a724a079a50ba4bc1dbb3c65f1aa6da7e82c6345ca7897dc0a3a9c1e24bbada80dfcd6e64b19939dd1207c1a96fee6e190e40dd787416": "_",
+    "50a682ff921d2f868a1f67cd8196e2cd3310e3e0d91ff5de3b8d887e2168372f5f3f554e56c76032a01256c81c29da894edbff091e5decf20fcfa7f7934be1f3": "`",
+    "239ec5f6fa397f7171f4e5911d87c9ef1b9b7316ec6e20926d503c872369911706b398def25a38f05c35044341ebc669c5c643afbdccca5974b3691fd3ce2caa": "a",
+    "f89eb349b8fcf1e466b6a6f9b2e9867f2c479e429793b8cc1f820e749591eab295c4b5e234fff955d4e1f743d46d5f3a132f38087efdf3467b9a7d067e937bbe": "b",
+    "7fafcb2f3066f6331752fa2b5a3b12b597fc35bd22f3986ab1c3f66bf521540bbe0eebc020d25d0da6941ee56946c64098fd4b6ba67a9c4f57ddd279b83486a2": "c",
+    "76a7739be470dfbe517cf2874a11bd573725dd43e7165b400ffe897b723561b1482ed49827876887f5c12d28c789c7e4ef7319f6a1b452ce2b567aa60936f29a": "d",
+    "dae9940a91ebf2af0f5b86105d427daa9119dac4d74ae67f04b14eb818a767273f63d8bf90f70233be62e93b6e083adbf38cf422f4954c097c51c43d4ce1e7ae": "e",
+    "bd10c84690f75b459a90ed002658f8c864997002d35fbb3b3817690d612851278049326e2b0c07b62df588b8c2864746fd2a78654644f27662b85b9611a2c1cf": "f",
+    "2c783acf54bb252809405155840da8c7e11d79276abd7f57a01290d4c214f4e2febe52bbcf8e5c3fbc3d33c78bcb65a7222ae8a68c3bc7deddbc400852b99a35": "g",
+    "503fddf816ec6ca701e9b441a35cc6529a05ea0922c301149b151fd348320bb24764ccd24b4396f62c8282ffecd8d226e2083e1b84c9608213a4450aa40a554a": "j",
+    "f5fdea429ebd23873bd2f7fa6a27813577ed066a2ea4717c3848aa755e462260aa8e15badc82ddd1e93a447040c46494a064fd53c7ec87d04b3b5d4722604daf": "k",
+    "b49a3d710e4a1c78bdd805295a2abbc340666a4c7e97f076af0787111226a5a5c9759c1f33b94d76a27a03dc102408c08ff006e03bceeb51c7bdc1fd81dc28b3": "l",
+    "b895b9feb257b65089fca37e11b899f167a0e1abf9778d1cda7d8136b323e558a25169b312184e630bb58e30a2d906bd223b6e47884d285e6af15c0c39dd45b8": "m",
+    "5cad977ae388d29287d124bb005fad05c68a7a0040f90e329e8aa65e59165e9e541c3fc434a3d51efa53a0015f6fb3321de4c69cbda4570eff04c5901c60808e": "n",
+    "1e5aa69fb64eb2a591cc21026d53cb663a9c7c0bbd3ce5e148c15249cc9859c532e3227f76b65b5e5791fbf85adb24bd45bbd4bdd5211d04fa3f92797229f30e": "o",
+    "w4060": "p",
+    "w4960": "q",
+    "w4900": "r",
+    "w4980": "s",
+    "w4128": "u",
+    "w3317": "v",
+    "w6100": "",
+    "w4100": "",
+    "w5040": "",
+    "w5020": "ƒ",
+    "w4040": "",
+    "w6080": "Ÿ",
+    "w5000": "¢",
+    "w6040": "¯",
+    "1ecdd78fcd13f4cea6025419c3a077b20a2fbf721a37c5273e70c840241f6bfb4646c714869bb7a06c15f2741307c961483ea4793c01f4b83258b948ccd8d7e9": "°",
+    "bcc4921c38d44fda2dcdd637e68163fb67dc552066d63ab405f988ccf3c0c9b78141d20444c0ed70a07b073c3f8b934c63bd386e1f0faac61ae110e032741ff5": "±",
+    "7ac15d14d7cc506d6f81cd5f305bff0ea58a20d657b0de8c582874e657ede674b666e1a0dcca60b170a54ffb60a3cb7d12b2bf26127152200df95af30950fade": "²",
+    "7ae71f92d3b0cf6a850ea861d8834a64e06c456407e395a977382c8effedd4abedecadd9eb53a1718ab516ea5c638a7966c0bd021612847fa0b708957174e965": "³",
+    "1b098244a32a80a5505ac234e4675cf3be4ee493d982d8b025affa0636695da387422ac9119c3b736001de7b6e59b63ee05ca3f44d6944f25d0a60b1fb6311dc": "´",
+    "2e4ceafbc50fbb4f21c30846fefe2871483c7748377410bfd9a3f9310032342e2b6e675434d781d603ba2cf9a0c149f18ef399b9092ba7132c230775c7073ca6": "µ",
+    "4d1e77e9153666598cfd08350de7cfd0fe129efc74211811fe575663a055ffb0149de761de49e61513347eee8edfa89b06f19ed63e9cc000839991c31133ba91": "º",
+    "cf53b2c517d58d2826b260b556633361b8cd2ce47886f09a44beb5ac3f1f7b135fe272c0d8f673000356f678ae1c2c14373d082495060f75c54b41a13d3ab09c": "»",
+    "ce9a42df5d73f09d947cf3672797730af8af81b8cbdd5333896effc1bbcd3d27f52b1f264aa9e918cb02d4715f9cb5a298c8311bb85dd5b6c2d98bf97f3166ae": "¼",
+    "f32d8cb69be9decba0981c9a8f876e1e68c0f41f2974749ca9e90f0175cc554dac9529404d3a6cdcd8feb4a8ef6fd2001d2b94a18ae28631861bfb8964c426d9": "½",
+    "300a4bc3a01dc1c658ed08bb985cf435d45ff4af1076414669745adb2ed562298b046d741705cae830c2b29da546b7ef0c555b7117adb989f5e664acc1f34383": "¾",
+    "b2af44568e81ad3ec94d175063e8fed818a7092fc41bd0c466ba986142c1ad0664f076f23b1cd46f879c8e8dc9b774640a1d1880c07fb51d772d3850085b2d7c": "¿",
+    "62b73806507227a7447a0ba24445884e386ffae1d0ab8dd02127942bea6c5386ecf8632655baad79867fc26076ae3f410f3d6c6b99d482f72972e58c9d205da9": "À",
+    "86fccbf89eb3d4b536f763a99b29da578a37915b3bd7515ee9c298a50f78254a58a5aa90d7b66919f4fbad37601d56f933204ad7ba91c129bca753e3d6f5426a": "Á",
+    "dc080e2bd3139e053fcea4237e7f023606c6e36b62d70888928f6b1573bb0e6a105c500579fae7e5683b17db4fab49e7c6601cd6fd3deb87237a98a2ba88776c": "Â",
+    "570e2f874bce4496344bbc8ba6447802d8dfd2329ee28f7411972dd0e7bf4c99936d2d8b1259e8b923f2035a317c77349c15f18e31010847bd8c0f2dafe3d0f9": "Ã",
+    "e952054bd1b0764326340cc19bb6cd0422f4d973cb5e032ba050759a9c93c6ebc81e2b02b803b8223d692b2de8213409dc092d7b97956f47d6cf259802d71bc5": "Ä",
+    "767ab463898846f263e36947eeca335b6c41d30c43fec0439e149c673398cbb944a6bc3b6503a4a38045c8ddded3c6f46bf6744939f0bb738d60e5f0ec1acfe4": "Å",
+    "da3c38b7df307f1801fba9446b733f8eca13a6812ea66a07a9418f4764ad4445631e67f46474221aaaae8f1131935f86d704f8c28192545704f2e89d72f0a32e": "Ê",
+    "aee2cde6225fb1ad21e524cc3496abc2c38e2b04ed445d21c4012e7ff6d522231da9427391eb801b8b80d29fe239bdd59498ce1033b024f0dbee5e499441df80": "Ë",
+    "d00b3c105e49b82227926dee97b065a65303f57bde31d59f0d88523bcc2cd1c21690ed320b70516ee3eeef32b470fda8d81a00c79431124a1bc6a78862ecc99d": "Ì",
+    "8ddef02f3b2b2c86d879ee71763fe6493ff539f45ea37c00c83b97d0f20c2f742146b42fafe8f4864df31d1edf71d6bb864f1a7cde583273fd4328b93a466622": "Í",
+    "8b88d1499dfbaf5be694f63090025e359534a70785dc0de6084487ce95546cc69bb422f712f560550ff9379ae38db46a3c7c0bdb8c221cc27385277a96996cf5": "Î",
+    "b7dab9a03c1458b1e36c21f2a7bd5b2025c2a9a6baa6ad5b15837a8e856f7514a2af798e9f43d16602692c669d7abbaf3d05811f91a4da152925dea1671d399c": "Ï",
+    "1d5e083102d5cf2cdc1a37a5634b573580ea1796b6e762e9f2892024328a7b08c950668416ac14010411b3178317e489b6ceaf5318cb4934688ad2e39c4eab72": "Ð",
+    "6a33557364c9c93ff958ab5c807a0c4a7c93acffad5394953f51d0111e45fe618ecd55d143ce46c9e47302f1f8a60dd15f7849b1889444ed84f621a53cffcb25": "Ñ",
+    "9c0f3e2fd0041967763e0a1b798adee789ce1ab62c9c6538e69ac91fcc9d7eb1f653b9787ac185b1127126c7544018488ab86fc0546bb152d6befb4e35babc9e": "Ò",
+    "bbf0a7e0dcd6d2a18fe705ef6adf6d0fc1fb1ad16f7657dffef1694d685bf5ee793860ba3f2bfe319e9fda13447a1e6a22e410bd0404cf01608cbc95b2f0351b": "Ó",
+    "724678fcc631a80afc02c65961473a000a6d60fbaa8af7581d4aa3c4541aeb226f3f7a709506cb71c39c9801169eed1a68b67e0339fa12125b882cd0274482a4": "Ô",
+    "ce9518bdc4aabe86f78b78ffd28083f9ec8581277fb58199264d7ee2a6cc4328466c63da9b3c383d536c099368e3e783c93bfe2d1e9e977c8369eff3ac1818e4": "Õ",
+    "0fb8347beb004b5401650fabac60eb894b3f710b791904645b8bd955fec98a518c9025451597c0e6b0935ec073ac93a1a159449df9ce84c5e487af430165428a": "Ú",
+    "492c71467f82c8c212ec6442d30d71ad624b9d568eb0ed79b3487c91e59dd6d55266a46d5f68b8d15993f37a5429ddfde5664e3b154d6614e7a74aaf3ee84cd5": "Û",
+    "3c44720f152a2024ab7faa7479c0ea1efb16206427b2986e2433dd48960c47ecc95add7145ae526ed3e7429a0b2d6d64566f477235d6e9f77ef540be49e08242": "Ü",
+    "4e149bcce61c4cdbf80f7766218ddbe3f77467b0ae5eebe31598fbd870c909f875b82dcc23df4780729599bce662ba467098afb747ee27355fe80a222d70802b": "Ý",
+    "11841f42740d81faa35f88b4ff694afb8c1f6af9a65b7f32af6e3c56e23befc3988509df70f7165bfad4d6990a590b43cda63f41bde4331bdc2d57540590959e": "Þ",
+    "d9a21b995247f0427b3e1b49c5d888b92f02ea1ab94d5e57ad587a0fb9cdd253b07ee68ee748ad54f1fbf55c9a33c2c9606cf4dd029061d4f536de4f11298ec9": "ß",
+    "f22c7dab5f1f5731a7fbdf532ebbae5e464cec5ab4bfaa4342d81535b6e5c702d6355c77ec21a69095da782af414217ff569bc20810e3305654c64831f169310": "à",
+    "f82d1291b96fb5601436c61ed2c5f0e08bb4e55b1afc23e7f2199447be42d47111108c6f756b6a00e3eb3aef48665a7a59734e81ff79c084cb1ab18b1a68b15a": "á",
+    "59739a11edf30df1c50891d2db08d1cd443c6c5bb76199c012ed81f25e92d4c56dceee2a7efd3da1132cf51522338346a8c21d1c4d6aedc5b7800387ee37c383": "â",
+    "7a28b6c61dd57e44c91c6d5283ea31241c055fbc6023c068103c2a28d503f3672ec5b042a4a6a1da412662e1f470c9728ddb2d8c998d88314a8eab3f34973ae7": "ã",
+    "2224ba07b9cfc4c202b69254dd64ab3b5c5360045d5cc5b23936b0dcfcbffaf6652137b3b282c32ac3e22fd54337ab046524043710cd073a9499537098b0fdf6": "ä",
+    "696a017205196d798429c854e569faa54fe27b2f1185f774578d99ee1d609c87a17888617a95bbd94f3bcd956df807e81fe2c5f4e033a349d3395e80ab630557": "å",
+    "0797564238c5f28152aff3e3776776562be19aafaad2ebe51c11df22ac4c62d5ca5b66323a46f0041b5ec97659aac674d04d9c6549b244b57af94f279582086b": "ê",
+    "ba58646a9c443b606202834e470260f7a59dd0551b7dc56e214c49d8493f1d5a08c9f2ff6da3fc819088858cb1b1cbf2e9096351c00409d21dcb0211385fa724": "ë",
+    "7523d5193780c97b0f46022d7a6ce9ca4ccbb5a3270bfd9acd25955d1d3dcf4adcb01bc1f76ec83cbde24b81e4d7bb01afa6506e417fae9ff649ad8d788115ab": "ì",
+    "ffa29d741750638eaed26310d4e7f88fd1075c8796d8aead95f15238b60eb6c20a04f5ba1ca4e70a06eda768f8ea926a8ccb7149a144a08fb74e61e09f3ed97e": "í",
+    "94344bc0807dd9e755d86fcc456f7b38a210e5be1f059c1b9c25f4b212bc4a95778dd89a625ee4f2efcb0382fef2ff1b4f3c1a835ce8182b85c9619fc83af560": "î",
+    "57665994ac33398bef4713cebcc2fe7edc91a417a033f73687543ff92bc1dd1e024ade0105b4d8b3f00ff0b1df44a9787d355fe5d8400e6b94505a39bbd1d38f": "ï",
+    "c8da906ba54bbdedef68a0750dc815532d77136bf1717cace59e5cebbe11f78f1ca55070dce602f0da536c7e17e7ca3c71d4725573995b3aaa565d0d269840aa": "ð",
+    "2008c310a3d8e77ddd6a492f18beec62abf232534a00ff36ed6bbc89d85e470f45cf23e0ce39c5671c4e368c0215551ccea0c75d7a74a661f2b2b8938e691b2c": "ñ",
+    "8874c1e8841a764a0cf7f04836c14a8c026cf07e9c47ad7ef743c441440b39e058c1cbdb3de831dfa5d3a5a84c9f88af8f7a7634cdabf43cc07cca63022d8f1e": "ò",
+    "2bf78e02a9ae9b416d58ae9a9142cce38beede6db02c427e280e5a4c0ab8e60d13a6cfb051f543ae0ec5077af6693ddbebb6fb84b4066e5686c34aa9d56458b7": "ó",
+    "1a78743cf7286167bbf3f1f8335ebf9201c68a50ea631756b0a226b9764f2ce33c7771896c8f69ec046c8b6f296f88beda744dab6922f77c35e62efa9a217405": "ô",
+    "67ec83682cea64f1111abb32fb579507cdf0be02f5d4bcce83ece34b0853c20189e8b835dcd535141e3e8d232fe12c5a7962dcbe7f3c414f8de70246384a71a1": "õ",
+    "2bda53fc78146af60af11b0796502d9e270da7fc8493b2deac15ebae918b3617cb7ae1ae27fdfa756627ff284504b626d2cd4844172dc7b4ea63471c6d7a2ca2": "ú",
+    "80624cb17b09cf475435009cc9374c7c912d90a6ab471dab21e1f0a15a54b9807307b2a2ac6d89a7304e900d82efcea3efa2e34f5e5575485f4afec11d96b607": "û",
+    "39885e98883b3ae9c98bbb6f87c03fb016804fed4ee1d505e5048894499e51958789c8c2db41c11b4f817cd72c97b273ba04ac5584fe98ad806d8b9da3e3d729": "ü",
+    "1a94249815f3941d17c7b3e574f9f8f59a373238030da3d36a6f67b2935a1c07c75b4a05b7c78c56f0ced5c54d848899290906bb391f727420bfc2f7156c1e7e": "ý",
+    "ea8c07cf70bdb8825c0bb94e753264ddb7518dec1098317eb75d48594ba176340924fa5449166437de906cea17bd53f6e5662afc9e070c3693a482a29934753e": "þ",
+    "32ecf05663431b73db17e55e18ba0d46c99f59405c21bb7944abce2ef863694e41629a5c15ec08135b6baf122cb0a64367872cb514449e45a62a7b6d2e5c1be8": "ÿ"
+  },
+  "_meta": {
+    "lookup_kind": "gshape",
+    "source": "tibetan-fonts-main.zip::tibetan-fonts-main/Non-Unicode Fonts/Landza/landza44.ttf",
+    "gids_mapped": 178,
+    "multi_char_stacks": 0,
+    "gsub_lookup_counts": {},
+    "entries": 127,
+    "fingerprint_method": "HashPointPen+RoundingPointPen(floatToFixedToFloat 14-bit)",
+    "hash_collisions": [
+      {
+        "fingerprint": "a0a40649201360ddbcb556d159a417a260406cbc31ba81762553912deb4e7031b0fc9cc544abf87b780f5838de88919a8d3e0d060420300e96a5e60abfb14186",
+        "kept_unicode": "\"",
+        "skipped_gid": 17,
+        "skipped_glyph_name": "greater",
+        "skipped_unicode": ">"
+      },
+      {
+        "fingerprint": "w4060",
+        "kept_unicode": "p",
+        "skipped_gid": 61,
+        "skipped_glyph_name": "t",
+        "skipped_unicode": "t"
+      },
+      {
+        "fingerprint": "w3317",
+        "kept_unicode": "v",
+        "skipped_gid": 64,
+        "skipped_glyph_name": "w",
+        "skipped_unicode": "w"
+      },
+      {
+        "fingerprint": "w3317",
+        "kept_unicode": "v",
+        "skipped_gid": 65,
+        "skipped_glyph_name": "x",
+        "skipped_unicode": "x"
+      },
+      {
+        "fingerprint": "w3317",
+        "kept_unicode": "v",
+        "skipped_gid": 66,
+        "skipped_glyph_name": "y",
+        "skipped_unicode": "y"
+      },
+      {
+        "fingerprint": "w4060",
+        "kept_unicode": "p",
+        "skipped_gid": 67,
+        "skipped_glyph_name": "z",
+        "skipped_unicode": "z"
+      },
+      {
+        "fingerprint": "w4060",
+        "kept_unicode": "p",
+        "skipped_gid": 68,
+        "skipped_glyph_name": "braceleft",
+        "skipped_unicode": "{"
+      },
+      {
+        "fingerprint": "w4960",
+        "kept_unicode": "q",
+        "skipped_gid": 69,
+        "skipped_glyph_name": "bar",
+        "skipped_unicode": "|"
+      },
+      {
+        "fingerprint": "w4960",
+        "kept_unicode": "q",
+        "skipped_gid": 70,
+        "skipped_glyph_name": "braceright",
+        "skipped_unicode": "}"
+      },
+      {
+        "fingerprint": "w4060",
+        "kept_unicode": "p",
+        "skipped_gid": 71,
+        "skipped_glyph_name": "asciitilde",
+        "skipped_unicode": "~"
+      },
+      {
+        "fingerprint": "w5040",
+        "kept_unicode": "",
+        "skipped_gid": 75,
+        "skipped_glyph_name": "quotesinglbase",
+        "skipped_unicode": "‚"
+      },
+      {
+        "fingerprint": "w4100",
+        "kept_unicode": "",
+        "skipped_gid": 77,
+        "skipped_glyph_name": "quotedblbase",
+        "skipped_unicode": "„"
+      },
+      {
+        "fingerprint": "w4100",
+        "kept_unicode": "",
+        "skipped_gid": 78,
+        "skipped_glyph_name": "ellipsis",
+        "skipped_unicode": "…"
+      },
+      {
+        "fingerprint": "w3317",
+        "kept_unicode": "v",
+        "skipped_gid": 79,
+        "skipped_glyph_name": "dagger",
+        "skipped_unicode": "†"
+      },
+      {
+        "fingerprint": "w3317",
+        "kept_unicode": "v",
+        "skipped_gid": 80,
+        "skipped_glyph_name": "daggerdbl",
+        "skipped_unicode": "‡"
+      },
+      {
+        "fingerprint": "w3317",
+        "kept_unicode": "v",
+        "skipped_gid": 81,
+        "skipped_glyph_name": "circumflex",
+        "skipped_unicode": "ˆ"
+      },
+      {
+        "fingerprint": "w3317",
+        "kept_unicode": "v",
+        "skipped_gid": 82,
+        "skipped_glyph_name": "perthousand",
+        "skipped_unicode": "‰"
+      },
+      {
+        "fingerprint": "w4100",
+        "kept_unicode": "",
+        "skipped_gid": 83,
+        "skipped_glyph_name": "Scaron",
+        "skipped_unicode": "Š"
+      },
+      {
+        "fingerprint": "w4100",
+        "kept_unicode": "",
+        "skipped_gid": 84,
+        "skipped_glyph_name": "guilsinglleft",
+        "skipped_unicode": "‹"
+      },
+      {
+        "fingerprint": "w5040",
+        "kept_unicode": "",
+        "skipped_gid": 85,
+        "skipped_glyph_name": "OE",
+        "skipped_unicode": "Œ"
+      },
+      {
+        "fingerprint": "w5040",
+        "kept_unicode": "",
+        "skipped_gid": 86,
+        "skipped_glyph_name": "c141",
+        "skipped_unicode": ""
+      },
+      {
+        "fingerprint": "w4100",
+        "kept_unicode": "",
+        "skipped_gid": 87,
+        "skipped_glyph_name": "c142",
+        "skipped_unicode": ""
+      },
+      {
+        "fingerprint": "w6100",
+        "kept_unicode": "",
+        "skipped_gid": 88,
+        "skipped_glyph_name": "c143",
+        "skipped_unicode": ""
+      },
+      {
+        "fingerprint": "w4980",
+        "kept_unicode": "s",
+        "skipped_gid": 90,
+        "skipped_glyph_name": "quoteleft",
+        "skipped_unicode": "‘"
+      },
+      {
+        "fingerprint": "w5020",
+        "kept_unicode": "ƒ",
+        "skipped_gid": 91,
+        "skipped_glyph_name": "quoteright",
+        "skipped_unicode": "’"
+      },
+      {
+        "fingerprint": "w5020",
+        "kept_unicode": "ƒ",
+        "skipped_gid": 92,
+        "skipped_glyph_name": "quotedblleft",
+        "skipped_unicode": "“"
+      },
+      {
+        "fingerprint": "w4040",
+        "kept_unicode": "",
+        "skipped_gid": 93,
+        "skipped_glyph_name": "quotedblright",
+        "skipped_unicode": "”"
+      },
+      {
+        "fingerprint": "w4040",
+        "kept_unicode": "",
+        "skipped_gid": 94,
+        "skipped_glyph_name": "bullet",
+        "skipped_unicode": "•"
+      },
+      {
+        "fingerprint": "w3317",
+        "kept_unicode": "v",
+        "skipped_gid": 95,
+        "skipped_glyph_name": "endash",
+        "skipped_unicode": "–"
+      },
+      {
+        "fingerprint": "w3317",
+        "kept_unicode": "v",
+        "skipped_gid": 96,
+        "skipped_glyph_name": "emdash",
+        "skipped_unicode": "—"
+      },
+      {
+        "fingerprint": "w3317",
+        "kept_unicode": "v",
+        "skipped_gid": 97,
+        "skipped_glyph_name": "tilde",
+        "skipped_unicode": "˜"
+      },
+      {
+        "fingerprint": "w3317",
+        "kept_unicode": "v",
+        "skipped_gid": 98,
+        "skipped_glyph_name": "trademark",
+        "skipped_unicode": "™"
+      },
+      {
+        "fingerprint": "w4040",
+        "kept_unicode": "",
+        "skipped_gid": 99,
+        "skipped_glyph_name": "scaron",
+        "skipped_unicode": "š"
+      },
+      {
+        "fingerprint": "w4040",
+        "kept_unicode": "",
+        "skipped_gid": 100,
+        "skipped_glyph_name": "guilsinglright",
+        "skipped_unicode": "›"
+      },
+      {
+        "fingerprint": "w4980",
+        "kept_unicode": "s",
+        "skipped_gid": 101,
+        "skipped_glyph_name": "oe",
+        "skipped_unicode": "œ"
+      },
+      {
+        "fingerprint": "w4980",
+        "kept_unicode": "s",
+        "skipped_gid": 102,
+        "skipped_glyph_name": "c157",
+        "skipped_unicode": ""
+      },
+      {
+        "fingerprint": "w4040",
+        "kept_unicode": "",
+        "skipped_gid": 103,
+        "skipped_glyph_name": "c158",
+        "skipped_unicode": ""
+      },
+      {
+        "fingerprint": "w4040",
+        "kept_unicode": "",
+        "skipped_gid": 105,
+        "skipped_glyph_name": "nonbreakingspace",
+        "skipped_unicode": " "
+      },
+      {
+        "fingerprint": "w4980",
+        "kept_unicode": "s",
+        "skipped_gid": 106,
+        "skipped_glyph_name": "exclamdown",
+        "skipped_unicode": "¡"
+      },
+      {
+        "fingerprint": "w4980",
+        "kept_unicode": "s",
+        "skipped_gid": 108,
+        "skipped_glyph_name": "sterling",
+        "skipped_unicode": "£"
+      },
+      {
+        "fingerprint": "w4040",
+        "kept_unicode": "",
+        "skipped_gid": 109,
+        "skipped_glyph_name": "currency",
+        "skipped_unicode": "¤"
+      },
+      {
+        "fingerprint": "w4040",
+        "kept_unicode": "",
+        "skipped_gid": 110,
+        "skipped_glyph_name": "yen",
+        "skipped_unicode": "¥"
+      },
+      {
+        "fingerprint": "w3317",
+        "kept_unicode": "v",
+        "skipped_gid": 111,
+        "skipped_glyph_name": "brokenbar",
+        "skipped_unicode": "¦"
+      },
+      {
+        "fingerprint": "w3317",
+        "kept_unicode": "v",
+        "skipped_gid": 112,
+        "skipped_glyph_name": "section",
+        "skipped_unicode": "§"
+      },
+      {
+        "fingerprint": "w3317",
+        "kept_unicode": "v",
+        "skipped_gid": 113,
+        "skipped_glyph_name": "dieresis",
+        "skipped_unicode": "¨"
+      },
+      {
+        "fingerprint": "w3317",
+        "kept_unicode": "v",
+        "skipped_gid": 114,
+        "skipped_glyph_name": "copyright",
+        "skipped_unicode": "©"
+      },
+      {
+        "fingerprint": "w4040",
+        "kept_unicode": "",
+        "skipped_gid": 115,
+        "skipped_glyph_name": "ordfeminine",
+        "skipped_unicode": "ª"
+      },
+      {
+        "fingerprint": "w4040",
+        "kept_unicode": "",
+        "skipped_gid": 116,
+        "skipped_glyph_name": "guillemotleft",
+        "skipped_unicode": "«"
+      },
+      {
+        "fingerprint": "w4980",
+        "kept_unicode": "s",
+        "skipped_gid": 117,
+        "skipped_glyph_name": "logicalnot",
+        "skipped_unicode": "¬"
+      },
+      {
+        "fingerprint": "w4980",
+        "kept_unicode": "s",
+        "skipped_gid": 118,
+        "skipped_glyph_name": "minus",
+        "skipped_unicode": "­"
+      },
+      {
+        "fingerprint": "w4040",
+        "kept_unicode": "",
+        "skipped_gid": 119,
+        "skipped_glyph_name": "registered",
+        "skipped_unicode": "®"
+      }
+    ],
+    "gshape_rows_patched_from_public_gname": 0,
+    "gshape_patch_skipped_no_hash_to_gname": 0,
+    "gshape_patch_skipped_no_pua_in_value": 127,
+    "gshape_patch_font_hash_collisions": 52
+  }
+}

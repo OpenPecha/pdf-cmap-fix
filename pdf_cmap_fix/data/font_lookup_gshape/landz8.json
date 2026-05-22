@@ -1,0 +1,50 @@
+{
+  "landz8": {
+    "w500": " ",
+    "0207f55c6868f5898eb8cf2f3451636a7fa06c84e6fb4b9e678434a6ada05699840f439a55ddd4547763f8c273bf5dbe50e8908153a5a3494a8350fc9e7e206a": "0",
+    "c5645fd2072d713833512dd2101a0f410defc04e34d29b853ee624a6c9a29aad9f9a5f35afec1a4f31681cc14e360946afe9567e05b49a3379075a1904dd738d": "1",
+    "dd93a22156ee730f2ae02598f6c56a5a8d22b5c86cbd55ce7a81be1f5dc8d6592b62c059ee68bf3fbd887b1a58a9037c9bb7ddc339e85f9b3dbae5d7653eca1f": "2",
+    "589d7fb9bccf889ddc7a26bcb1aeacaf382aad91ce58420a857b5f55904c5048bd0d33033542a1501eb346a094b29393049311f2c89578a593fb93e73b7fc339": "3",
+    "1730a86f3fcf259f74a3611c74ffe78e5a732983d4aa6006faa66fccd0ab018f34a2bdecf0db7e3aae17bc9ca88207ca044617c78f22d1269f4e159a9a61ae2b": "4",
+    "93179ff0dcc24f0b78b2e95e1e2c6276efe9c2d070cefd003cee4c6143a95fcabbd1118f90c15997c5ba754cfaa9399a576b5900dfcfc71e954cf67936dbf294": "5",
+    "w3317": "6",
+    "a145a29559abada97f130c7858373df371f093a84337d6128978ef321e58a6f1d7cff00031957baa6fd581ab8ce5c1f4eea2db5fa7d0e4881848e5fc00d9da77": ":",
+    "b6d60417430a74e55485418deef9e4749beb8fcee25363f43acb156f79a30e134f97f28584064c587b176dc42225e54e629b8601e71f3844f4678d680597727c": ";",
+    "a0c1b655a5d4a03a8cef5d90026e759c11d209cb64e0236c4055a5d66d3cbb5b4014b61a68740dfcafcd42b901f0171ef536f2dc7e3b577df044dbfd869a0320": "<",
+    "cc63ff2480f6fa0c3de87e0ef6ecbe892fb5ee422f0808d5e3fbdc624c1e0b3a5d68a949dabb31108736fe4b3f198bf171dbfb5d78c1f9973fe7dbd92a61e570": "=",
+    "6002fe6d676e962ac3eb8098ff2f9545b578911fb30568d9ebccf92f25c09b9abe715ca0d14e77f561c88cdeda6ede734528cb5e9f6027d54114314f902ff7df": ">",
+    "52b7bc550fd79f9c5890bc148496970fa6a35ee8d20a91d5ec03f4e0fd4cb0718f1f2fcf754ded253b2728022d9ab7c77ee6f721a45952248ea5316331cc7d3b": "?"
+  },
+  "_meta": {
+    "lookup_kind": "gshape",
+    "source": "tibetan-fonts-main.zip::tibetan-fonts-main/Non-Unicode Fonts/Landza/landz8.ttf",
+    "gids_mapped": 17,
+    "multi_char_stacks": 0,
+    "gsub_lookup_counts": {},
+    "entries": 14,
+    "fingerprint_method": "HashPointPen+RoundingPointPen(floatToFixedToFloat 14-bit)",
+    "hash_collisions": [
+      {
+        "fingerprint": "w3317",
+        "kept_unicode": "6",
+        "skipped_gid": 11,
+        "skipped_glyph_name": "seven",
+        "skipped_unicode": "7"
+      },
+      {
+        "fingerprint": "w3317",
+        "kept_unicode": "6",
+        "skipped_gid": 12,
+        "skipped_glyph_name": "eight",
+        "skipped_unicode": "8"
+      },
+      {
+        "fingerprint": "w3317",
+        "kept_unicode": "6",
+        "skipped_gid": 13,
+        "skipped_glyph_name": "nine",
+        "skipped_unicode": "9"
+      }
+    ]
+  }
+}

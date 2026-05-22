@@ -1,0 +1,39 @@
+{
+  "landz98": {
+    "space": " ",
+    "zero": "0",
+    "at": "@",
+    "A": "A",
+    "B": "B",
+    "C": "C",
+    "D": "D",
+    "E": "E",
+    "F": "F",
+    "G": "G",
+    "H": "H",
+    "I": "I",
+    "J": "J",
+    "K": "K",
+    "L": "L",
+    "M": "M",
+    "N": "N",
+    "O": "O",
+    "P": "P",
+    "Q": "Q",
+    "R": "R",
+    "S": "S",
+    "T": "T",
+    "V": "V",
+    "underscore": "_"
+  },
+  "_meta": {
+    "lookup_kind": "gname",
+    "source": "tibetan-fonts-main.zip::tibetan-fonts-main/Non-Unicode Fonts/Landza/landz98.ttf",
+    "gids_mapped": 25,
+    "multi_char_stacks": 0,
+    "gsub_lookup_counts": {},
+    "entries": 25,
+    "pua_to_unicode_from_uni_names": true,
+    "pua_rows_rewritten": 0
+  }
+}

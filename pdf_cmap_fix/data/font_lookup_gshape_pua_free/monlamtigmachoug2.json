@@ -1,0 +1,1333 @@
+{
+  "monlamtigmachoug2": {
+    "w403": " ",
+    "w0": "!",
+    "w407q270-390l261-400o111-268q109-94o107+75q261+203l270+192o154+81q152-93o151-257|": "(",
+    "w407q275-52o277-228q123-359l115-349o169-290o233-131q233-52o233+118q115+233l123+244o273+116|": ")",
+    "w481l351+82l260-9l351-97l319-127l229-39l142-126l114-98l202-11l114+78l143+110l233+21l323+112|": "*",
+    "53c1a054e2ae80c627d36df0bde271ef72fa2c3ae572ebddf34ca0f30b653f60afd2092248b333e249a897523f85c219633233764938673fb6cff91ae8937315": ",",
+    "bc92f4df7a0a8ad87517fd31cb3ff9ca4252c6146d13592f95c8c272073eaff477d31b87a9fc71b3f48dffee66ac74043d082cb4a8d780062b90dad81e307301": "0",
+    "8f574cfd35e0890a15bfd810cd7500b0d3f0a344ee5dc3fcf9b8105d862678cf7ceae2e1e4d9678fc04de8d4d90211234fe90128eb1d1aab6775992426c59950": "1",
+    "5e729c1870392157df9119a78475f658b0e236f0c8f8df5ce8151febbe2b9c731607ba3cc7c6c6344c18099a3d8684829ddb9daf4b3d27256619a3b1c7147ba0": "2",
+    "530758a5022da160fa3b1d61269c2edcd75635a3a1a9c0fb5404fee7a40e4c4722e89e5d4785ff199ee4a7398070f0aa091fc645ca9b78b69b51012f15b4d518": "3",
+    "478263dec78d87ac34be6357604d91d2490646bb81c8a03c6205348dba9f596cce88dfb335e38f8a2deabf48f06b607cff7197bde8898db5cadda232b9b5c724": "4",
+    "581d5301e4ec01a22f7caa816ae3fc5e2f222a87e802877de9a25e15fb26ef8e93f3e09ff3826992dc0a9cd26978c22ddfbc2f47131d26cfe09e5c1d831fa952": "5",
+    "30cf2f57c2e95d090f219b5840783f3f74340808112e542afceaf3c1ca977af2ff5af276e2126c62e8fc7c75b4456a42d95b96f71aff1d8b433f242531ff1e46": "6",
+    "d45711c16cf320ade4a1ed5a6fb8b05b1b738789e9d2ffb46fd5cadf751844ed5a104a29d4025f66bac86101263a90fff858e6001e1c7c3fa1208048bdc43f50": "7",
+    "dcfa9d59ebaa7ca24b8a3189098eef9a4eeef20da51e6dca092820e1f4c3b56578f47baca3bcfe5e558daaf4b9b2ad870f3045d0e1ac6846a80b3b99c320da60": "8",
+    "e2e6ab49efc412e2feb67dcd8a064d1ec18abab5ccbaaa78f5afb238d9b59384c4bca7846c6a34593eb2cfd3e016a69155ba8ed047b06d1287ba756a8d2a1876": "9",
+    "c1402e44b92612ac95e39f07fba91bf7eccb4c92582e963333cc4f8a36fe5766443a4368615511aefdc5e9349ffe07c98571b5aae484e7b033a55056acaeb29e": "<",
+    "w373l343-76l212-76l212-198l169-198l169-76l38-76l38-32l169-32l169+97l212+97l212-32l343-32|": "?",
+    "600ecd2ed6854c9ae2ac5f6c470676f49f540075980b6de0d572d69bea6c99a370ab96c69e01841e9fe5862d21c7b2bc770c636b3bc67d436ad20a4f1eb570e2": "[",
+    "a5dda9efe3c78d505aa5a724eb229609ea139136b11dd62fb40d80e2890ca42e0f34e0a7e847941f50dba87706c70fd62d23001be0ee4b22a450d3952bbf824f": "]",
+    "w545l324-359o333-360q383-359l194-76l385+205l325+206l133-76|l451-353l489-353l298-76l489+197l449+197l257-76|": "{",
+    "w518l276-359o268-360q217-359l406-76l215+205l275+206l467-76|l150-353l111-353l302-76l111+197l152+197l343-76|": "}",
+    "9d4073a567195cadd08df8dd540b0f0ba697c2fad47f1c41a67ffa14384d51c64283ef25cfdd9765118c515d251bc29c7b964fdc578552ec8680608da60a214f": "‘",
+    "34d6a6a412ba6b38c622201d78e63b2fd072d0c48f9961196808b7a7e8048aaebe797376213908ef0255566664d0bbf7eecd1c3e2114d7757c2308d49a64e60a": "’",
+    "56a6678741782705de1907e23964d0db2f3d552fdc1d4a231be78ffa5b65192bbd47840dd552ecec28568289745b31dd2f57d20cb755e6374578f391f0106aa6": "™",
+    "2c9f804a1538cbcfa4cd1ba64777d5647759b29247bbf6ee1bf5b54351779a9cce6cdd5ac4939faae33c0fa23a1d8b210a7f099dc16f0fecb599dc77312c6a61": ""
+  },
+  "_meta": {
+    "lookup_kind": "gshape",
+    "source": "tibetan-fonts-main.zip::tibetan-fonts-main/Non-Unicode Fonts/Monlam/Monlam Tigma-choug 2.TTF",
+    "gids_mapped": 210,
+    "multi_char_stacks": 0,
+    "gsub_lookup_counts": {},
+    "entries": 26,
+    "fingerprint_method": "HashPointPen+RoundingPointPen(floatToFixedToFloat 14-bit)",
+    "hash_collisions": [
+      {
+        "fingerprint": "w0",
+        "kept_unicode": "!",
+        "skipped_gid": 5,
+        "skipped_glyph_name": "quotedbl",
+        "skipped_unicode": "\""
+      },
+      {
+        "fingerprint": "w0",
+        "kept_unicode": "!",
+        "skipped_gid": 6,
+        "skipped_glyph_name": "numbersign",
+        "skipped_unicode": "#"
+      },
+      {
+        "fingerprint": "w0",
+        "kept_unicode": "!",
+        "skipped_gid": 7,
+        "skipped_glyph_name": "dollar",
+        "skipped_unicode": "$"
+      },
+      {
+        "fingerprint": "w0",
+        "kept_unicode": "!",
+        "skipped_gid": 8,
+        "skipped_glyph_name": "percent",
+        "skipped_unicode": "%"
+      },
+      {
+        "fingerprint": "w0",
+        "kept_unicode": "!",
+        "skipped_gid": 9,
+        "skipped_glyph_name": "ampersand",
+        "skipped_unicode": "&"
+      },
+      {
+        "fingerprint": "w0",
+        "kept_unicode": "!",
+        "skipped_gid": 10,
+        "skipped_glyph_name": "quotesingle",
+        "skipped_unicode": "'"
+      },
+      {
+        "fingerprint": "w0",
+        "kept_unicode": "!",
+        "skipped_gid": 14,
+        "skipped_glyph_name": "plus",
+        "skipped_unicode": "+"
+      },
+      {
+        "fingerprint": "w0",
+        "kept_unicode": "!",
+        "skipped_gid": 17,
+        "skipped_glyph_name": "period",
+        "skipped_unicode": "."
+      },
+      {
+        "fingerprint": "w0",
+        "kept_unicode": "!",
+        "skipped_gid": 18,
+        "skipped_glyph_name": "slash",
+        "skipped_unicode": "/"
+      },
+      {
+        "fingerprint": "w0",
+        "kept_unicode": "!",
+        "skipped_gid": 29,
+        "skipped_glyph_name": "colon",
+        "skipped_unicode": ":"
+      },
+      {
+        "fingerprint": "w0",
+        "kept_unicode": "!",
+        "skipped_gid": 30,
+        "skipped_glyph_name": "semicolon",
+        "skipped_unicode": ";"
+      },
+      {
+        "fingerprint": "w0",
+        "kept_unicode": "!",
+        "skipped_gid": 32,
+        "skipped_glyph_name": "equal",
+        "skipped_unicode": "="
+      },
+      {
+        "fingerprint": "w0",
+        "kept_unicode": "!",
+        "skipped_gid": 33,
+        "skipped_glyph_name": "greater",
+        "skipped_unicode": ">"
+      },
+      {
+        "fingerprint": "w0",
+        "kept_unicode": "!",
+        "skipped_gid": 35,
+        "skipped_glyph_name": "at",
+        "skipped_unicode": "@"
+      },
+      {
+        "fingerprint": "w0",
+        "kept_unicode": "!",
+        "skipped_gid": 36,
+        "skipped_glyph_name": "A",
+        "skipped_unicode": "A"
+      },
+      {
+        "fingerprint": "w0",
+        "kept_unicode": "!",
+        "skipped_gid": 37,
+        "skipped_glyph_name": "B",
+        "skipped_unicode": "B"
+      },
+      {
+        "fingerprint": "w0",
+        "kept_unicode": "!",
+        "skipped_gid": 38,
+        "skipped_glyph_name": "C",
+        "skipped_unicode": "C"
+      },
+      {
+        "fingerprint": "w0",
+        "kept_unicode": "!",
+        "skipped_gid": 39,
+        "skipped_glyph_name": "D",
+        "skipped_unicode": "D"
+      },
+      {
+        "fingerprint": "w0",
+        "kept_unicode": "!",
+        "skipped_gid": 40,
+        "skipped_glyph_name": "E",
+        "skipped_unicode": "E"
+      },
+      {
+        "fingerprint": "w0",
+        "kept_unicode": "!",
+        "skipped_gid": 41,
+        "skipped_glyph_name": "F",
+        "skipped_unicode": "F"
+      },
+      {
+        "fingerprint": "w0",
+        "kept_unicode": "!",
+        "skipped_gid": 42,
+        "skipped_glyph_name": "G",
+        "skipped_unicode": "G"
+      },
+      {
+        "fingerprint": "w0",
+        "kept_unicode": "!",
+        "skipped_gid": 43,
+        "skipped_glyph_name": "H",
+        "skipped_unicode": "H"
+      },
+      {
+        "fingerprint": "w0",
+        "kept_unicode": "!",
+        "skipped_gid": 44,
+        "skipped_glyph_name": "I",
+        "skipped_unicode": "I"
+      },
+      {
+        "fingerprint": "w0",
+        "kept_unicode": "!",
+        "skipped_gid": 45,
+        "skipped_glyph_name": "J",
+        "skipped_unicode": "J"
+      },
+      {
+        "fingerprint": "w0",
+        "kept_unicode": "!",
+        "skipped_gid": 46,
+        "skipped_glyph_name": "K",
+        "skipped_unicode": "K"
+      },
+      {
+        "fingerprint": "w0",
+        "kept_unicode": "!",
+        "skipped_gid": 47,
+        "skipped_glyph_name": "L",
+        "skipped_unicode": "L"
+      },
+      {
+        "fingerprint": "w0",
+        "kept_unicode": "!",
+        "skipped_gid": 49,
+        "skipped_glyph_name": "backslash",
+        "skipped_unicode": "\\"
+      },
+      {
+        "fingerprint": "w0",
+        "kept_unicode": "!",
+        "skipped_gid": 51,
+        "skipped_glyph_name": "asciicircum",
+        "skipped_unicode": "^"
+      },
+      {
+        "fingerprint": "w0",
+        "kept_unicode": "!",
+        "skipped_gid": 52,
+        "skipped_glyph_name": "underscore",
+        "skipped_unicode": "_"
+      },
+      {
+        "fingerprint": "w0",
+        "kept_unicode": "!",
+        "skipped_gid": 53,
+        "skipped_glyph_name": "grave",
+        "skipped_unicode": "`"
+      },
+      {
+        "fingerprint": "w0",
+        "kept_unicode": "!",
+        "skipped_gid": 54,
+        "skipped_glyph_name": "a",
+        "skipped_unicode": "a"
+      },
+      {
+        "fingerprint": "w0",
+        "kept_unicode": "!",
+        "skipped_gid": 55,
+        "skipped_glyph_name": "b",
+        "skipped_unicode": "b"
+      },
+      {
+        "fingerprint": "w0",
+        "kept_unicode": "!",
+        "skipped_gid": 56,
+        "skipped_glyph_name": "c",
+        "skipped_unicode": "c"
+      },
+      {
+        "fingerprint": "w0",
+        "kept_unicode": "!",
+        "skipped_gid": 57,
+        "skipped_glyph_name": "d",
+        "skipped_unicode": "d"
+      },
+      {
+        "fingerprint": "w0",
+        "kept_unicode": "!",
+        "skipped_gid": 58,
+        "skipped_glyph_name": "e",
+        "skipped_unicode": "e"
+      },
+      {
+        "fingerprint": "w0",
+        "kept_unicode": "!",
+        "skipped_gid": 59,
+        "skipped_glyph_name": "f",
+        "skipped_unicode": "f"
+      },
+      {
+        "fingerprint": "w0",
+        "kept_unicode": "!",
+        "skipped_gid": 60,
+        "skipped_glyph_name": "g",
+        "skipped_unicode": "g"
+      },
+      {
+        "fingerprint": "w0",
+        "kept_unicode": "!",
+        "skipped_gid": 61,
+        "skipped_glyph_name": "h",
+        "skipped_unicode": "h"
+      },
+      {
+        "fingerprint": "w0",
+        "kept_unicode": "!",
+        "skipped_gid": 62,
+        "skipped_glyph_name": "i",
+        "skipped_unicode": "i"
+      },
+      {
+        "fingerprint": "w0",
+        "kept_unicode": "!",
+        "skipped_gid": 63,
+        "skipped_glyph_name": "j",
+        "skipped_unicode": "j"
+      },
+      {
+        "fingerprint": "w0",
+        "kept_unicode": "!",
+        "skipped_gid": 64,
+        "skipped_glyph_name": "k",
+        "skipped_unicode": "k"
+      },
+      {
+        "fingerprint": "w0",
+        "kept_unicode": "!",
+        "skipped_gid": 65,
+        "skipped_glyph_name": "l",
+        "skipped_unicode": "l"
+      },
+      {
+        "fingerprint": "w0",
+        "kept_unicode": "!",
+        "skipped_gid": 66,
+        "skipped_glyph_name": "m",
+        "skipped_unicode": "m"
+      },
+      {
+        "fingerprint": "w0",
+        "kept_unicode": "!",
+        "skipped_gid": 67,
+        "skipped_glyph_name": "n",
+        "skipped_unicode": "n"
+      },
+      {
+        "fingerprint": "w0",
+        "kept_unicode": "!",
+        "skipped_gid": 68,
+        "skipped_glyph_name": "o",
+        "skipped_unicode": "o"
+      },
+      {
+        "fingerprint": "w0",
+        "kept_unicode": "!",
+        "skipped_gid": 69,
+        "skipped_glyph_name": "p",
+        "skipped_unicode": "p"
+      },
+      {
+        "fingerprint": "w0",
+        "kept_unicode": "!",
+        "skipped_gid": 70,
+        "skipped_glyph_name": "q",
+        "skipped_unicode": "q"
+      },
+      {
+        "fingerprint": "w0",
+        "kept_unicode": "!",
+        "skipped_gid": 71,
+        "skipped_glyph_name": "r",
+        "skipped_unicode": "r"
+      },
+      {
+        "fingerprint": "w0",
+        "kept_unicode": "!",
+        "skipped_gid": 72,
+        "skipped_glyph_name": "s",
+        "skipped_unicode": "s"
+      },
+      {
+        "fingerprint": "w0",
+        "kept_unicode": "!",
+        "skipped_gid": 73,
+        "skipped_glyph_name": "t",
+        "skipped_unicode": "t"
+      },
+      {
+        "fingerprint": "w0",
+        "kept_unicode": "!",
+        "skipped_gid": 74,
+        "skipped_glyph_name": "u",
+        "skipped_unicode": "u"
+      },
+      {
+        "fingerprint": "w0",
+        "kept_unicode": "!",
+        "skipped_gid": 75,
+        "skipped_glyph_name": "v",
+        "skipped_unicode": "v"
+      },
+      {
+        "fingerprint": "w0",
+        "kept_unicode": "!",
+        "skipped_gid": 76,
+        "skipped_glyph_name": "w",
+        "skipped_unicode": "w"
+      },
+      {
+        "fingerprint": "w0",
+        "kept_unicode": "!",
+        "skipped_gid": 77,
+        "skipped_glyph_name": "x",
+        "skipped_unicode": "x"
+      },
+      {
+        "fingerprint": "w0",
+        "kept_unicode": "!",
+        "skipped_gid": 78,
+        "skipped_glyph_name": "y",
+        "skipped_unicode": "y"
+      },
+      {
+        "fingerprint": "w0",
+        "kept_unicode": "!",
+        "skipped_gid": 79,
+        "skipped_glyph_name": "z",
+        "skipped_unicode": "z"
+      },
+      {
+        "fingerprint": "w0",
+        "kept_unicode": "!",
+        "skipped_gid": 81,
+        "skipped_glyph_name": "bar",
+        "skipped_unicode": "|"
+      },
+      {
+        "fingerprint": "w0",
+        "kept_unicode": "!",
+        "skipped_gid": 83,
+        "skipped_glyph_name": "asciitilde",
+        "skipped_unicode": "~"
+      },
+      {
+        "fingerprint": "w0",
+        "kept_unicode": "!",
+        "skipped_gid": 84,
+        "skipped_glyph_name": "exclamdown",
+        "skipped_unicode": "¡"
+      },
+      {
+        "fingerprint": "w0",
+        "kept_unicode": "!",
+        "skipped_gid": 85,
+        "skipped_glyph_name": "cent",
+        "skipped_unicode": "¢"
+      },
+      {
+        "fingerprint": "w0",
+        "kept_unicode": "!",
+        "skipped_gid": 86,
+        "skipped_glyph_name": "sterling",
+        "skipped_unicode": "£"
+      },
+      {
+        "fingerprint": "w0",
+        "kept_unicode": "!",
+        "skipped_gid": 87,
+        "skipped_glyph_name": "currency",
+        "skipped_unicode": "¤"
+      },
+      {
+        "fingerprint": "w0",
+        "kept_unicode": "!",
+        "skipped_gid": 88,
+        "skipped_glyph_name": "yen",
+        "skipped_unicode": "¥"
+      },
+      {
+        "fingerprint": "w0",
+        "kept_unicode": "!",
+        "skipped_gid": 89,
+        "skipped_glyph_name": "brokenbar",
+        "skipped_unicode": "¦"
+      },
+      {
+        "fingerprint": "w0",
+        "kept_unicode": "!",
+        "skipped_gid": 90,
+        "skipped_glyph_name": "section",
+        "skipped_unicode": "§"
+      },
+      {
+        "fingerprint": "w0",
+        "kept_unicode": "!",
+        "skipped_gid": 91,
+        "skipped_glyph_name": "dieresis",
+        "skipped_unicode": "¨"
+      },
+      {
+        "fingerprint": "w0",
+        "kept_unicode": "!",
+        "skipped_gid": 92,
+        "skipped_glyph_name": "copyright",
+        "skipped_unicode": "©"
+      },
+      {
+        "fingerprint": "w0",
+        "kept_unicode": "!",
+        "skipped_gid": 93,
+        "skipped_glyph_name": "ordfeminine",
+        "skipped_unicode": "ª"
+      },
+      {
+        "fingerprint": "w0",
+        "kept_unicode": "!",
+        "skipped_gid": 94,
+        "skipped_glyph_name": "guillemotleft",
+        "skipped_unicode": "«"
+      },
+      {
+        "fingerprint": "w0",
+        "kept_unicode": "!",
+        "skipped_gid": 95,
+        "skipped_glyph_name": "logicalnot",
+        "skipped_unicode": "¬"
+      },
+      {
+        "fingerprint": "w0",
+        "kept_unicode": "!",
+        "skipped_gid": 96,
+        "skipped_glyph_name": "registered",
+        "skipped_unicode": "®"
+      },
+      {
+        "fingerprint": "w0",
+        "kept_unicode": "!",
+        "skipped_gid": 98,
+        "skipped_glyph_name": "degree",
+        "skipped_unicode": "°"
+      },
+      {
+        "fingerprint": "w0",
+        "kept_unicode": "!",
+        "skipped_gid": 99,
+        "skipped_glyph_name": "plusminus",
+        "skipped_unicode": "±"
+      },
+      {
+        "fingerprint": "w0",
+        "kept_unicode": "!",
+        "skipped_gid": 100,
+        "skipped_glyph_name": "twosuperior",
+        "skipped_unicode": "²"
+      },
+      {
+        "fingerprint": "w0",
+        "kept_unicode": "!",
+        "skipped_gid": 101,
+        "skipped_glyph_name": "threesuperior",
+        "skipped_unicode": "³"
+      },
+      {
+        "fingerprint": "w0",
+        "kept_unicode": "!",
+        "skipped_gid": 102,
+        "skipped_glyph_name": "acute",
+        "skipped_unicode": "´"
+      },
+      {
+        "fingerprint": "w0",
+        "kept_unicode": "!",
+        "skipped_gid": 104,
+        "skipped_glyph_name": "paragraph",
+        "skipped_unicode": "¶"
+      },
+      {
+        "fingerprint": "w0",
+        "kept_unicode": "!",
+        "skipped_gid": 105,
+        "skipped_glyph_name": "middot",
+        "skipped_unicode": "∙"
+      },
+      {
+        "fingerprint": "w0",
+        "kept_unicode": "!",
+        "skipped_gid": 106,
+        "skipped_glyph_name": "cedilla",
+        "skipped_unicode": "¸"
+      },
+      {
+        "fingerprint": "w0",
+        "kept_unicode": "!",
+        "skipped_gid": 107,
+        "skipped_glyph_name": "onesuperior",
+        "skipped_unicode": "¹"
+      },
+      {
+        "fingerprint": "w0",
+        "kept_unicode": "!",
+        "skipped_gid": 108,
+        "skipped_glyph_name": "ordmasculine",
+        "skipped_unicode": "º"
+      },
+      {
+        "fingerprint": "w0",
+        "kept_unicode": "!",
+        "skipped_gid": 109,
+        "skipped_glyph_name": "guillemotright",
+        "skipped_unicode": "»"
+      },
+      {
+        "fingerprint": "w0",
+        "kept_unicode": "!",
+        "skipped_gid": 110,
+        "skipped_glyph_name": "onequarter",
+        "skipped_unicode": "¼"
+      },
+      {
+        "fingerprint": "w0",
+        "kept_unicode": "!",
+        "skipped_gid": 111,
+        "skipped_glyph_name": "onehalf",
+        "skipped_unicode": "½"
+      },
+      {
+        "fingerprint": "w0",
+        "kept_unicode": "!",
+        "skipped_gid": 112,
+        "skipped_glyph_name": "threequarters",
+        "skipped_unicode": "¾"
+      },
+      {
+        "fingerprint": "w0",
+        "kept_unicode": "!",
+        "skipped_gid": 113,
+        "skipped_glyph_name": "questiondown",
+        "skipped_unicode": "¿"
+      },
+      {
+        "fingerprint": "w0",
+        "kept_unicode": "!",
+        "skipped_gid": 114,
+        "skipped_glyph_name": "Agrave",
+        "skipped_unicode": "À"
+      },
+      {
+        "fingerprint": "w0",
+        "kept_unicode": "!",
+        "skipped_gid": 115,
+        "skipped_glyph_name": "Aacute",
+        "skipped_unicode": "Á"
+      },
+      {
+        "fingerprint": "w0",
+        "kept_unicode": "!",
+        "skipped_gid": 116,
+        "skipped_glyph_name": "Acircumflex",
+        "skipped_unicode": "Â"
+      },
+      {
+        "fingerprint": "w0",
+        "kept_unicode": "!",
+        "skipped_gid": 117,
+        "skipped_glyph_name": "Atilde",
+        "skipped_unicode": "Ã"
+      },
+      {
+        "fingerprint": "w0",
+        "kept_unicode": "!",
+        "skipped_gid": 118,
+        "skipped_glyph_name": "Adieresis",
+        "skipped_unicode": "Ä"
+      },
+      {
+        "fingerprint": "w0",
+        "kept_unicode": "!",
+        "skipped_gid": 119,
+        "skipped_glyph_name": "Aring",
+        "skipped_unicode": "Å"
+      },
+      {
+        "fingerprint": "w0",
+        "kept_unicode": "!",
+        "skipped_gid": 120,
+        "skipped_glyph_name": "AE",
+        "skipped_unicode": "Æ"
+      },
+      {
+        "fingerprint": "w0",
+        "kept_unicode": "!",
+        "skipped_gid": 121,
+        "skipped_glyph_name": "Ccedilla",
+        "skipped_unicode": "Ç"
+      },
+      {
+        "fingerprint": "w0",
+        "kept_unicode": "!",
+        "skipped_gid": 122,
+        "skipped_glyph_name": "Egrave",
+        "skipped_unicode": "È"
+      },
+      {
+        "fingerprint": "w0",
+        "kept_unicode": "!",
+        "skipped_gid": 123,
+        "skipped_glyph_name": "Eacute",
+        "skipped_unicode": "É"
+      },
+      {
+        "fingerprint": "w0",
+        "kept_unicode": "!",
+        "skipped_gid": 124,
+        "skipped_glyph_name": "Ecircumflex",
+        "skipped_unicode": "Ê"
+      },
+      {
+        "fingerprint": "w0",
+        "kept_unicode": "!",
+        "skipped_gid": 125,
+        "skipped_glyph_name": "Edieresis",
+        "skipped_unicode": "Ë"
+      },
+      {
+        "fingerprint": "w0",
+        "kept_unicode": "!",
+        "skipped_gid": 126,
+        "skipped_glyph_name": "Igrave",
+        "skipped_unicode": "Ì"
+      },
+      {
+        "fingerprint": "w0",
+        "kept_unicode": "!",
+        "skipped_gid": 127,
+        "skipped_glyph_name": "Iacute",
+        "skipped_unicode": "Í"
+      },
+      {
+        "fingerprint": "w0",
+        "kept_unicode": "!",
+        "skipped_gid": 128,
+        "skipped_glyph_name": "Icircumflex",
+        "skipped_unicode": "Î"
+      },
+      {
+        "fingerprint": "w0",
+        "kept_unicode": "!",
+        "skipped_gid": 129,
+        "skipped_glyph_name": "Idieresis",
+        "skipped_unicode": "Ï"
+      },
+      {
+        "fingerprint": "w0",
+        "kept_unicode": "!",
+        "skipped_gid": 130,
+        "skipped_glyph_name": "Eth",
+        "skipped_unicode": "Ð"
+      },
+      {
+        "fingerprint": "w0",
+        "kept_unicode": "!",
+        "skipped_gid": 131,
+        "skipped_glyph_name": "Ntilde",
+        "skipped_unicode": "Ñ"
+      },
+      {
+        "fingerprint": "w0",
+        "kept_unicode": "!",
+        "skipped_gid": 132,
+        "skipped_glyph_name": "Ograve",
+        "skipped_unicode": "Ò"
+      },
+      {
+        "fingerprint": "w0",
+        "kept_unicode": "!",
+        "skipped_gid": 133,
+        "skipped_glyph_name": "Oacute",
+        "skipped_unicode": "Ó"
+      },
+      {
+        "fingerprint": "w0",
+        "kept_unicode": "!",
+        "skipped_gid": 134,
+        "skipped_glyph_name": "Ocircumflex",
+        "skipped_unicode": "Ô"
+      },
+      {
+        "fingerprint": "w0",
+        "kept_unicode": "!",
+        "skipped_gid": 135,
+        "skipped_glyph_name": "Otilde",
+        "skipped_unicode": "Õ"
+      },
+      {
+        "fingerprint": "w0",
+        "kept_unicode": "!",
+        "skipped_gid": 136,
+        "skipped_glyph_name": "Odieresis",
+        "skipped_unicode": "Ö"
+      },
+      {
+        "fingerprint": "w0",
+        "kept_unicode": "!",
+        "skipped_gid": 137,
+        "skipped_glyph_name": "multiply",
+        "skipped_unicode": "×"
+      },
+      {
+        "fingerprint": "w0",
+        "kept_unicode": "!",
+        "skipped_gid": 138,
+        "skipped_glyph_name": "Oslash",
+        "skipped_unicode": "Ø"
+      },
+      {
+        "fingerprint": "w0",
+        "kept_unicode": "!",
+        "skipped_gid": 139,
+        "skipped_glyph_name": "Ugrave",
+        "skipped_unicode": "Ù"
+      },
+      {
+        "fingerprint": "w0",
+        "kept_unicode": "!",
+        "skipped_gid": 140,
+        "skipped_glyph_name": "Uacute",
+        "skipped_unicode": "Ú"
+      },
+      {
+        "fingerprint": "w0",
+        "kept_unicode": "!",
+        "skipped_gid": 141,
+        "skipped_glyph_name": "Ucircumflex",
+        "skipped_unicode": "Û"
+      },
+      {
+        "fingerprint": "w0",
+        "kept_unicode": "!",
+        "skipped_gid": 142,
+        "skipped_glyph_name": "Udieresis",
+        "skipped_unicode": "Ü"
+      },
+      {
+        "fingerprint": "w0",
+        "kept_unicode": "!",
+        "skipped_gid": 143,
+        "skipped_glyph_name": "Yacute",
+        "skipped_unicode": "Ý"
+      },
+      {
+        "fingerprint": "w0",
+        "kept_unicode": "!",
+        "skipped_gid": 144,
+        "skipped_glyph_name": "Thorn",
+        "skipped_unicode": "Þ"
+      },
+      {
+        "fingerprint": "w0",
+        "kept_unicode": "!",
+        "skipped_gid": 145,
+        "skipped_glyph_name": "germandbls",
+        "skipped_unicode": "ß"
+      },
+      {
+        "fingerprint": "w0",
+        "kept_unicode": "!",
+        "skipped_gid": 146,
+        "skipped_glyph_name": "agrave",
+        "skipped_unicode": "à"
+      },
+      {
+        "fingerprint": "w0",
+        "kept_unicode": "!",
+        "skipped_gid": 147,
+        "skipped_glyph_name": "aacute",
+        "skipped_unicode": "á"
+      },
+      {
+        "fingerprint": "w0",
+        "kept_unicode": "!",
+        "skipped_gid": 148,
+        "skipped_glyph_name": "acircumflex",
+        "skipped_unicode": "â"
+      },
+      {
+        "fingerprint": "w0",
+        "kept_unicode": "!",
+        "skipped_gid": 149,
+        "skipped_glyph_name": "atilde",
+        "skipped_unicode": "ã"
+      },
+      {
+        "fingerprint": "w0",
+        "kept_unicode": "!",
+        "skipped_gid": 150,
+        "skipped_glyph_name": "adieresis",
+        "skipped_unicode": "ä"
+      },
+      {
+        "fingerprint": "w0",
+        "kept_unicode": "!",
+        "skipped_gid": 151,
+        "skipped_glyph_name": "aring",
+        "skipped_unicode": "å"
+      },
+      {
+        "fingerprint": "w0",
+        "kept_unicode": "!",
+        "skipped_gid": 152,
+        "skipped_glyph_name": "ae",
+        "skipped_unicode": "æ"
+      },
+      {
+        "fingerprint": "w0",
+        "kept_unicode": "!",
+        "skipped_gid": 153,
+        "skipped_glyph_name": "ccedilla",
+        "skipped_unicode": "ç"
+      },
+      {
+        "fingerprint": "w0",
+        "kept_unicode": "!",
+        "skipped_gid": 154,
+        "skipped_glyph_name": "egrave",
+        "skipped_unicode": "è"
+      },
+      {
+        "fingerprint": "w0",
+        "kept_unicode": "!",
+        "skipped_gid": 155,
+        "skipped_glyph_name": "eacute",
+        "skipped_unicode": "é"
+      },
+      {
+        "fingerprint": "w0",
+        "kept_unicode": "!",
+        "skipped_gid": 156,
+        "skipped_glyph_name": "ecircumflex",
+        "skipped_unicode": "ê"
+      },
+      {
+        "fingerprint": "w0",
+        "kept_unicode": "!",
+        "skipped_gid": 157,
+        "skipped_glyph_name": "edieresis",
+        "skipped_unicode": "ë"
+      },
+      {
+        "fingerprint": "w0",
+        "kept_unicode": "!",
+        "skipped_gid": 158,
+        "skipped_glyph_name": "igrave",
+        "skipped_unicode": "ì"
+      },
+      {
+        "fingerprint": "w0",
+        "kept_unicode": "!",
+        "skipped_gid": 159,
+        "skipped_glyph_name": "iacute",
+        "skipped_unicode": "í"
+      },
+      {
+        "fingerprint": "w0",
+        "kept_unicode": "!",
+        "skipped_gid": 160,
+        "skipped_glyph_name": "icircumflex",
+        "skipped_unicode": "î"
+      },
+      {
+        "fingerprint": "w0",
+        "kept_unicode": "!",
+        "skipped_gid": 161,
+        "skipped_glyph_name": "idieresis",
+        "skipped_unicode": "ï"
+      },
+      {
+        "fingerprint": "w0",
+        "kept_unicode": "!",
+        "skipped_gid": 162,
+        "skipped_glyph_name": "eth",
+        "skipped_unicode": "ð"
+      },
+      {
+        "fingerprint": "w0",
+        "kept_unicode": "!",
+        "skipped_gid": 163,
+        "skipped_glyph_name": "ntilde",
+        "skipped_unicode": "ñ"
+      },
+      {
+        "fingerprint": "w0",
+        "kept_unicode": "!",
+        "skipped_gid": 164,
+        "skipped_glyph_name": "ograve",
+        "skipped_unicode": "ò"
+      },
+      {
+        "fingerprint": "w0",
+        "kept_unicode": "!",
+        "skipped_gid": 165,
+        "skipped_glyph_name": "oacute",
+        "skipped_unicode": "ó"
+      },
+      {
+        "fingerprint": "w0",
+        "kept_unicode": "!",
+        "skipped_gid": 166,
+        "skipped_glyph_name": "ocircumflex",
+        "skipped_unicode": "ô"
+      },
+      {
+        "fingerprint": "w0",
+        "kept_unicode": "!",
+        "skipped_gid": 167,
+        "skipped_glyph_name": "otilde",
+        "skipped_unicode": "õ"
+      },
+      {
+        "fingerprint": "w0",
+        "kept_unicode": "!",
+        "skipped_gid": 168,
+        "skipped_glyph_name": "odieresis",
+        "skipped_unicode": "ö"
+      },
+      {
+        "fingerprint": "w0",
+        "kept_unicode": "!",
+        "skipped_gid": 169,
+        "skipped_glyph_name": "divide",
+        "skipped_unicode": "÷"
+      },
+      {
+        "fingerprint": "w0",
+        "kept_unicode": "!",
+        "skipped_gid": 170,
+        "skipped_glyph_name": "oslash",
+        "skipped_unicode": "ø"
+      },
+      {
+        "fingerprint": "w0",
+        "kept_unicode": "!",
+        "skipped_gid": 171,
+        "skipped_glyph_name": "ugrave",
+        "skipped_unicode": "ù"
+      },
+      {
+        "fingerprint": "w0",
+        "kept_unicode": "!",
+        "skipped_gid": 172,
+        "skipped_glyph_name": "uacute",
+        "skipped_unicode": "ú"
+      },
+      {
+        "fingerprint": "w0",
+        "kept_unicode": "!",
+        "skipped_gid": 173,
+        "skipped_glyph_name": "ucircumflex",
+        "skipped_unicode": "û"
+      },
+      {
+        "fingerprint": "w0",
+        "kept_unicode": "!",
+        "skipped_gid": 174,
+        "skipped_glyph_name": "udieresis",
+        "skipped_unicode": "ü"
+      },
+      {
+        "fingerprint": "w0",
+        "kept_unicode": "!",
+        "skipped_gid": 175,
+        "skipped_glyph_name": "yacute",
+        "skipped_unicode": "ý"
+      },
+      {
+        "fingerprint": "w0",
+        "kept_unicode": "!",
+        "skipped_gid": 176,
+        "skipped_glyph_name": "thorn",
+        "skipped_unicode": "þ"
+      },
+      {
+        "fingerprint": "w0",
+        "kept_unicode": "!",
+        "skipped_gid": 177,
+        "skipped_glyph_name": "ydieresis",
+        "skipped_unicode": "ÿ"
+      },
+      {
+        "fingerprint": "w0",
+        "kept_unicode": "!",
+        "skipped_gid": 178,
+        "skipped_glyph_name": "Amacron",
+        "skipped_unicode": "Ā"
+      },
+      {
+        "fingerprint": "w0",
+        "kept_unicode": "!",
+        "skipped_gid": 179,
+        "skipped_glyph_name": "amacron",
+        "skipped_unicode": "ā"
+      },
+      {
+        "fingerprint": "w0",
+        "kept_unicode": "!",
+        "skipped_gid": 180,
+        "skipped_glyph_name": "Abreve",
+        "skipped_unicode": "Ă"
+      },
+      {
+        "fingerprint": "w0",
+        "kept_unicode": "!",
+        "skipped_gid": 181,
+        "skipped_glyph_name": "abreve",
+        "skipped_unicode": "ă"
+      },
+      {
+        "fingerprint": "w0",
+        "kept_unicode": "!",
+        "skipped_gid": 182,
+        "skipped_glyph_name": "Aogonek",
+        "skipped_unicode": "Ą"
+      },
+      {
+        "fingerprint": "w0",
+        "kept_unicode": "!",
+        "skipped_gid": 183,
+        "skipped_glyph_name": "aogonek",
+        "skipped_unicode": "ą"
+      },
+      {
+        "fingerprint": "w0",
+        "kept_unicode": "!",
+        "skipped_gid": 184,
+        "skipped_glyph_name": "Cacute",
+        "skipped_unicode": "Ć"
+      },
+      {
+        "fingerprint": "w0",
+        "kept_unicode": "!",
+        "skipped_gid": 185,
+        "skipped_glyph_name": "cacute",
+        "skipped_unicode": "ć"
+      },
+      {
+        "fingerprint": "w0",
+        "kept_unicode": "!",
+        "skipped_gid": 186,
+        "skipped_glyph_name": "OE",
+        "skipped_unicode": "Œ"
+      },
+      {
+        "fingerprint": "w0",
+        "kept_unicode": "!",
+        "skipped_gid": 187,
+        "skipped_glyph_name": "oe",
+        "skipped_unicode": "œ"
+      },
+      {
+        "fingerprint": "w0",
+        "kept_unicode": "!",
+        "skipped_gid": 188,
+        "skipped_glyph_name": "Scaron",
+        "skipped_unicode": "Š"
+      },
+      {
+        "fingerprint": "w0",
+        "kept_unicode": "!",
+        "skipped_gid": 189,
+        "skipped_glyph_name": "scaron",
+        "skipped_unicode": "š"
+      },
+      {
+        "fingerprint": "w0",
+        "kept_unicode": "!",
+        "skipped_gid": 190,
+        "skipped_glyph_name": "Ydieresis",
+        "skipped_unicode": "Ÿ"
+      },
+      {
+        "fingerprint": "w0",
+        "kept_unicode": "!",
+        "skipped_gid": 191,
+        "skipped_glyph_name": "florin",
+        "skipped_unicode": "ƒ"
+      },
+      {
+        "fingerprint": "w0",
+        "kept_unicode": "!",
+        "skipped_gid": 192,
+        "skipped_glyph_name": "circumflex",
+        "skipped_unicode": "ˆ"
+      },
+      {
+        "fingerprint": "w0",
+        "kept_unicode": "!",
+        "skipped_gid": 193,
+        "skipped_glyph_name": "macron",
+        "skipped_unicode": "ˉ"
+      },
+      {
+        "fingerprint": "w0",
+        "kept_unicode": "!",
+        "skipped_gid": 194,
+        "skipped_glyph_name": "tilde",
+        "skipped_unicode": "˜"
+      },
+      {
+        "fingerprint": "w0",
+        "kept_unicode": "!",
+        "skipped_gid": 195,
+        "skipped_glyph_name": "Epsilon",
+        "skipped_unicode": "Ε"
+      },
+      {
+        "fingerprint": "w0",
+        "kept_unicode": "!",
+        "skipped_gid": 196,
+        "skipped_glyph_name": "Nu",
+        "skipped_unicode": "Ν"
+      },
+      {
+        "fingerprint": "w0",
+        "kept_unicode": "!",
+        "skipped_gid": 197,
+        "skipped_glyph_name": "endash",
+        "skipped_unicode": "–"
+      },
+      {
+        "fingerprint": "w0",
+        "kept_unicode": "!",
+        "skipped_gid": 198,
+        "skipped_glyph_name": "emdash",
+        "skipped_unicode": "—"
+      },
+      {
+        "fingerprint": "w0",
+        "kept_unicode": "!",
+        "skipped_gid": 201,
+        "skipped_glyph_name": "quotesinglbase",
+        "skipped_unicode": "‚"
+      },
+      {
+        "fingerprint": "w0",
+        "kept_unicode": "!",
+        "skipped_gid": 202,
+        "skipped_glyph_name": "quotedblbase",
+        "skipped_unicode": "„"
+      },
+      {
+        "fingerprint": "w0",
+        "kept_unicode": "!",
+        "skipped_gid": 203,
+        "skipped_glyph_name": "dagger",
+        "skipped_unicode": "†"
+      },
+      {
+        "fingerprint": "w0",
+        "kept_unicode": "!",
+        "skipped_gid": 204,
+        "skipped_glyph_name": "daggerdbl",
+        "skipped_unicode": "‡"
+      },
+      {
+        "fingerprint": "w0",
+        "kept_unicode": "!",
+        "skipped_gid": 205,
+        "skipped_glyph_name": "bullet",
+        "skipped_unicode": "•"
+      },
+      {
+        "fingerprint": "w0",
+        "kept_unicode": "!",
+        "skipped_gid": 206,
+        "skipped_glyph_name": "ellipsis",
+        "skipped_unicode": "…"
+      },
+      {
+        "fingerprint": "w0",
+        "kept_unicode": "!",
+        "skipped_gid": 207,
+        "skipped_glyph_name": "perthousand",
+        "skipped_unicode": "‰"
+      },
+      {
+        "fingerprint": "w0",
+        "kept_unicode": "!",
+        "skipped_gid": 208,
+        "skipped_glyph_name": "guilsinglleft",
+        "skipped_unicode": "‹"
+      },
+      {
+        "fingerprint": "w0",
+        "kept_unicode": "!",
+        "skipped_gid": 209,
+        "skipped_glyph_name": "guilsinglright",
+        "skipped_unicode": "›"
+      },
+      {
+        "fingerprint": "w403",
+        "kept_unicode": " ",
+        "skipped_gid": 244,
+        "skipped_glyph_name": "nonbreakingspace",
+        "skipped_unicode": " "
+      },
+      {
+        "fingerprint": "w0",
+        "kept_unicode": "!",
+        "skipped_gid": 245,
+        "skipped_glyph_name": "ch263",
+        "skipped_unicode": "¯"
+      },
+      {
+        "fingerprint": "w0",
+        "kept_unicode": "!",
+        "skipped_gid": 246,
+        "skipped_glyph_name": "ch265",
+        "skipped_unicode": "μ"
+      },
+      {
+        "fingerprint": "w0",
+        "kept_unicode": "!",
+        "skipped_gid": 247,
+        "skipped_glyph_name": "ch266",
+        "skipped_unicode": "‐"
+      }
+    ],
+    "gshape_rows_patched_from_public_gname": 0,
+    "gshape_patch_skipped_no_hash_to_gname": 0,
+    "gshape_patch_skipped_no_pua_in_value": 26,
+    "gshape_patch_font_hash_collisions": 221
+  }
+}

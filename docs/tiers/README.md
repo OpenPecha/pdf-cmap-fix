@@ -12,6 +12,8 @@ Use this page as a **map** between tier numbers, **`pdf_cmap_fix/data/`** direct
 
 Each JSON file sets **`_meta.lookup_kind`** to `gid`, `gname`, or `gshape`. The extractor reads whichever folder you point at.
 
+**CLI commands** (extract, patch, `--font-lookup-dir` per tier): see [README § CLI by lookup tier](../../README.md#cli-by-lookup-tier).
+
 ## Maintainer: where is the CLI for each tier?
 
 | Tier | Scripts folder |

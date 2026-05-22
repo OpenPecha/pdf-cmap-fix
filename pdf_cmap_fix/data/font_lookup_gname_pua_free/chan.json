@@ -1,0 +1,13 @@
+{
+  "chan": {},
+  "_meta": {
+    "lookup_kind": "gname",
+    "source": "tibetan-fonts-main.zip::tibetan-fonts-main/Non-Unicode Fonts/chan.TTF",
+    "gids_mapped": 0,
+    "multi_char_stacks": 0,
+    "gsub_lookup_counts": {},
+    "entries": 0,
+    "pua_to_unicode_from_uni_names": true,
+    "pua_rows_rewritten": 0
+  }
+}

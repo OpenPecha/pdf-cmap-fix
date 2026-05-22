@@ -1,0 +1,15 @@
+{
+  "drukfonv13": {
+    "1": "\u0000",
+    "2": "\r"
+  },
+  "_meta": {
+    "lookup_kind": "gid",
+    "source": "tibetan-fonts-main.zip::tibetan-fonts-main/Non-Unicode Fonts/Druk/DrukV13-1991/DrukFonV13.ttf",
+    "gids_mapped": 2,
+    "multi_char_stacks": 0,
+    "gsub_lookup_counts": {},
+    "gid_rows_patched_from_gname_json": 0,
+    "gid_patch_missing_gname_entries": 0
+  }
+}

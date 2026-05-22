@@ -1,0 +1,19 @@
+{
+  "drukfonv13": {
+    "w0": "\u0000",
+    "w250": "\r"
+  },
+  "_meta": {
+    "lookup_kind": "gshape",
+    "source": "tibetan-fonts-main.zip::tibetan-fonts-main/Non-Unicode Fonts/Druk/DrukV13-1991/DrukFonV13.ttf",
+    "gids_mapped": 2,
+    "multi_char_stacks": 0,
+    "gsub_lookup_counts": {},
+    "entries": 2,
+    "fingerprint_method": "HashPointPen+RoundingPointPen(floatToFixedToFloat 14-bit)",
+    "gshape_rows_patched_from_public_gname": 0,
+    "gshape_patch_skipped_no_hash_to_gname": 0,
+    "gshape_patch_skipped_no_pua_in_value": 2,
+    "gshape_patch_font_hash_collisions": 0
+  }
+}
