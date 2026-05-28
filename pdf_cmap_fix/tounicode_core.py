@@ -16,6 +16,8 @@ from typing import Any, Iterable, Literal, Optional, Tuple
 import fitz
 from fontTools.ttLib import TTFont
 
+from pdf_cmap_fix.content_streams import collect_referenced_gids
+
 LookupTier = Literal["gid", "gname", "gshape"]
 
 PREVIEW_LINES = 15
@@ -160,35 +162,154 @@ def _resolve_db_gid_map(
                 pass
 
 
+_LOOKUP_FILE_CACHE: dict[tuple[str, float, int], Optional[Tuple[str, dict[str, str]]]] = {}
+
+
+def _load_lookup_file_cached(path: Path) -> Optional[Tuple[str, dict[str, str]]]:
+    """Process-global cached version of :func:`_load_lookup_file`.
+
+    Lookup JSON files are read-only data shipped with the package (or
+    pointed at via ``--font-lookup-dir``); parsing
+    ``microsofthimalaya.json`` (~1.5 MB, 1500 entries) once per
+    ``patch_doc`` call dominates batch runtimes.
+    """
+    try:
+        st = path.stat()
+    except OSError:
+        return _load_lookup_file(path)
+    cache_key = (str(path.resolve()), st.st_mtime, st.st_size)
+    if cache_key in _LOOKUP_FILE_CACHE:
+        return _LOOKUP_FILE_CACHE[cache_key]
+    loaded = _load_lookup_file(path)
+    _LOOKUP_FILE_CACHE[cache_key] = loaded
+    return loaded
+
+
+def _hex_to_unicode(hex_str: str) -> str:
+    """Decode an even-length hex string as a UTF-16-BE unicode value."""
+    if not hex_str:
+        return ""
+    if len(hex_str) % 2 == 1:
+        hex_str = "0" + hex_str
+    try:
+        raw = bytes.fromhex(hex_str)
+    except ValueError:
+        return ""
+    if len(raw) % 2 == 1:
+        raw = b"\x00" + raw
+    try:
+        return raw.decode("utf-16-be", errors="replace")
+    except UnicodeDecodeError:
+        return ""
+
+
+def _tokenise_cmap_block(text: str):
+    """Tokenise a bfchar/bfrange block.
+
+    Yields ``("hex", value)`` for ``<...>`` tokens, ``("[", None)``,
+    ``("]", None)`` for array delimiters, and ignores everything else.
+    """
+    i = 0
+    n = len(text)
+    while i < n:
+        c = text[i]
+        if c == "<":
+            j = text.find(">", i)
+            if j == -1:
+                break
+            yield ("hex", text[i + 1 : j])
+            i = j + 1
+            continue
+        if c == "[":
+            yield ("[", None)
+            i += 1
+            continue
+        if c == "]":
+            yield ("]", None)
+            i += 1
+            continue
+        i += 1
+
+
 def _parse_tounicode(stream: bytes) -> dict:
-    text = stream.decode("latin-1")
-    result: dict = {}
+    """Parse a CMap ToUnicode stream.
+
+    Handles the three forms in PDF 1.7 §9.10.3 / Adobe TN 5099:
+    ``bfchar``, range-form ``bfrange`` and array-form ``bfrange``.
+    The previous regex-based implementation silently mis-parsed the
+    array form (``<lo> <hi> [<u1> <u2> …]``), inflating clean CMaps to
+    millions of bogus entries (see bug 02-performance.md).
+    """
+    text = stream.decode("latin-1", errors="replace")
+    result: dict[int, str] = {}
 
     for blk in re.finditer(r"beginbfchar(.*?)endbfchar", text, re.DOTALL):
-        for m in re.finditer(r"<([0-9A-Fa-f]+)>\s*<([0-9A-Fa-f]+)>", blk.group(1)):
-            try:
-                code = int(m.group(1), 16)
-                uni = "".join(
-                    chr(int(m.group(2)[i : i + 4], 16))
-                    for i in range(0, len(m.group(2)), 4)
-                )
-                result[code] = uni
-            except (ValueError, OverflowError):
-                pass
+        toks = list(_tokenise_cmap_block(blk.group(1)))
+        i = 0
+        while i + 1 < len(toks):
+            ka, va = toks[i]
+            kb, vb = toks[i + 1]
+            if ka == "hex" and kb == "hex":
+                try:
+                    code = int(va, 16)
+                except ValueError:
+                    i += 2
+                    continue
+                result[code] = _hex_to_unicode(vb)
+                i += 2
+            else:
+                i += 1
 
     for blk in re.finditer(r"beginbfrange(.*?)endbfrange", text, re.DOTALL):
-        for m in re.finditer(
-            r"<([0-9A-Fa-f]+)>\s*<([0-9A-Fa-f]+)>\s*<([0-9A-Fa-f]+)>",
-            blk.group(1),
-        ):
+        toks = list(_tokenise_cmap_block(blk.group(1)))
+        i = 0
+        while i < len(toks):
+            if i + 1 >= len(toks):
+                break
+            t_lo = toks[i]
+            t_hi = toks[i + 1]
+            if t_lo[0] != "hex" or t_hi[0] != "hex":
+                i += 1
+                continue
             try:
-                lo = int(m.group(1), 16)
-                hi = int(m.group(2), 16)
-                base = int(m.group(3), 16)
-                for off in range(hi - lo + 1):
-                    result[lo + off] = chr(base + off)
-            except (ValueError, OverflowError):
-                pass
+                lo = int(t_lo[1], 16)
+                hi = int(t_hi[1], 16)
+            except ValueError:
+                i += 2
+                continue
+            j = i + 2
+            if j >= len(toks):
+                break
+            if toks[j][0] == "hex":
+                base_hex = toks[j][1]
+                base_uni = _hex_to_unicode(base_hex)
+                if base_uni:
+                    span = hi - lo + 1
+                    if span > 0 and span <= 0x10000:
+                        for off in range(span):
+                            if len(base_uni) == 1:
+                                result[lo + off] = chr(
+                                    (ord(base_uni[0]) + off) & 0xFFFF
+                                )
+                            else:
+                                last = ord(base_uni[-1])
+                                result[lo + off] = (
+                                    base_uni[:-1]
+                                    + chr((last + off) & 0xFFFF)
+                                )
+                i = j + 1
+            elif toks[j][0] == "[":
+                k = j + 1
+                idx = 0
+                while k < len(toks) and toks[k][0] != "]":
+                    if toks[k][0] == "hex":
+                        if idx <= hi - lo:
+                            result[lo + idx] = _hex_to_unicode(toks[k][1])
+                        idx += 1
+                    k += 1
+                i = k + 1 if k < len(toks) else k
+            else:
+                i = j
 
     return result
 
@@ -219,10 +340,30 @@ def _build_tounicode_type0(mapping: dict) -> bytes:
     return "\n".join(lines).encode("latin-1")
 
 
-def _merge(existing: dict, db_map: dict) -> tuple:
+def _merge(
+    existing: dict,
+    db_map: dict,
+    referenced: Optional[set] = None,
+) -> tuple:
+    """Merge ``db_map`` into ``existing``.
+
+    If ``referenced`` is given, only GIDs in that set are eligible for
+    upgrade. This is the key performance lever on subsetted fonts: a
+    Word-style ``microsofthimalaya.json`` lookup has ~1500 entries, but
+    a per-page subset typically references ~10–80 GIDs. Without this
+    filter we'd treat the other ~1400 entries as ``changed`` and
+    rewrite the (semantically identical) ToUnicode stream for every
+    subset (see bug report 02-performance.md). When ``referenced`` is
+    ``None`` (back-compat) we fall back to the old "consider every
+    db_map entry" behaviour.
+    """
     merged = dict(existing)
     changed = 0
-    for gid, db_uni in db_map.items():
+    if referenced is None:
+        items = db_map.items()
+    else:
+        items = ((gid, db_map[gid]) for gid in db_map.keys() & referenced)
+    for gid, db_uni in items:
         if db_uni != existing.get(gid, ""):
             merged[gid] = db_uni
             changed += 1
@@ -250,8 +391,6 @@ def collect_font_merges(
     also accepts files with missing ``lookup_kind``). Merge output is always
     GID → Unicode for the PDF cmap.
     """
-    cache: dict[tuple[str, str], Optional[Tuple[str, dict[str, str]]]] = {}
-
     keys_disk = _discover_lookup_keys(lookup_dir)
     db_index = _build_db_index(keys_disk)
 
@@ -259,6 +398,14 @@ def collect_font_merges(
     records: list[dict[str, Any]] = []
     seen: set = set()
     reported: set = set()
+
+    type0_xrefs: set[int] = set()
+    for pno in range(len(doc)):
+        for f in doc[pno].get_fonts(full=True):
+            xref, _, ftype, _, _, _, _ = f
+            if ftype == "Type0":
+                type0_xrefs.add(xref)
+    referenced_by_xref = collect_referenced_gids(doc, type0_xrefs=type0_xrefs)
 
     for pno in range(len(doc)):
         for f in doc[pno].get_fonts(full=True):
@@ -292,14 +439,9 @@ def collect_font_merges(
             else:
                 path = lookup_dir / f"{picked}.json"
                 if path.is_file():
-                    cache_key = (str(path.resolve()), tier)
-                    if cache_key not in cache:
-                        raw = _load_lookup_file(path)
-                        if raw is not None and raw[0] == tier:
-                            cache[cache_key] = raw
-                        else:
-                            cache[cache_key] = None
-                    loaded = cache[cache_key]
+                    loaded = _load_lookup_file_cached(path)
+                    if loaded is not None and loaded[0] != tier:
+                        loaded = None
                     db_map = None
                     db_key = None
                     if loaded is not None:
@@ -335,7 +477,14 @@ def collect_font_merges(
                 if verbose and norm not in reported:
                     reported.add(norm)
                     print(f"  [matched] {basename[:50]} -> {db_key}  [{match_kind}]")
-                merged, changed = _merge(existing, db_map)
+                # Use content-stream-derived GIDs as the "referenced" set
+                # (see bug 02-performance.md). Falling back to the existing
+                # ToUnicode keys is a safe approximation for Word-style
+                # subsets when content-stream parsing came up empty.
+                referenced = referenced_by_xref.get(xref)
+                if not referenced:
+                    referenced = set(existing.keys())
+                merged, changed = _merge(existing, db_map, referenced)
                 overrides = _overrides(existing, merged)
 
             records.append(
