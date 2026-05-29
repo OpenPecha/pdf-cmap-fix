@@ -115,6 +115,51 @@ def _gid_map_from_inner(inner: dict[str, str]) -> dict[int, str]:
     return out
 
 
+def _extract_font_names(doc: fitz.Document, font_xref: int) -> list[str]:
+    """Return candidate font names from the embedded font's own name table.
+
+    Reads nameIDs 6 (PostScript name), 4 (Full name), 1 (Family name) from
+    the embedded TrueType/CFF data.  Returns an empty list if the font cannot
+    be extracted or parsed.  Used by :func:`collect_font_merges` so that
+    generic PDF-level aliases like ``CIDFont+F1`` are resolved to the real
+    font name (e.g. ``MicrosoftHimalaya``) before falling back to the
+    PDF-level ``BaseFont`` string.
+    """
+    try:
+        tup = doc.extract_font(font_xref)
+    except Exception:
+        return []
+    if not tup or len(tup) < 4:
+        return []
+    buf = tup[3]
+    if not buf or not isinstance(buf, (bytes, bytearray)):
+        return []
+    ext_font: Optional[TTFont] = None
+    try:
+        ext_font = TTFont(io.BytesIO(bytes(buf)), lazy=False)
+        name_table = ext_font.get("name")
+        if name_table is None:
+            return []
+        names: list[str] = []
+        for name_id in (6, 4, 1):
+            record = name_table.getName(name_id, 3, 1)  # Windows Unicode
+            if record is None:
+                record = name_table.getName(name_id, 1, 0)  # Mac Roman
+            if record is not None:
+                val = record.toUnicode(errors="replace").strip()
+                if val:
+                    names.append(val)
+        return names
+    except Exception:
+        return []
+    finally:
+        if ext_font is not None:
+            try:
+                ext_font.close()
+            except Exception:
+                pass
+
+
 def _resolve_db_gid_map(
     doc: fitz.Document,
     font_xref: int,
@@ -154,6 +199,59 @@ def _resolve_db_gid_map(
         return resolved
     except Exception:
         return {}
+    finally:
+        if ext_font is not None:
+            try:
+                ext_font.close()
+            except Exception:
+                pass
+
+
+def _extract_font_names(doc: fitz.Document, font_xref: int) -> list[str]:
+    """Return candidate font name strings from an embedded font's name table.
+
+    Reads nameIDs 6 (PostScript), 4 (Full Name), and 1 (Family Name) from the
+    OpenType/TrueType name table of the font embedded at ``font_xref``. These
+    are fed to :func:`_pick_best_font_key` *before* the PDF-level ``BaseFont``
+    name so that generic wrapper names such as ``CIDFont+F1`` do not prevent
+    the correct lookup file (e.g. ``microsofthimalaya.json``) from being found.
+
+    Returns an empty list if the font cannot be extracted or parsed, so callers
+    fall back to the PDF basename without raising.
+    """
+    try:
+        tup = doc.extract_font(font_xref)
+    except Exception:
+        return []
+    if not tup or len(tup) < 4:
+        return []
+    buf = tup[3]
+    if not buf or not isinstance(buf, (bytes, bytearray)):
+        return []
+    ext_font: Optional[TTFont] = None
+    try:
+        ext_font = TTFont(io.BytesIO(bytes(buf)), lazy=False)
+        name_table = ext_font.get("name")
+        if name_table is None:
+            return []
+        candidates: list[str] = []
+        for name_id in (6, 4, 1):
+            for record in name_table.names:
+                if record.nameID != name_id:
+                    continue
+                try:
+                    s = record.toUnicode()
+                except Exception:
+                    try:
+                        s = record.string.decode("latin-1", errors="replace")
+                    except Exception:
+                        continue
+                s = s.strip()
+                if s and s not in candidates:
+                    candidates.append(s)
+        return candidates
+    except Exception:
+        return []
     finally:
         if ext_font is not None:
             try:
@@ -432,7 +530,18 @@ def collect_font_merges(
 
             existing = _parse_tounicode(tu_stream)
 
-            picked = _pick_best_font_key(db_index, basename)
+            # Try the embedded font's own name table first so that generic
+            # PDF aliases like CIDFont+F1 / T1_0 / F0 do not cause the
+            # substring scorer to pick an unrelated lookup (e.g. umef1 for
+            # a font that is actually Microsoft Himalaya).
+            embedded_names = _extract_font_names(doc, xref)
+            picked = None
+            for cand in embedded_names:
+                picked = _pick_best_font_key(db_index, cand)
+                if picked:
+                    break
+            if picked is None:
+                picked = _pick_best_font_key(db_index, basename)
             match_kind = ""
             if picked is None:
                 db_map, db_key = None, None

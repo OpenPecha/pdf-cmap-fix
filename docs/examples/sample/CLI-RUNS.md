@@ -10,19 +10,19 @@ Re-run from repo root:
 
 ```powershell
 $env:PYTHONUTF8 = "1"
-.\scripts\docs\run_examples_all_tiers.ps1 -Examples sample
+.\scripts\docs\run_examples_all_tiers.ps1 -Examples sample -Clean -DumpCmap
 ```
 
 ## Results by tier
 
 | Tier | Lookup directory | CLI | Match | GID upgrades | Diff lines | Outputs |
 |------|------------------|-----|-------|--------------|------------|---------|
-| **gid** | `pdf_cmap_fix/data/font_lookup/` | `pdf-cmap-fix` | MATCH | 3159 | 16 | [cli-results/gid](cli-results/gid/) |
+| **gid** | `pdf_cmap_fix/data/font_lookup/` | `pdf-cmap-fix` | MATCH | 128 | 16 | [cli-results/gid](cli-results/gid/) |
 | **gname** | `pdf_cmap_fix/data/font_lookup_gname/` | `pdf-cmap-fix-gname` | no-match | 0 | 0 | [cli-results/gname](cli-results/gname/) |
 | **gname_pua_free** | `pdf_cmap_fix/data/font_lookup_gname_pua_free/` | `pdf-cmap-fix-gname` | no-match | 0 | 0 | [cli-results/gname_pua_free](cli-results/gname_pua_free/) |
-| **gshape** | `pdf_cmap_fix/data/font_lookup_gshape/` | `pdf-cmap-fix-gshape` | MATCH | 207 | 16 | [cli-results/gshape](cli-results/gshape/) |
-| **gshape_pua_free** | `pdf_cmap_fix/data/font_lookup_gshape_pua_free/` | `pdf-cmap-fix-gshape` | MATCH | 222 | 16 | [cli-results/gshape_pua_free](cli-results/gshape_pua_free/) |
-| **gid_pua_free** | `pdf_cmap_fix/data/font_lookup_gid_pua_free/` | `pdf-cmap-fix` | MATCH | 3159 | 16 | [cli-results/gid_pua_free](cli-results/gid_pua_free/) |
+| **gshape** | `pdf_cmap_fix/data/font_lookup_gshape/` | `pdf-cmap-fix-gshape` | MATCH | 98 | 16 | [cli-results/gshape](cli-results/gshape/) |
+| **gshape_pua_free** | `pdf_cmap_fix/data/font_lookup_gshape_pua_free/` | `pdf-cmap-fix-gshape` | MATCH | 113 | 16 | [cli-results/gshape_pua_free](cli-results/gshape_pua_free/) |
+| **gid_pua_free** | `pdf_cmap_fix/data/font_lookup_gid_pua_free/` | `pdf-cmap-fix` | MATCH | 128 | 16 | [cli-results/gid_pua_free](cli-results/gid_pua_free/) |
 
 ## Example commands (extract text)
 
@@ -73,6 +73,46 @@ pdf-cmap-fix --font-lookup-dir pdf_cmap_fix/data/font_lookup_gid_pua_free docs/e
 ```
 
 Outputs copied to `docs/examples/sample/cli-results/gid_pua_free/`.
+
+## Cmap dump (dict JSON)
+
+Generate the merged ToUnicode map as JSON (no PDF rewrite) for each tier:
+
+### gid
+
+```powershell
+pdf-cmap-fix --font-lookup-dir pdf_cmap_fix/data/font_lookup --dump-cmap docs/examples/sample/cli-results/gid/sample.gid.cmap-dump.json docs/examples/sample/sample.pdf
+```
+
+### gname
+
+```powershell
+pdf-cmap-fix-gname --font-lookup-dir pdf_cmap_fix/data/font_lookup_gname --dump-cmap docs/examples/sample/cli-results/gname/sample.gname.cmap-dump.json docs/examples/sample/sample.pdf
+```
+
+### gname_pua_free
+
+```powershell
+pdf-cmap-fix-gname --font-lookup-dir pdf_cmap_fix/data/font_lookup_gname_pua_free --dump-cmap docs/examples/sample/cli-results/gname_pua_free/sample.gname_pua_free.cmap-dump.json docs/examples/sample/sample.pdf
+```
+
+### gshape
+
+```powershell
+pdf-cmap-fix-gshape --font-lookup-dir pdf_cmap_fix/data/font_lookup_gshape --dump-cmap docs/examples/sample/cli-results/gshape/sample.gshape.cmap-dump.json docs/examples/sample/sample.pdf
+```
+
+### gshape_pua_free
+
+```powershell
+pdf-cmap-fix-gshape --font-lookup-dir pdf_cmap_fix/data/font_lookup_gshape_pua_free --dump-cmap docs/examples/sample/cli-results/gshape_pua_free/sample.gshape_pua_free.cmap-dump.json docs/examples/sample/sample.pdf
+```
+
+### gid_pua_free
+
+```powershell
+pdf-cmap-fix --font-lookup-dir pdf_cmap_fix/data/font_lookup_gid_pua_free --dump-cmap docs/examples/sample/cli-results/gid_pua_free/sample.gid_pua_free.cmap-dump.json docs/examples/sample/sample.pdf
+```
 
 ## Patch PDF (optional, not run by default)
 

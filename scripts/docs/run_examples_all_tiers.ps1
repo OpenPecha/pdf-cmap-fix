@@ -5,13 +5,16 @@
 # Usage (from repo root):
 #   .\scripts\docs\run_examples_all_tiers.ps1
 #   .\scripts\docs\run_examples_all_tiers.ps1 -Examples sample,TI1461-01-001
+#   .\scripts\docs\run_examples_all_tiers.ps1 -Examples ladakh-excerpt -Clean -DumpCmap
 #   .\scripts\docs\run_examples_all_tiers.ps1 -OnlyTiers gid,gshape -GenerateDocs
 
 param(
     [string[]]$Examples = @(),
     [string[]]$OnlyTiers = @(),
     [switch]$GenerateDocs,
-    [switch]$SkipRun
+    [switch]$SkipRun,
+    [switch]$Clean,
+    [switch]$DumpCmap
 )
 
 $ErrorActionPreference = "Stop"
@@ -33,12 +36,13 @@ $tiersAll = @(
 )
 
 $exampleMeta = @{
-    "sample"         = @{ Desc = "Mixed; Jomolhari + Cambria"; Pages = "varies" }
-    "TI1055-01-001"  = @{ Desc = "MS Word; Monlam Uni OuChan"; Pages = "528" }
-    "TI1751-01-001"  = @{ Desc = "InDesign; Monlam / Himalaya"; Pages = "528" }
-    "TI803-01-001"   = @{ Desc = "MS Word; Microsoft Himalaya"; Pages = "398" }
-    "TI1461-01-001"  = @{ Desc = "InDesign; Qomolangma + Monlam"; Pages = "1" }
-    "TI1763-01-002"  = @{ Desc = "MS Word; Monlam Uni OuChan 2"; Pages = "1" }
+    "sample"          = @{ Desc = "Mixed; Jomolhari + Cambria"; Pages = "varies" }
+    "TI1055-01-001"   = @{ Desc = "MS Word; Monlam Uni OuChan"; Pages = "528" }
+    "TI1751-01-001"   = @{ Desc = "InDesign; Monlam / Himalaya"; Pages = "528" }
+    "TI803-01-001"    = @{ Desc = "MS Word; Microsoft Himalaya"; Pages = "398" }
+    "TI1461-01-001"   = @{ Desc = "InDesign; Qomolangma + Monlam"; Pages = "1" }
+    "TI1763-01-002"   = @{ Desc = "MS Word; Monlam Uni OuChan 2"; Pages = "1" }
+    "ladakh-excerpt"  = @{ Desc = "MS Word subset alias case (Ladakh excerpt)"; Pages = "1" }
 }
 
 $cliModules = @{
@@ -58,11 +62,16 @@ function Invoke-TierCli {
     param(
         [string]$CliName,
         [string]$LookupDir,
-        [string]$PdfPath
+        [string]$PdfPath,
+        [string]$DumpCmapPath = ""
     )
     $exe = Resolve-CliExe $CliName
     if ($exe) {
-        $out = & $exe --font-lookup-dir $LookupDir $PdfPath 2>&1
+        if ($DumpCmapPath) {
+            $out = & $exe --font-lookup-dir $LookupDir --dump-cmap $DumpCmapPath $PdfPath 2>&1
+        } else {
+            $out = & $exe --font-lookup-dir $LookupDir $PdfPath 2>&1
+        }
         return @{ Output = $out; Exit = $LASTEXITCODE }
     }
     $mod = $cliModules[$CliName]
@@ -73,7 +82,11 @@ function Invoke-TierCli {
     if (-not $py) {
         throw "Neither $CliName nor python on PATH. From repo root: pip install -e ."
     }
-    $out = & $py.Source -m $mod --font-lookup-dir $LookupDir $PdfPath 2>&1
+    if ($DumpCmapPath) {
+        $out = & $py.Source -m $mod --font-lookup-dir $LookupDir --dump-cmap $DumpCmapPath $PdfPath 2>&1
+    } else {
+        $out = & $py.Source -m $mod --font-lookup-dir $LookupDir $PdfPath 2>&1
+    }
     return @{ Output = $out; Exit = $LASTEXITCODE }
 }
 
@@ -97,23 +110,27 @@ function Parse-ConsoleStats {
         if ($stats.Match -eq "?") { $stats.Match = "no-match" }
     }
     if ($Text -match 'patched:\s+\d+\s+\((\d+) GID upgrades\)') { $stats.Upgrades = $Matches[1] }
+    if ($Text -match 'would patch:\s+\d+\s+\((\d+) GID upgrades\)') { $stats.Upgrades = $Matches[1] }
     if ($Text -match 'Lines changed:\s+(\d+)') { $stats.DiffLines = $Matches[1] }
     return $stats
 }
 
 function Write-CliRunsMarkdown {
-    param([string]$ExampleId, [hashtable]$RunsForExample)
+    param(
+        [string]$ExampleId,
+        [string]$Stem,
+        [string]$RelPdfPath,
+        [hashtable]$RunsForExample,
+        [bool]$WithDump = $false
+    )
 
     $meta = $exampleMeta[$ExampleId]
     if (-not $meta) { $meta = @{ Desc = "Example PDF"; Pages = "?" } }
 
-    $pdfPath = "docs/examples/$ExampleId/$ExampleId.pdf"
-    if ($ExampleId -eq "sample") { $pdfPath = "docs/examples/sample/sample.pdf" }
-
     $lines = @(
         "# CLI runs: $ExampleId",
         "",
-        "**PDF:** ``$pdfPath``",
+        "**PDF:** ``$RelPdfPath``",
         "",
         "**About:** $($meta.Desc) ($($meta.Pages) pages)",
         "",
@@ -123,7 +140,7 @@ function Write-CliRunsMarkdown {
         "",
         '```powershell',
         '$env:PYTHONUTF8 = "1"',
-        ".\scripts\docs\run_examples_all_tiers.ps1 -Examples $ExampleId",
+        ".\scripts\docs\run_examples_all_tiers.ps1 -Examples $ExampleId -Clean$(if ($WithDump) { ' -DumpCmap' })",
         '```',
         "",
         "## Results by tier",
@@ -138,8 +155,6 @@ function Write-CliRunsMarkdown {
         $r = $RunsForExample[$key]
         $lookupRel = "pdf_cmap_fix/data/$($t.LookupSub)"
         $outDir = "cli-results/$key"
-        $stem = if ($ExampleId -eq "sample") { "sample" } else { $ExampleId }
-        $outLink = "$outDir/${stem}.$key.diff.txt"
         $lines += "| **$key** | ``$lookupRel/`` | ``$($t.Cli)`` | $($r.Match) | $($r.Upgrades) | $($r.DiffLines) | [$outDir]($outDir/) |"
     }
 
@@ -155,7 +170,7 @@ function Write-CliRunsMarkdown {
             "### $($t.Name)",
             "",
             '```powershell',
-            "$($t.Cli) --font-lookup-dir $lookupRel $pdfPath",
+            "$($t.Cli) --font-lookup-dir $lookupRel $RelPdfPath",
             '```',
             "",
             "Outputs copied to ``docs/examples/$ExampleId/cli-results/$($t.Name)/``.",
@@ -163,11 +178,32 @@ function Write-CliRunsMarkdown {
         )
     }
 
+    if ($WithDump) {
+        $lines += @(
+            "## Cmap dump (dict JSON)",
+            "",
+            "Generate the merged ToUnicode map as JSON (no PDF rewrite) for each tier:",
+            ""
+        )
+        foreach ($t in $tiersAll) {
+            $lookupRel = "pdf_cmap_fix/data/$($t.LookupSub)"
+            $dumpOut = "docs/examples/$ExampleId/cli-results/$($t.Name)/$Stem.$($t.Name).cmap-dump.json"
+            $lines += @(
+                "### $($t.Name)",
+                "",
+                '```powershell',
+                "$($t.Cli) --font-lookup-dir $lookupRel --dump-cmap $dumpOut $RelPdfPath",
+                '```',
+                ""
+            )
+        }
+    }
+
     $lines += @(
         "## Patch PDF (optional, not run by default)",
         "",
         '```powershell',
-        "pdf-cmap-fix --font-lookup-dir pdf_cmap_fix/data/font_lookup $pdfPath -p",
+        "pdf-cmap-fix --font-lookup-dir pdf_cmap_fix/data/font_lookup $RelPdfPath -p",
         '```',
         ""
     )
@@ -215,7 +251,18 @@ $allStats = @{}
 foreach ($ex in $pdfs) {
     $allStats[$ex.Id] = @{}
     $cliResultsRoot = Join-Path (Join-Path $EXAMPLES_ROOT $ex.Id) "cli-results"
+
+    if ($Clean -and (Test-Path $cliResultsRoot)) {
+        Remove-Item -Recurse -Force $cliResultsRoot
+        Write-Host "Cleaned $cliResultsRoot"
+    }
+
     New-Item -ItemType Directory -Force -Path $cliResultsRoot | Out-Null
+
+    $stem = [IO.Path]::GetFileNameWithoutExtension($ex.Path)
+    $pdfDir = Split-Path $ex.Path -Parent
+    # Relative path for use in markdown docs
+    $relPdf = "docs/examples/$($ex.Id)/$($stem).pdf"
 
     foreach ($tier in $tierList) {
         $lookupDir = Join-Path $DATA $tier.LookupSub
@@ -231,10 +278,6 @@ foreach ($ex in $pdfs) {
         $tierOut = Join-Path $cliResultsRoot $tier.Name
         New-Item -ItemType Directory -Force -Path $tierOut | Out-Null
 
-        $stem = [IO.Path]::GetFileNameWithoutExtension($ex.Path)
-        $pdfDir = Split-Path $ex.Path -Parent
-        $lookupArg = $lookupDir
-
         Write-Host "`n=== $($tier.Name) / $($ex.Id) / $stem ==="
 
         if ($SkipRun) {
@@ -247,38 +290,56 @@ foreach ($ex in $pdfs) {
             continue
         }
 
+        # --- Main extraction run ---
         $consolePath = Join-Path $tierOut "console.txt"
         try {
-            $run = Invoke-TierCli -CliName $tier.Cli -LookupDir $lookupArg -PdfPath $ex.Path
+            $run = Invoke-TierCli -CliName $tier.Cli -LookupDir $lookupDir -PdfPath $ex.Path
         } catch {
             Write-Warning $_.Exception.Message
             continue
         }
         $run.Output | Tee-Object -FilePath $consolePath
-        $exit = $run.Exit
 
         foreach ($ext in @("raw.txt", "patched.txt", "diff.txt")) {
             $src = Join-Path $pdfDir "$stem.$ext"
             if (Test-Path $src) {
                 Copy-Item $src (Join-Path $tierOut "$stem.$($tier.Name).$ext") -Force
+                Remove-Item $src -Force
             }
         }
 
         $console = Get-Content $consolePath -Raw -ErrorAction SilentlyContinue
         $parsed = Parse-ConsoleStats $console
-        $parsed.Exit = $exit
+        $parsed.Exit = $run.Exit
         $allStats[$ex.Id][$tier.Name] = $parsed
 
         $msg = "[{0}] {1}  exit={2}  match={3}  upgrades={4}  diff_lines={5}" -f `
-            $tier.Name, $ex.Id, $exit, $parsed.Match, $parsed.Upgrades, $parsed.DiffLines
+            $tier.Name, $ex.Id, $run.Exit, $parsed.Match, $parsed.Upgrades, $parsed.DiffLines
         Write-Host $msg
         Add-Content $LOG_PATH -Value $msg -Encoding utf8
         $runLog += $msg
+
+        # --- Optional cmap dump run ---
+        if ($DumpCmap) {
+            $dumpJsonPath = Join-Path $tierOut "$stem.$($tier.Name).cmap-dump.json"
+            $dumpConsolePath = Join-Path $tierOut "console-dump.txt"
+            try {
+                $dumpRun = Invoke-TierCli -CliName $tier.Cli -LookupDir $lookupDir -PdfPath $ex.Path -DumpCmapPath $dumpJsonPath
+            } catch {
+                Write-Warning "Dump run failed: $($_.Exception.Message)"
+                continue
+            }
+            $dumpRun.Output | Tee-Object -FilePath $dumpConsolePath
+        }
     }
 }
 
 foreach ($id in $allStats.Keys) {
-    Write-CliRunsMarkdown -ExampleId $id -RunsForExample $allStats[$id]
+    $ex = $pdfs | Where-Object { $_.Id -eq $id } | Select-Object -First 1
+    if (-not $ex) { continue }
+    $stem = [IO.Path]::GetFileNameWithoutExtension($ex.Path)
+    $relPdf = "docs/examples/$id/$stem.pdf"
+    Write-CliRunsMarkdown -ExampleId $id -Stem $stem -RelPdfPath $relPdf -RunsForExample $allStats[$id] -WithDump:$DumpCmap.IsPresent
 }
 
 Write-Host "`nLog: $LOG_PATH"
