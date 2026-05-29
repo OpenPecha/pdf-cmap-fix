@@ -141,17 +141,29 @@ by shortest name-length difference.
 
 ### Step 3 — Patch the ToUnicode CMap
 
-For each matched Type0 font in the PDF:
+For each matched font in the PDF:
 
 1. Read the existing ToUnicode CMap stream.
-2. For every GID where our DB has a mapping, **replace** the existing entry
-   with the DB value — unconditionally, because the GSUB decomposition of the
-   original full font is the authoritative source.
-3. Write the merged CMap back into the PDF in memory (`pymupdf` updates the
-   in-memory document).  The **input PDF file on disk is never modified**.
+2. For every entry where our DB has a mapping, **replace** the
+   existing entry with the DB value — unconditionally, because the
+   GSUB decomposition of the original full font is the authoritative
+   source.
+3. Write the merged CMap back into the PDF in memory (`pymupdf`
+   updates the in-memory document). The **input PDF file on disk is
+   never modified**.
 
-The new CMap uses 2-byte GID format (`<XXXX>`) as required for Type0/CID
-Identity-H fonts.
+What "entry" means depends on the source font type:
+
+| Font type | Content-stream codes | DB key resolved through | Output CMap codespace |
+|-----------|----------------------|------------------------|------------------------|
+| **Type0 (Identity-H)** | 2-byte GIDs | direct (`gid`) / glyph order (`gname` / `gshape`) | `<0000> <FFFF>`, 4-hex keys |
+| **Type1 / MMType1 / TrueType** (simple) | 1-byte char codes | font's `/Encoding` (predefined base + `/Differences`) → glyph name → DB (`gname` / `gshape`) | `<00> <FF>`, 2-hex keys |
+
+Tier 1 (`gid`) is Type0-only by design: simple-font CharString indices
+are font-local and not portable across PDFs that subset the same family
+differently. Tiers 2 (`gname`) and 3 (`gshape`) work for every supported
+font type because the key (glyph name or outline fingerprint) is the
+same across subsets.
 
 ### Text extraction vs patched PDF
 
@@ -204,19 +216,31 @@ characters in a post‑processing step. Option (c) is what we recommend for
 downstream NLP pipelines because it is local, reversible, and never touches
 spaces between Tibetan and other scripts.
 
-### Why Only Type0 Fonts?
+### Why GID-based matching is Type0-only
 
 Type0/CID fonts with **Identity-H encoding** preserve the original font GIDs
 in the PDF.  Char code `N` in the PDF content stream = GID `N` in the
-original font = GID `N` in our font lookup map.  The mapping is exact.
+original font = GID `N` in our font lookup map.  The mapping is exact, so
+tier 1 (`gid` keys) works out of the box.
 
-TrueType **simple-encoding** fonts (e.g. Ghostscript-generated PDFs) assign
-their own sequential char codes (1, 2, 3, …) inside each embedded program.
-Char code 1 is often the *first used glyph* in that program, which may be GID 3
-or GID 1042 or anything else in the original font file. Without reading the
-embedded font program’s glyph order and matching it against the full font’s
-glyph order, there is no reliable way to map char codes back to original GIDs.
-Patching these blindly produces garbled output.
+For **simple (single-byte) fonts** -- Type1, MMType1, TrueType simple --
+the PDF content stream uses 1-byte char codes that the font's `/Encoding`
+entry (a predefined base name plus an optional `/Differences` array)
+resolves to PostScript glyph names. The glyph name is the stable key
+that the same glyph carries across every PDF that embeds the same font,
+so tiers 2 (`gname`) and 3 (`gshape`) work directly for these fonts;
+that path was added in v0.4 (see ``pdf_cmap_fix/pdf_font_encoding.py``
+for the `/Encoding` resolver and ``_resolve_db_code_map_simple`` /
+``_build_tounicode_simple`` in ``tounicode_core.py`` for the merge and
+ToUnicode generation). Tier 1 (`gid`) is still Type0-only because a
+simple font's internal CharString indices are font-local and not
+portable across PDFs that subset the same family differently.
+
+The last remaining edge case is **TrueType simple-encoding fonts that
+have no `/Encoding` entry** (e.g. some Ghostscript outputs), which rely
+on the font's built-in encoding. We don't yet parse that built-in
+encoding; for those PDFs the extractor reports "no match" and leaves
+the ToUnicode unchanged.
 
 ## Supported Fonts
 
@@ -225,12 +249,16 @@ letters and digits only). See [font-inventory.md](font-inventory.md). Example ke
 publications include **`monlamuniouchan2`**, **`himalaya`**, **`jomolhari`**, and
 many others from the combined font ZIPs.
 
-Fonts **not** yet supported (TrueType simple encoding):
+Fonts **not** yet supported:
 
-- Himalaya-G variant used in older Ghostscript PDFs (PUA codepoints F001-F04B,
-  predating Tibetan Unicode standardisation)
-- Any Ghostscript-generated PDF where Tibetan fonts are embedded as TrueType
-  simple fonts with sequential char-code assignment
+- TrueType simple-encoding PDFs whose `/Font` dict has **no** `/Encoding`
+  entry (the font relies on its built-in encoding). Examples: Himalaya-G in
+  older Ghostscript PDFs (PUA codepoints F001–F04B, predating Tibetan
+  Unicode standardisation), and other Ghostscript outputs with sequential
+  char-code assignment. Adding the font's built-in encoding read path is a
+  follow-up enhancement.
+- Type3 (procedural) fonts have no embedded font program; lookups have
+  nothing to bind against.
 
 ## Worked examples
 

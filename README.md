@@ -2,7 +2,7 @@
 
 Fix incorrect or incomplete PDF `/ToUnicode` CMaps so that text extraction, search, and copy-paste return correct Unicode.
 
-Primary use case: **Tibetan stacked syllables** (Monlam, Himalaya, Jomolhari fonts) in Type0 / CID / Identity-H PDFs.  
+Primary use case: **Tibetan stacked syllables** (Monlam, Himalaya, Jomolhari fonts) in Type0 / CID / Identity-H PDFs, and **Type1 / TrueType simple-encoding** PDFs (e.g. YesheDe) since v0.4.  
 **GitHub:** [OpenPecha/pdf-cmap-fix](https://github.com/OpenPecha/pdf-cmap-fix)
 
 ---
@@ -348,8 +348,23 @@ pyproject.toml
 
 ## Limits
 
-- Supported: **Type0 / CID / Identity-H** PDFs where PDF char codes equal font GIDs.
-- Not supported: TrueType simple-encoding PDFs (e.g. some Ghostscript outputs) where char codes are Ghostscript-assigned integers unrelated to font GIDs.
+- **Type0 / CID / Identity-H**: fully supported on all three tiers
+  (`gid`, `gname`, `gshape`). The historical primary target.
+- **Type1 / MMType1 / TrueType (simple, 1-byte)**: supported on
+  `gname` and `gshape` (tier 2 and tier 3) since v0.4. Char codes go
+  through the font's `/Encoding` (predefined base + `/Differences`) to
+  a PostScript glyph name; the lookup is done on the glyph name (or
+  its outline fingerprint, tier 3). Output ToUnicode uses a 1-byte
+  codespace (`<00> <FF>`). Tier 1 (`gid`) is intentionally **not**
+  supported for simple fonts: GIDs in their embedded font programs are
+  font-local and not portable across PDFs.
+- **Type3** (procedural): not supported. These fonts have no
+  embedded font program, so neither glyph name nor outline fingerprint
+  lookups have anything to bind against. Silently skipped.
+- **TrueType simple-encoding without `/Encoding`** (e.g. some
+  Ghostscript outputs where char codes are sequential integers
+  unrelated to glyph names): still not supported. Adding the font's
+  built-in encoding read path is a future enhancement.
 
 See [docs/approach.md](docs/approach.md) for the full rationale.
 

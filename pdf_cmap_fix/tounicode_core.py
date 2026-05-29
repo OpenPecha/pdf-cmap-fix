@@ -162,6 +162,270 @@ def _resolve_db_gid_map(
                 pass
 
 
+# Simple (non-Type0) PDF font types we know how to handle. Type3 fonts
+# are excluded -- they have no embedded font program, so a glyph-name
+# or outline-fingerprint lookup has nothing to bind against.
+_SIMPLE_FONT_TYPES = frozenset({"Type1", "MMType1", "TrueType"})
+
+
+def _load_pdf_embedded_font(buf: bytes) -> Optional[TTFont]:
+    """Load a PDF-embedded font as ``fontTools.TTFont``.
+
+    Handles two cases:
+
+    * SFNT-wrapped (OpenType / TrueType): direct ``TTFont`` load.
+    * Bare CFF (what PyMuPDF returns for Type1 / Type1C fonts) -- wrap
+      the CFF bytes in a minimal OTF on the fly so ``TTFont`` can read
+      it. Only the tables :func:`fingerprint_glyph` needs (``CFF``,
+      ``hmtx``, ``hhea``, ``maxp``, ``cmap``, ``head``, ``post``,
+      ``name``, ``OS/2``) are emitted, with widths taken from the CFF
+      CharStrings.
+    """
+    try:
+        return TTFont(io.BytesIO(buf), lazy=False)
+    except Exception:
+        pass
+    # Fallback: treat as raw CFF.
+    try:
+        return _wrap_cff_as_otf(buf)
+    except Exception:
+        return None
+
+
+def _wrap_cff_as_otf(cff_bytes: bytes) -> TTFont:
+    """Minimal in-memory CFF -> OpenType wrapper. Just enough to make
+    :func:`pdf_cmap_fix.glyph_fingerprint.fingerprint_glyph` work
+    (glyph names + outlines + advance widths)."""
+
+    from fontTools.cffLib import CFFFontSet
+    from fontTools.pens.recordingPen import RecordingPen
+    from fontTools.ttLib import newTable
+    from fontTools.ttLib.tables._c_m_a_p import CmapSubtable
+
+    cff = CFFFontSet()
+    cff.decompile(io.BytesIO(cff_bytes), None, isCFF2=False)
+    top = cff[0]
+
+    glyph_order = list(top.getGlyphOrder())
+    if ".notdef" in glyph_order:
+        glyph_order = [".notdef"] + [g for g in glyph_order if g != ".notdef"]
+    else:
+        glyph_order = [".notdef"] + glyph_order
+
+    upem = 1000
+    private = getattr(top, "Private", None)
+    default_w = int(round(getattr(private, "defaultWidthX", 0) or 0))
+
+    widths: dict[str, int] = {}
+    for gn in glyph_order:
+        if gn == ".notdef":
+            widths[gn] = upem
+            continue
+        try:
+            cs = top.CharStrings[gn]
+            # Force CharString decompilation so cs.width is populated.
+            cs.draw(RecordingPen())
+            w = getattr(cs, "width", None)
+            widths[gn] = int(round(w)) if w is not None else default_w
+        except Exception:
+            widths[gn] = default_w
+
+    tt = TTFont(sfntVersion="OTTO")
+    tt.setGlyphOrder(glyph_order)
+
+    # CFF table -- inject the parsed CFFFontSet directly.
+    cff_table = newTable("CFF ")
+    cff_table.cff = cff
+    tt["CFF "] = cff_table
+
+    head = newTable("head")
+    head.tableVersion = 1.0
+    head.fontRevision = 1.0
+    head.checkSumAdjustment = 0
+    head.magicNumber = 0x5F0F3CF5
+    head.flags = 3
+    head.unitsPerEm = upem
+    head.created = head.modified = 0
+    head.xMin = head.yMin = -1000
+    head.xMax = head.yMax = 2000
+    head.macStyle = 0
+    head.lowestRecPPEM = 8
+    head.fontDirectionHint = 2
+    head.indexToLocFormat = 0
+    head.glyphDataFormat = 0
+    tt["head"] = head
+
+    hhea = newTable("hhea")
+    hhea.tableVersion = 0x00010000
+    hhea.ascent = int(upem * 0.85)
+    hhea.descent = -int(upem * 0.15)
+    hhea.lineGap = 0
+    hhea.advanceWidthMax = max(widths.values()) if widths else upem
+    hhea.minLeftSideBearing = 0
+    hhea.minRightSideBearing = 0
+    hhea.xMaxExtent = hhea.advanceWidthMax
+    hhea.caretSlopeRise = 1
+    hhea.caretSlopeRun = 0
+    hhea.caretOffset = 0
+    hhea.reserved0 = hhea.reserved1 = hhea.reserved2 = hhea.reserved3 = 0
+    hhea.metricDataFormat = 0
+    hhea.numberOfHMetrics = len(glyph_order)
+    tt["hhea"] = hhea
+
+    maxp = newTable("maxp")
+    maxp.tableVersion = 0x00005000  # CFF flavour
+    maxp.numGlyphs = len(glyph_order)
+    tt["maxp"] = maxp
+
+    hmtx = newTable("hmtx")
+    hmtx.metrics = {gn: (widths.get(gn, default_w), 0) for gn in glyph_order}
+    tt["hmtx"] = hmtx
+
+    post = newTable("post")
+    post.formatType = 3.0  # no glyph names in the post table -- CFF carries them
+    post.italicAngle = 0
+    post.underlinePosition = -100
+    post.underlineThickness = 50
+    post.isFixedPitch = 0
+    post.minMemType42 = post.maxMemType42 = post.minMemType1 = post.maxMemType1 = 0
+    tt["post"] = post
+
+    name = newTable("name")
+    name.names = []
+    tt["name"] = name
+
+    os2 = newTable("OS/2")
+    os2.version = 4
+    os2.xAvgCharWidth = 500
+    os2.usWeightClass = 400
+    os2.usWidthClass = 5
+    os2.fsType = 0
+    os2.ySubscriptXSize = os2.ySubscriptYSize = 0
+    os2.ySubscriptXOffset = os2.ySubscriptYOffset = 0
+    os2.ySuperscriptXSize = os2.ySuperscriptYSize = 0
+    os2.ySuperscriptXOffset = os2.ySuperscriptYOffset = 0
+    os2.yStrikeoutSize = 50
+    os2.yStrikeoutPosition = 250
+    os2.sFamilyClass = 0
+    panose = type("p", (), {})()
+    for fld in (
+        "bFamilyType", "bSerifStyle", "bWeight", "bProportion", "bContrast",
+        "bStrokeVariation", "bArmStyle", "bLetterForm", "bMidline", "bXHeight",
+    ):
+        setattr(panose, fld, 0)
+    os2.panose = panose
+    os2.ulUnicodeRange1 = os2.ulUnicodeRange2 = 0
+    os2.ulUnicodeRange3 = os2.ulUnicodeRange4 = 0
+    os2.achVendID = "    "
+    os2.fsSelection = 0x40
+    os2.usFirstCharIndex = 0x20
+    os2.usLastCharIndex = 0xFFFF
+    os2.sTypoAscender = hhea.ascent
+    os2.sTypoDescender = hhea.descent
+    os2.sTypoLineGap = 0
+    os2.usWinAscent = hhea.ascent
+    os2.usWinDescent = -hhea.descent
+    os2.ulCodePageRange1 = os2.ulCodePageRange2 = 0
+    os2.sxHeight = int(upem * 0.5)
+    os2.sCapHeight = int(upem * 0.7)
+    os2.usDefaultChar = 0
+    os2.usBreakChar = 0x20
+    os2.usMaxContext = 0
+    tt["OS/2"] = os2
+
+    cmap = newTable("cmap")
+    cmap.tableVersion = 0
+    sub = CmapSubtable.newSubtable(4)
+    sub.platformID = 3
+    sub.platEncID = 1
+    sub.format = 4
+    sub.language = 0
+    sub.cmap = {}
+    cmap.tables = [sub]
+    tt["cmap"] = cmap
+
+    return tt
+
+
+def _resolve_db_code_map_simple(
+    doc: fitz.Document,
+    font_xref: int,
+    lookup_kind: str,
+    inner: dict[str, str],
+) -> dict[int, str]:
+    """Resolve a simple-encoding (Type1 / MMType1 / TrueType) font to a
+    ``{char_code (0..255) -> Unicode}`` mapping.
+
+    Unlike :func:`_resolve_db_gid_map`, the keys here are **PDF char
+    codes**, not GIDs, because in a simple font the content stream
+    references glyphs by 1-byte char codes that go through
+    ``/Encoding`` (predefined name + ``/Differences``) to land on a
+    PostScript glyph name. Once we know the glyph name we can use the
+    same gname / gshape lookups Type0 paths already consume.
+
+    Tier 1 (``gid``) is intentionally not supported for simple fonts:
+    GIDs in Type1 CharStrings are font-local and not portable between
+    PDFs, so a single tier-1 entry could not be reused across
+    documents.
+    """
+
+    if lookup_kind == "gid":
+        # GID-based tier 1 is Type0-only by design (see docstring).
+        return {}
+
+    from pdf_cmap_fix.pdf_font_encoding import parse_pdf_encoding
+
+    code_to_gname = parse_pdf_encoding(doc, font_xref)
+    if not code_to_gname:
+        return {}
+
+    if lookup_kind == "gname":
+        out: dict[int, str] = {}
+        for code, gname in code_to_gname.items():
+            u = inner.get(gname)
+            if u:
+                out[code] = u
+        return out
+
+    # lookup_kind == "gshape"
+    try:
+        tup = doc.extract_font(font_xref)
+    except Exception:
+        return {}
+    if not tup or len(tup) < 4:
+        return {}
+    buf = tup[3]
+    if not buf or not isinstance(buf, (bytes, bytearray)):
+        return {}
+
+    ext_font = _load_pdf_embedded_font(bytes(buf))
+    if ext_font is None:
+        return {}
+    try:
+        from pdf_cmap_fix.glyph_fingerprint import fingerprint_glyph
+
+        out2: dict[int, str] = {}
+        # Cache fingerprints per glyph name so we hash each glyph at
+        # most once even when several codes alias to the same name
+        # (extremely rare but allowed by the spec).
+        fp_cache: dict[str, Optional[str]] = {}
+        for code, gname in code_to_gname.items():
+            if gname not in fp_cache:
+                fp_cache[gname] = fingerprint_glyph(ext_font, gname)
+            fp = fp_cache[gname]
+            if not fp:
+                continue
+            u = inner.get(fp)
+            if u:
+                out2[code] = u
+        return out2
+    finally:
+        try:
+            ext_font.close()
+        except Exception:
+            pass
+
+
 def _extract_font_names(doc: fitz.Document, font_xref: int) -> list[str]:
     """Return candidate font name strings from an embedded font's name table.
 
@@ -393,6 +657,45 @@ def _build_tounicode_type0(mapping: dict) -> bytes:
     return "\n".join(lines).encode("latin-1")
 
 
+def _build_tounicode_simple(mapping: dict) -> bytes:
+    """ToUnicode CMap for simple (Type1 / TrueType) fonts.
+
+    Differences from :func:`_build_tounicode_type0`:
+
+    * Codespace is ``<00> <FF>`` (single byte) -- matches the 1-byte
+      char codes simple fonts use in their content streams.
+    * Keys are emitted as 2-hex-digit codes.
+
+    Any mapping key outside ``0..255`` is silently dropped: simple
+    fonts cannot reference it from the content stream anyway.
+    """
+
+    entries = [
+        f"<{cc:02X}> <{''.join(f'{ord(c):04X}' for c in uni)}>"
+        for cc, uni in sorted(mapping.items())
+        if 0 <= cc <= 0xFF
+    ]
+    lines = [
+        "/CIDInit /ProcSet findresource begin",
+        "12 dict begin",
+        "begincmap",
+        "/CIDSystemInfo << /Registry (Adobe) /Ordering (UCS) /Supplement 0 >> def",
+        "/CMapName /Adobe-Identity-UCS def",
+        "/CMapType 2 def",
+        "1 begincodespacerange",
+        "<00> <FF>",
+        "endcodespacerange",
+        f"{len(entries)} beginbfchar",
+        *entries,
+        "endbfchar",
+        "endcmap",
+        "CMapName currentdict /CMap defineresource pop",
+        "end",
+        "end",
+    ]
+    return "\n".join(lines).encode("latin-1")
+
+
 def _merge(
     existing: dict,
     db_map: dict,
@@ -438,11 +741,30 @@ def collect_font_merges(
     tier: LookupTier,
     verbose: bool = False,
 ) -> tuple[list[dict[str, Any]], dict[str, int]]:
-    """Scan Type0 fonts with ToUnicode; compute merged maps without writing PDF.
+    """Scan PDF fonts with a ``/ToUnicode`` entry, compute merged maps
+    against the lookup directory, and return them as records (without
+    rewriting the PDF).
 
-    Only JSON whose ``_meta.lookup_kind`` matches ``tier`` is used (``gid`` tier
-    also accepts files with missing ``lookup_kind``). Merge output is always
-    GID → Unicode for the PDF cmap.
+    Two font-type paths are handled:
+
+    * **Type0 (composite, Identity-H)** -- the historical path. PDF
+      char codes ARE GIDs; the merge happens on
+      ``{GID -> Unicode}`` and the output ToUnicode stream uses a
+      4-hex-digit codespace.
+    * **Type1, MMType1, TrueType (simple, single-byte)** -- new path,
+      enabled for ``gname`` and ``gshape`` lookup tiers only (tier 1
+      ``gid`` keys are GID-based and not portable across simple-font
+      subsets). PDF char codes go through the font's
+      ``/Encoding`` (predefined base + ``/Differences``) to a
+      PostScript glyph name, which is what the lookup keys on. The
+      merge happens on ``{char_code -> Unicode}`` and the output
+      ToUnicode stream uses a 2-hex-digit codespace.
+
+    Type3 (procedural) fonts have no embedded font program and are
+    silently skipped.
+
+    Only JSON whose ``_meta.lookup_kind`` matches ``tier`` is used
+    (``gid`` tier also accepts files with missing ``lookup_kind``).
     """
     keys_disk = _discover_lookup_keys(lookup_dir)
     db_index = _build_db_index(keys_disk)
@@ -452,13 +774,24 @@ def collect_font_merges(
     seen: set = set()
     reported: set = set()
 
+    # Pre-scan: split font xrefs by family. We need both groups up
+    # front so the content-stream walk can decode each font's strings
+    # at the correct byte width (2 bytes for Type0/Identity-H,
+    # 1 byte for simple fonts).
     type0_xrefs: set[int] = set()
+    simple_xrefs: set[int] = set()
     for pno in range(len(doc)):
         for f in doc[pno].get_fonts(full=True):
             xref, _, ftype, _, _, _, _ = f
             if ftype == "Type0":
                 type0_xrefs.add(xref)
-    referenced_by_xref = collect_referenced_gids(doc, type0_xrefs=type0_xrefs)
+            elif ftype in _SIMPLE_FONT_TYPES:
+                simple_xrefs.add(xref)
+    referenced_by_xref = collect_referenced_gids(
+        doc,
+        type0_xrefs=type0_xrefs,
+        simple_xrefs=simple_xrefs,
+    )
 
     for pno in range(len(doc)):
         for f in doc[pno].get_fonts(full=True):
@@ -467,7 +800,10 @@ def collect_font_merges(
                 continue
             seen.add(xref)
 
-            if ftype != "Type0":
+            is_type0 = ftype == "Type0"
+            is_simple = ftype in _SIMPLE_FONT_TYPES
+            if not (is_type0 or is_simple):
+                # Type3 (no font program) or unknown types.
                 continue
             stats["fonts_seen"] += 1
 
@@ -510,14 +846,29 @@ def collect_font_merges(
                     db_key = None
                     if loaded is not None:
                         match_kind, inner = loaded
-                        if match_kind == "gid":
-                            db_map = _gid_map_from_inner(inner)
-                            if db_map:
-                                db_key = picked
+                        if is_type0:
+                            if match_kind == "gid":
+                                db_map = _gid_map_from_inner(inner)
+                                if db_map:
+                                    db_key = picked
+                                else:
+                                    db_map = None
                             else:
-                                db_map = None
+                                db_map = _resolve_db_gid_map(
+                                    doc, xref, match_kind, inner
+                                )
+                                if db_map:
+                                    db_key = picked
+                                else:
+                                    db_map = None
                         else:
-                            db_map = _resolve_db_gid_map(doc, xref, match_kind, inner)
+                            # Simple font path: GID-based tier 1 is not
+                            # portable, only gname / gshape are. The
+                            # output is keyed by 1-byte char code, not
+                            # GID.
+                            db_map = _resolve_db_code_map_simple(
+                                doc, xref, match_kind, inner
+                            )
                             if db_map:
                                 db_key = picked
                             else:
@@ -540,11 +891,12 @@ def collect_font_merges(
                 norm = _normalise_name(basename)
                 if verbose and norm not in reported:
                     reported.add(norm)
-                    print(f"  [matched] {basename[:50]} -> {db_key}  [{match_kind}]")
-                # Use content-stream-derived GIDs as the "referenced" set
-                # (see bug 02-performance.md). Falling back to the existing
-                # ToUnicode keys is a safe approximation for Word-style
-                # subsets when content-stream parsing came up empty.
+                    print(f"  [matched] {basename[:50]} -> {db_key}  [{match_kind}]  ({ftype})")
+                # Use content-stream-derived codes/GIDs as the
+                # "referenced" set (see bug 02-performance.md).
+                # Falling back to the existing ToUnicode keys is a safe
+                # approximation for Word-style subsets when
+                # content-stream parsing came up empty.
                 referenced = referenced_by_xref.get(xref)
                 if not referenced:
                     referenced = set(existing.keys())
@@ -556,6 +908,7 @@ def collect_font_merges(
                     "font_xref": xref,
                     "to_unicode_xref": tu_xref,
                     "pdf_font_name": basename,
+                    "pdf_font_type": ftype,
                     "db_key_matched": db_key,
                     "existing": existing,
                     "merged": merged,
@@ -576,14 +929,24 @@ def collect_font_merges(
 
 
 def apply_font_merges_to_doc(doc: fitz.Document, records: list[dict[str, Any]]) -> None:
-    """Write merged ToUnicode streams for records with changed > 0."""
+    """Write merged ToUnicode streams for records with changed > 0.
+
+    The CMap codespace size depends on the source font type:
+    Type0 uses 2-byte codes (``<XXXX>``), every simple font type
+    (Type1, MMType1, TrueType) uses 1-byte codes (``<XX>``). Records
+    written by older versions of :func:`collect_font_merges` that
+    don't carry ``pdf_font_type`` are treated as Type0 for backward
+    compatibility.
+    """
     for r in records:
         if r["changed"] <= 0:
             continue
-        doc.update_stream(
-            r["to_unicode_xref"],
-            _build_tounicode_type0(r["merged"]),
-        )
+        ftype = r.get("pdf_font_type", "Type0")
+        if ftype in _SIMPLE_FONT_TYPES:
+            cmap_bytes = _build_tounicode_simple(r["merged"])
+        else:
+            cmap_bytes = _build_tounicode_type0(r["merged"])
+        doc.update_stream(r["to_unicode_xref"], cmap_bytes)
 
 
 def patch_doc(
