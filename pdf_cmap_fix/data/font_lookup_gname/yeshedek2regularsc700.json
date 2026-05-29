@@ -1,0 +1,13 @@
+{
+  "yeshedek2regularsc700": {
+    "uniE10B": "༡"
+  },
+  "_meta": {
+    "lookup_kind": "gname",
+    "source": "pydeduff YesheDe pipeline: scripts/yeshede/ + tiblegenc.csv (approved entries). .tsheg variants expand to base + U+0F0B.",
+    "sub_font": "yeshedek2-Regular-SC700",
+    "n_pdfs": 1,
+    "n_subsets": 1,
+    "entries": 1
+  }
+}

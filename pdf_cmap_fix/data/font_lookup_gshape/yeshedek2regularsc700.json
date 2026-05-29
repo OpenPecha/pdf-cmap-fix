@@ -1,0 +1,15 @@
+{
+  "yeshedek2regularsc700": {
+    "27042754946e5711d3fc7d58a20abfbbe3c612da6f5913d70614a24e9a3b82be9653069cc65d9b0e525673d5bd908bd3600f87de81421ee36130ec7fe258cbab": "༡"
+  },
+  "_meta": {
+    "lookup_kind": "gshape",
+    "source": "pydeduff YesheDe pipeline: scripts/yeshede/ + tiblegenc.csv (approved entries). .tsheg variants expand to base + U+0F0B.",
+    "sub_font": "yeshedek2-Regular-SC700",
+    "n_pdfs": 1,
+    "n_subsets": 1,
+    "entries": 1,
+    "fingerprint_method": "HashPointPen+RoundingPointPen(floatToFixedToFloat 14-bit)",
+    "merged_ttf_source": "yeshedek2-Regular-SC700.ttf"
+  }
+}

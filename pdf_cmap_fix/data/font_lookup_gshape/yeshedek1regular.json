@@ -1,0 +1,17 @@
+{
+  "yeshedek1regular": {
+    "4b2937d3891440a59263af6b0d586ce673b1068e4d7a5332806fbb71fef47e29e7edc68985cf0cb636ae641d848cdbf1c228c9b4c930a5fcd7cc9a93379bf506": "འ",
+    "62a0114b69ec80dcfbcc2460931394766242055bb286d2229bcfcd16b30e09b5870463db2a90ce7a5dde66f3414cd1c105dcc4c00c9a02192ee4ded793afa57b": "བ",
+    "e86aa85d69a65eb77c531a2724d42e21010e680a38089114af892da3d23f4a8365f1aced576d0864f87c66214b5c6cec4f9748e1830ca379c8e493a10b38db7b": "ར"
+  },
+  "_meta": {
+    "lookup_kind": "gshape",
+    "source": "pydeduff YesheDe pipeline: scripts/yeshede/ + tiblegenc.csv (approved entries). .tsheg variants expand to base + U+0F0B.",
+    "sub_font": "yeshedek1-Regular",
+    "n_pdfs": 83,
+    "n_subsets": 83,
+    "entries": 3,
+    "fingerprint_method": "HashPointPen+RoundingPointPen(floatToFixedToFloat 14-bit)",
+    "merged_ttf_source": "yeshedek1-Regular.ttf"
+  }
+}

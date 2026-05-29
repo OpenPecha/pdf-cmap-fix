@@ -1,0 +1,15 @@
+{
+  "yeshedek1regular": {
+    "uniE127": "འ",
+    "uniE142": "བ",
+    "uniE152": "ར"
+  },
+  "_meta": {
+    "lookup_kind": "gname",
+    "source": "pydeduff YesheDe pipeline: scripts/yeshede/ + tiblegenc.csv (approved entries). .tsheg variants expand to base + U+0F0B.",
+    "sub_font": "yeshedek1-Regular",
+    "n_pdfs": 83,
+    "n_subsets": 83,
+    "entries": 3
+  }
+}
