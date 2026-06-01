@@ -117,3 +117,101 @@ def test_merge_referenced_intersection_only() -> None:
     merged, changed = _merge(existing, db_map, referenced)
     assert merged == {1: "x", 2: "Y"}
     assert changed == 1
+
+
+def test_iter_text_strings_picks_up_single_byte_payloads_for_simple_fonts() -> None:
+    """Simple fonts use 1-byte char codes; the iterator still hands
+    each text-show operator's payload to the caller as bytes. The
+    *interpretation* (1 vs 2 byte) is the caller's responsibility --
+    here we just confirm we receive every byte verbatim."""
+    stream = (
+        b"q BT\n"
+        b"/F3 12 Tf\n"
+        b"<0102030405> Tj\n"
+        b"ET Q\n"
+    )
+    out = list(_iter_text_strings(stream))
+    assert out == [(b"F3", b"\x01\x02\x03\x04\x05")]
+
+
+# Inline PDF synthesis is heavy for unit tests; the public
+# collect_referenced_gids API is exercised end-to-end by the
+# integration smoke test against docs/examples/*. Here we only need
+# to know that the byte-width split is faithfully wired: a synthetic
+# input forces a known split.
+
+class _StubDoc:
+    """Minimal fitz.Document stand-in for collect_referenced_gids."""
+
+    def __init__(self, contents: bytes, font_xref: int, fname: bytes = b"F1"):
+        from unittest.mock import MagicMock
+        self._page = MagicMock()
+        self._page.read_contents.return_value = contents
+        # Make _resource_font_xref_map find {fname: font_xref}.
+        self._page.xref = 100
+        self.font_xref = font_xref
+        self.fname = fname
+        # xref tree: page 100 -> /Resources/Font is an indirect ref to 101,
+        # which is a dict mapping F1 -> font_xref.
+        self._key_table = {
+            (100, "Resources/Font"): ("xref", "101 0 R"),
+            (100, "Parent"): None,
+        }
+        self._object_table = {
+            101: f"<< /{self.fname.decode('latin-1')} {self.font_xref} 0 R >>",
+        }
+
+    def __len__(self) -> int:
+        return 1
+
+    def __getitem__(self, pno: int):
+        return self._page
+
+    def xref_get_key(self, xref: int, key: str):
+        return self._key_table.get((xref, key))
+
+    def xref_object(self, xref: int) -> str:
+        return self._object_table.get(xref, "")
+
+
+def test_collect_referenced_gids_simple_font_reads_one_byte_per_code() -> None:
+    stream = (
+        b"q BT\n"
+        b"/F1 12 Tf\n"
+        b"<0D1F2030> Tj\n"
+        b"ET Q\n"
+    )
+    doc = _StubDoc(stream, font_xref=42)
+    out = collect_referenced_gids(doc, simple_xrefs={42})
+    assert out[42] == {0x0D, 0x1F, 0x20, 0x30}
+
+
+def test_collect_referenced_gids_type0_font_reads_two_bytes_per_gid() -> None:
+    stream = (
+        b"q BT\n"
+        b"/F1 12 Tf\n"
+        b"<00010002000300040A0B> Tj\n"
+        b"ET Q\n"
+    )
+    doc = _StubDoc(stream, font_xref=42)
+    out = collect_referenced_gids(doc, type0_xrefs={42})
+    assert out[42] == {0x0001, 0x0002, 0x0003, 0x0004, 0x0A0B}
+
+
+def test_collect_referenced_gids_xref_not_in_either_set_is_skipped() -> None:
+    stream = b"q BT /F1 12 Tf <0102> Tj ET Q\n"
+    doc = _StubDoc(stream, font_xref=42)
+    # Provide explicit, disjoint sets that exclude xref 42 -> nothing
+    # should land in the output.
+    out = collect_referenced_gids(doc, type0_xrefs=set(), simple_xrefs=set())
+    assert out == {}
+
+
+def test_collect_referenced_gids_back_compat_defaults_to_type0() -> None:
+    """When the caller passes no classification (legacy 1-arg call),
+    every payload is treated as Identity-H (2 bytes per GID), exactly
+    as before this PR."""
+    stream = b"q BT /F1 12 Tf <00010002> Tj ET Q\n"
+    doc = _StubDoc(stream, font_xref=42)
+    out = collect_referenced_gids(doc)
+    assert out[42] == {0x0001, 0x0002}

@@ -228,18 +228,26 @@ def collect_referenced_gids(
     doc: fitz.Document,
     *,
     type0_xrefs: Optional[Set[int]] = None,
+    simple_xrefs: Optional[Set[int]] = None,
 ) -> Dict[int, Set[int]]:
-    """Return ``{font_xref: {gid, ...}}`` for Type0 (Identity-H) fonts.
+    """Return ``{font_xref: {code, ...}}`` for every font referenced by
+    the document's content streams.
 
-    For each page we walk the content stream once, attribute every text
-    string to the most recent ``/Fname size Tf`` selection, look the
-    name up in the page's ``/Resources/Font`` dictionary, and decode
-    the string two bytes at a time as GIDs. ``type0_xrefs``, when
-    provided, restricts which fonts get recorded - callers typically
-    pass the set of Type0 font xrefs they discovered in advance to
-    avoid recording GIDs from simple-encoding TrueType fonts.
+    The integer in the returned set is whichever width PDF reads it
+    at: GIDs for Type0 (2 bytes per code, Identity-H), or 1-byte
+    char codes for simple fonts (Type1, MMType1, TrueType). Callers
+    that need to distinguish should pass disjoint ``type0_xrefs`` /
+    ``simple_xrefs`` sets up front and consult their own bookkeeping
+    to know which width applies per xref.
+
+    ``type0_xrefs`` and ``simple_xrefs`` filter which fonts get
+    recorded. When BOTH are omitted, every text-show op is recorded
+    as 2-byte (Identity-H) for backward compatibility with the
+    original 1-argument API: callers that don't classify ahead of
+    time get the historical behavior.
     """
     out: Dict[int, Set[int]] = {}
+    classifying = type0_xrefs is not None or simple_xrefs is not None
     for pno in range(len(doc)):
         page = doc[pno]
         try:
@@ -257,11 +265,26 @@ def collect_referenced_gids(
             xref = name_to_xref.get(fname)
             if xref is None:
                 continue
-            if type0_xrefs is not None and xref not in type0_xrefs:
-                continue
+            if classifying:
+                is_simple = (
+                    simple_xrefs is not None and xref in simple_xrefs
+                )
+                is_type0 = (
+                    type0_xrefs is not None and xref in type0_xrefs
+                )
+                if not (is_simple or is_type0):
+                    continue
+            else:
+                is_simple = False
             bucket = out.setdefault(xref, set())
-            if len(payload) < 2:
-                continue
-            for k in range(0, len(payload) - 1, 2):
-                bucket.add((payload[k] << 8) | payload[k + 1])
+            if is_simple:
+                # Simple font: each byte is a char code.
+                for b in payload:
+                    bucket.add(b)
+            else:
+                # Type0 (Identity-H): each pair of bytes is a GID.
+                if len(payload) < 2:
+                    continue
+                for k in range(0, len(payload) - 1, 2):
+                    bucket.add((payload[k] << 8) | payload[k + 1])
     return out
