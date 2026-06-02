@@ -43,8 +43,6 @@ $exampleMeta = @{
     "TI1461-01-001"   = @{ Desc = "InDesign; Qomolangma + Monlam"; Pages = "1" }
     "TI1763-01-002"   = @{ Desc = "MS Word; Monlam Uni OuChan 2"; Pages = "1" }
     "ladakh-excerpt"  = @{ Desc = "MS Word subset alias case (Ladakh excerpt)"; Pages = "1" }
-    "test"            = @{ Desc = "MS Word; Taranatha Dzam Thang (jonangdharma.org)"; Pages = "1018" }
-    "tarantara"       = @{ Desc = "MS Word; Taranatha Ladakh vol. 6 (jonangdharma.org)"; Pages = "959" }
 }
 
 $cliModules = @{

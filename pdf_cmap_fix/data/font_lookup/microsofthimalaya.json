@@ -1477,13 +1477,11 @@
     "1478": "ྵྲ",
     "1479": "ྶྲ",
     "1480": "ྷྲ",
-    "1481": "ྸྲ",
-    "65279": "\u2060",
-    "65533": "\u2060"
+    "1481": "ྸྲ"
   },
   "_meta": {
     "source": "C:\\Users\\GANGA GYATSO\\work\\pdf-cmap-fix\\scripts\\MicrosoftHimalaya.ttf",
-    "gids_mapped": 1480,
+    "gids_mapped": 1478,
     "multi_char_stacks": 833,
     "gsub_lookup_counts": {
       "1": 15,
