@@ -20,6 +20,26 @@ from pdf_cmap_fix.content_streams import collect_referenced_gids
 
 LookupTier = Literal["gid", "gname", "gshape"]
 
+# Word PDFs may emit these Type0 GIDs before stack syllables; they are not
+# always picked up by :func:`collect_referenced_gids` but still need ToUnicode
+# entries (often supplied via lookup JSON, e.g. microsofthimalaya.json).
+WORD_SENTINEL_GIDS: frozenset[int] = frozenset({0xFEFF, 0xFFFD})
+
+# Word sometimes wraps real Tj glyph text in marked-content spans with
+# ActualText<FEFFFFFD>. PyMuPDF includes that ActualText in extraction,
+# producing visible U+FFFD noise even when the following GIDs map fine.
+#
+# Example shape:
+#   /Span<</ActualText<FEFFFFFD>>> BDC
+#   ... <0384>Tj ...
+#   EMC
+#
+# We preserve the inner drawing operators and only remove the BDC/EMC wrapper.
+_WORD_ACTUALTEXT_SENTINEL_RE = re.compile(
+    rb"/Span\s*<<.*?/ActualText\s*<\s*FEFFFFFD\s*>.*?>>\s*BDC\s*(.*?)\s*EMC",
+    re.IGNORECASE | re.DOTALL,
+)
+
 PREVIEW_LINES = 15
 PREVIEW_DIFF = 8
 
@@ -900,6 +920,10 @@ def collect_font_merges(
                 referenced = referenced_by_xref.get(xref)
                 if not referenced:
                     referenced = set(existing.keys())
+                if is_type0:
+                    referenced = set(referenced) | (
+                        db_map.keys() & WORD_SENTINEL_GIDS
+                    )
                 merged, changed = _merge(existing, db_map, referenced)
                 overrides = _overrides(existing, merged)
 
@@ -949,6 +973,54 @@ def apply_font_merges_to_doc(doc: fitz.Document, records: list[dict[str, Any]]) 
         doc.update_stream(r["to_unicode_xref"], cmap_bytes)
 
 
+def _strip_word_actualtext_sentinels_in_stream(
+    stream: bytes,
+) -> tuple[bytes, int]:
+    """Remove Word ``ActualText<FEFFFFFD>`` wrappers from one content stream.
+
+    Keeps the enclosed content (e.g. ``<0384>Tj``) and strips only the
+    marked-content wrapper so extraction does not surface U+FFFD sentinels.
+    """
+    if not stream:
+        return stream, 0
+    out, n = _WORD_ACTUALTEXT_SENTINEL_RE.subn(lambda m: m.group(1), stream)
+    return out, n
+
+
+def strip_word_actualtext_sentinels(doc: fitz.Document) -> dict[str, int]:
+    """Strip Word FEFF/FFFD ActualText wrappers across page content streams."""
+    seen_stream_xrefs: set[int] = set()
+    markers_removed = 0
+    streams_changed = 0
+    for pno in range(len(doc)):
+        page = doc[pno]
+        try:
+            content_xrefs = page.get_contents()
+        except Exception:
+            continue
+        for xref in content_xrefs:
+            if xref in seen_stream_xrefs:
+                continue
+            seen_stream_xrefs.add(xref)
+            try:
+                stream = doc.xref_stream(xref)
+            except Exception:
+                continue
+            new_stream, n = _strip_word_actualtext_sentinels_in_stream(stream)
+            if n <= 0:
+                continue
+            try:
+                doc.update_stream(xref, new_stream)
+            except Exception:
+                continue
+            markers_removed += n
+            streams_changed += 1
+    return dict(
+        actualtext_removed=markers_removed,
+        actualtext_streams_changed=streams_changed,
+    )
+
+
 def patch_doc(
     doc: fitz.Document,
     *,
@@ -963,6 +1035,9 @@ def patch_doc(
         verbose=verbose,
     )
     apply_font_merges_to_doc(doc, records)
+    clean_stats = strip_word_actualtext_sentinels(doc)
+    stats = dict(stats)
+    stats.update(clean_stats)
     return stats
 
 
@@ -1249,6 +1324,11 @@ def cli_main(
             print(f"  would patch:   {s['patched']}  ({s['upgrades']} GID upgrades)")
             print(f"  no change:     {s['no_change']}")
             print(f"  no DB match:   {s['no_match']}")
+            if s.get("actualtext_removed", 0) > 0:
+                print(
+                    "  stripped:      "
+                    f"{s['actualtext_removed']} Word ActualText marker(s)"
+                )
             print(f"  Written: {out_json}")
             continue
 
@@ -1267,6 +1347,11 @@ def cli_main(
             print(f"  patched:       {stats['patched']}  ({stats['upgrades']} GID upgrades)")
             print(f"  no change:     {stats['no_change']}")
             print(f"  no DB match:   {stats['no_match']}")
+            if stats.get("actualtext_removed", 0) > 0:
+                print(
+                    "  stripped:      "
+                    f"{stats['actualtext_removed']} Word ActualText marker(s)"
+                )
             print(f"  Written: {out_path}  ({len(pdf_bytes):,} bytes)")
             continue
 
@@ -1291,6 +1376,11 @@ def cli_main(
         print(f"  patched:       {stats['patched']}  ({stats['upgrades']} GID upgrades)")
         print(f"  no change:     {stats['no_change']}")
         print(f"  no DB match:   {stats['no_match']}")
+        if stats.get("actualtext_removed", 0) > 0:
+            print(
+                "  stripped:      "
+                f"{stats['actualtext_removed']} Word ActualText marker(s)"
+            )
         print(f"  Written: {pdf_path.parent}/{stem}.{{raw,patched,diff}}.txt")
         _show_preview("PATCHED TEXT", patched_text)
         print("\n[Diff]")
