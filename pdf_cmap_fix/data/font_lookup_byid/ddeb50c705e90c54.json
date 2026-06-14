@@ -1,0 +1,36 @@
+{
+  "ddeb50c705e90c54": {
+    "1": "\u0000",
+    "2": "\r",
+    "62": "К",
+    "65": "Х",
+    "123": "Ш",
+    "131": "A"
+  },
+  "_meta": {
+    "lookup_kind": "gid",
+    "source": "tibetan-fonts/Non-Unicode Fonts/Druk/DrukV13-1991/DrukFonV13.otf",
+    "gids_mapped": 6,
+    "multi_char_stacks": 0,
+    "gsub_lookup_counts": {},
+    "font_id": "ddeb50c705e90c54",
+    "filename": "DrukFonV13.otf",
+    "names": [
+      {
+        "role": "ps",
+        "raw": "DrukFontV13",
+        "norm": "drukfontv13"
+      },
+      {
+        "role": "full",
+        "raw": "DrukFontV13",
+        "norm": "drukfontv13"
+      },
+      {
+        "role": "family",
+        "raw": "Druk",
+        "norm": "druk"
+      }
+    ]
+  }
+}

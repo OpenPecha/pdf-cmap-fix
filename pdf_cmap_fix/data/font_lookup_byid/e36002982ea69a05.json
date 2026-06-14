@@ -1,0 +1,31 @@
+{
+  "e36002982ea69a05": {
+    "1": ""
+  },
+  "_meta": {
+    "lookup_kind": "gid",
+    "source": "tibetan-fonts-private/yeshede/yeshedek2-Regular-SC700.ttf",
+    "gids_mapped": 1,
+    "multi_char_stacks": 0,
+    "gsub_lookup_counts": {},
+    "font_id": "e36002982ea69a05",
+    "filename": "yeshedek2-Regular-SC700.ttf",
+    "names": [
+      {
+        "role": "ps",
+        "raw": "yeshedek2-Regular-SC700-merged",
+        "norm": "yeshedek2regularsc700merged"
+      },
+      {
+        "role": "full",
+        "raw": "yeshedek2-Regular-SC700-merged",
+        "norm": "yeshedek2regularsc700merged"
+      },
+      {
+        "role": "family",
+        "raw": "yeshedek2-Regular-SC700-merged",
+        "norm": "yeshedek2regularsc700merged"
+      }
+    ]
+  }
+}

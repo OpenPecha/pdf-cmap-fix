@@ -1,0 +1,24 @@
+{
+  "7fbe307e274481d3": {},
+  "_meta": {
+    "lookup_kind": "gid",
+    "source": "tibetan-fonts/Non-Unicode Fonts/chan.TTF",
+    "gids_mapped": 0,
+    "multi_char_stacks": 0,
+    "gsub_lookup_counts": {},
+    "font_id": "7fbe307e274481d3",
+    "filename": "chan.TTF",
+    "names": [
+      {
+        "role": "full",
+        "raw": "‹-chan",
+        "norm": "chan"
+      },
+      {
+        "role": "family",
+        "raw": "‹-chan",
+        "norm": "chan"
+      }
+    ]
+  }
+}

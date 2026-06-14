@@ -1,0 +1,47 @@
+{
+  "b3d33a03b0c6502b": {
+    "3": " ",
+    "4": "0",
+    "5": "1",
+    "6": "2",
+    "7": "3",
+    "8": "4",
+    "9": "5",
+    "10": "6",
+    "11": "7",
+    "12": "8",
+    "13": "9",
+    "14": ":",
+    "15": ";",
+    "16": "<",
+    "17": "=",
+    "18": ">",
+    "19": "?"
+  },
+  "_meta": {
+    "lookup_kind": "gid",
+    "source": "tibetan-fonts/Non-Unicode Fonts/Landza/landz8.ttf",
+    "gids_mapped": 17,
+    "multi_char_stacks": 0,
+    "gsub_lookup_counts": {},
+    "font_id": "b3d33a03b0c6502b",
+    "filename": "landz8.ttf",
+    "names": [
+      {
+        "role": "ps",
+        "raw": "Landz8",
+        "norm": "landz8"
+      },
+      {
+        "role": "full",
+        "raw": "Landz8",
+        "norm": "landz8"
+      },
+      {
+        "role": "family",
+        "raw": "Landz8",
+        "norm": "landz8"
+      }
+    ]
+  }
+}

@@ -1,0 +1,32 @@
+{
+  "31bde624c0ff9f2f": {
+    "1": "\u0000",
+    "2": "\r"
+  },
+  "_meta": {
+    "lookup_kind": "gid",
+    "source": "tibetan-fonts/Non-Unicode Fonts/Druk/DrukV13-1991/DrukFonV13.ttf",
+    "gids_mapped": 2,
+    "multi_char_stacks": 0,
+    "gsub_lookup_counts": {},
+    "font_id": "31bde624c0ff9f2f",
+    "filename": "DrukFonV13.ttf",
+    "names": [
+      {
+        "role": "ps",
+        "raw": "DrukFontV13",
+        "norm": "drukfontv13"
+      },
+      {
+        "role": "full",
+        "raw": "DrukFontV13",
+        "norm": "drukfontv13"
+      },
+      {
+        "role": "family",
+        "raw": "Druk",
+        "norm": "druk"
+      }
+    ]
+  }
+}

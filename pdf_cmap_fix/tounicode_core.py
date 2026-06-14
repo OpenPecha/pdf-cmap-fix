@@ -501,6 +501,183 @@ def _extract_font_names(doc: fitz.Document, font_xref: int) -> list[str]:
 
 _LOOKUP_FILE_CACHE: dict[tuple[str, float, int], Optional[Tuple[str, dict[str, str]]]] = {}
 
+# --- name-index (font-ID) matching -----------------------------------------
+#
+# The tier-1 (gid) lookup directory built by
+# ``scripts/gid/rebuild_indexed_lookup.py`` is keyed by an opaque content-hash
+# font ID (``<id>.json``) and ships a ``_name_index.json`` that maps normalised
+# font names to those IDs, split by name-table role. When that index is present
+# we match PDF fonts against real name-table names (PostScript primary, then
+# full / family / filename) instead of fuzzy-matching against filenames. This
+# is both more accurate (``TimesNewRomanPSMT`` no longer substring-hits the
+# ``Ma``/Mantra font) and version-aware (``TibetanChogyalUnicode-141208``
+# resolves to the matching 2014 face, not a different release ``…-170221``).
+
+_NAME_INDEX_FILENAME = "_name_index.json"
+_INDEX_ROLES = ("ps", "full", "family", "filename")
+_DIGITS = "0123456789"
+# Prefix matches (one normalised name is a prefix of the other, e.g. a style
+# suffix like ``Regular``) only count when the shorter name is reasonably long
+# and covers a good fraction of the longer -- this keeps short unrelated names
+# from latching onto long PDF names.
+_PREFIX_MIN_LEN = 5
+_PREFIX_MIN_RATIO = 0.5
+
+_NAME_INDEX_CACHE: dict[tuple[str, float, int], Optional[dict]] = {}
+
+
+def _load_name_index(lookup_dir: Path) -> Optional[dict]:
+    path = lookup_dir / _NAME_INDEX_FILENAME
+    try:
+        data = json.loads(path.read_text(encoding="utf-8"))
+    except (OSError, json.JSONDecodeError):
+        return None
+    if not isinstance(data, dict):
+        return None
+    return data
+
+
+def _load_name_index_cached(lookup_dir: Path) -> Optional[dict]:
+    path = lookup_dir / _NAME_INDEX_FILENAME
+    try:
+        st = path.stat()
+    except OSError:
+        return None
+    key = (str(path.resolve()), st.st_mtime, st.st_size)
+    if key in _NAME_INDEX_CACHE:
+        return _NAME_INDEX_CACHE[key]
+    loaded = _load_name_index(lookup_dir)
+    _NAME_INDEX_CACHE[key] = loaded
+    return loaded
+
+
+def _resolve_index_font_ids(
+    index: dict, pdf_norm_candidates: list[str]
+) -> Tuple[Optional[str], list[str]]:
+    """Resolve normalised PDF font names to candidate font IDs via the index.
+
+    ``pdf_norm_candidates`` is an ordered list (best first, e.g. embedded
+    PostScript name then PDF basename) of names already passed through
+    :func:`_normalise_name`. Returns ``(matched_name, [font_id, ...])`` for the
+    single best-scoring match, or ``(None, [])`` if nothing matched. Several
+    IDs are returned when one name legitimately maps to multiple faces (e.g.
+    two releases sharing a PostScript name); the caller breaks that tie using
+    referenced-GID coverage.
+
+    Match tiers, strongest first:
+
+    1. exact name equality;
+    2. version/date-suffix equality -- the PDF name with trailing digits
+       stripped equals an index name (``tibetanchogyalunicode141208`` ->
+       ``tibetanchogyalunicode``); never matches a *different* numeric suffix;
+    3. prefix relationship (style suffix like ``Regular``), gated by length.
+    """
+    results: list[tuple[tuple[int, int, int, int], str, tuple[str, ...]]] = []
+    for ci, q in enumerate(pdf_norm_candidates):
+        if not q:
+            continue
+        qs = q.rstrip(_DIGITS)
+        for ri, role in enumerate(_INDEX_ROLES):
+            names = index.get(role)
+            if not isinstance(names, dict) or not names:
+                continue
+            exact_ids = names.get(q)
+            if exact_ids:
+                results.append(((3, len(q), -ci, -ri), q, tuple(exact_ids)))
+            if qs and qs != q:
+                vs_ids = names.get(qs)
+                if vs_ids:
+                    results.append(((2, len(qs), -ci, -ri), qs, tuple(vs_ids)))
+            if len(q) >= _PREFIX_MIN_LEN:
+                for nm, nids in names.items():
+                    # Only the "DB name is a prefix of the PDF name" direction
+                    # is allowed (the PDF appended a style suffix like
+                    # ``Regular``). The reverse -- the PDF name being a prefix
+                    # of a longer DB name -- is a *different* suffix
+                    # (``times`` -> ``timescsx``, ``timesnewroman`` ->
+                    # ``timesnewromandia``) and is exactly the kind of loose
+                    # match we must reject.
+                    if len(nm) < _PREFIX_MIN_LEN or len(nm) >= len(q):
+                        continue
+                    if q.startswith(nm) and len(nm) / len(q) >= _PREFIX_MIN_RATIO:
+                        results.append(((1, len(nm), -ci, -ri), nm, tuple(nids)))
+    if not results:
+        return None, []
+    results.sort(key=lambda r: r[0], reverse=True)
+    top_score = results[0][0]
+    matched_name = results[0][1]
+    ids: list[str] = []
+    for score, _name, rids in results:
+        if score != top_score:
+            break
+        for fid in rids:
+            if fid not in ids:
+                ids.append(fid)
+    return matched_name, ids
+
+
+def _compute_db_map(
+    doc: fitz.Document,
+    font_xref: int,
+    is_type0: bool,
+    match_kind: str,
+    inner: dict[str, str],
+) -> dict[int, str]:
+    """Build the ``{code -> Unicode}`` map for one font from a loaded lookup.
+
+    Dispatches on font family and lookup tier exactly like the historical
+    inline logic: Type0 + ``gid`` uses the raw GID map, Type0 + ``gname`` /
+    ``gshape`` resolves through the embedded font, and simple fonts go through
+    the char-code path.
+    """
+    if is_type0:
+        if match_kind == "gid":
+            return _gid_map_from_inner(inner)
+        return _resolve_db_gid_map(doc, font_xref, match_kind, inner)
+    return _resolve_db_code_map_simple(doc, font_xref, match_kind, inner)
+
+
+def _pick_db_map_via_index(
+    doc: fitz.Document,
+    font_xref: int,
+    *,
+    is_type0: bool,
+    tier: str,
+    lookup_dir: Path,
+    name_index: dict,
+    pdf_norm_candidates: list[str],
+    referenced: set,
+) -> Tuple[Optional[dict[int, str]], Optional[str], str, Optional[str]]:
+    """Index-based match. Returns ``(db_map, font_id, match_kind, matched_name)``.
+
+    Among the font IDs a name resolves to, the one whose lookup covers the most
+    referenced GIDs wins (ties broken by larger overall coverage), so a richer
+    face (e.g. the 1036-glyph release) beats a sparse one sharing the same name.
+    """
+    matched_name, cand_ids = _resolve_index_font_ids(name_index, pdf_norm_candidates)
+    if not cand_ids:
+        return None, None, "", None
+    best: Optional[tuple[tuple[int, int], str, str, dict[int, str]]] = None
+    for cid in cand_ids:
+        path = lookup_dir / f"{cid}.json"
+        if not path.is_file():
+            continue
+        loaded = _load_lookup_file_cached(path)
+        if loaded is None or loaded[0] != tier:
+            continue
+        match_kind, inner = loaded
+        cand_map = _compute_db_map(doc, font_xref, is_type0, match_kind, inner)
+        if not cand_map:
+            continue
+        overlap = len(cand_map.keys() & referenced) if referenced else 0
+        score = (overlap, len(cand_map))
+        if best is None or score > best[0]:
+            best = (score, cid, match_kind, cand_map)
+    if best is None:
+        return None, None, "", matched_name
+    _score, font_id, match_kind, db_map = best
+    return db_map, font_id, match_kind, matched_name
+
 
 def _load_lookup_file_cached(path: Path) -> Optional[Tuple[str, dict[str, str]]]:
     """Process-global cached version of :func:`_load_lookup_file`.
@@ -788,6 +965,10 @@ def collect_font_merges(
     """
     keys_disk = _discover_lookup_keys(lookup_dir)
     db_index = _build_db_index(keys_disk)
+    # When the lookup dir ships a name index (font-ID-keyed tier-1 DB) we match
+    # on real name-table names; otherwise we fall back to legacy filename-stem
+    # fuzzy matching (still used by the gname / gshape tiers).
+    name_index = _load_name_index_cached(lookup_dir)
 
     stats = dict(fonts_seen=0, patched=0, upgrades=0, no_change=0, no_match=0)
     records: list[dict[str, Any]] = []
@@ -841,60 +1022,62 @@ def collect_font_merges(
 
             existing = _parse_tounicode(tu_stream)
 
-            # Try the embedded font's own name table first so that generic
-            # PDF aliases like CIDFont+F1 / T1_0 / F0 do not cause the
-            # substring scorer to pick an unrelated lookup (e.g. umef1 for
-            # a font that is actually Microsoft Himalaya).
+            # The "referenced" set (content-stream-derived codes/GIDs) is the
+            # performance lever on subsets *and* the tie-breaker when a name
+            # maps to several faces (see bug 02-performance.md). Falling back
+            # to the existing ToUnicode keys is a safe approximation for
+            # Word-style subsets when content-stream parsing came up empty.
+            referenced = referenced_by_xref.get(xref)
+            if not referenced:
+                referenced = set(existing.keys())
+
+            # Build the ordered list of candidate names: the embedded font's
+            # own name-table names first (PostScript / full / family) so that
+            # generic PDF aliases like CIDFont+F1 / T1_0 / F0 do not drive the
+            # match, then the PDF basename.
             embedded_names = _extract_font_names(doc, xref)
-            picked = None
-            for cand in embedded_names:
-                picked = _pick_best_font_key(db_index, cand)
-                if picked:
-                    break
-            if picked is None:
-                picked = _pick_best_font_key(db_index, basename)
             match_kind = ""
-            if picked is None:
-                db_map, db_key = None, None
+            db_map = None
+            db_key = None
+            matched_display: Optional[str] = None
+
+            if name_index is not None:
+                pdf_norm_candidates: list[str] = []
+                for cand in [*embedded_names, basename]:
+                    q = _normalise_name(cand)
+                    if q and q not in pdf_norm_candidates:
+                        pdf_norm_candidates.append(q)
+                db_map, db_key, match_kind, matched_display = _pick_db_map_via_index(
+                    doc,
+                    xref,
+                    is_type0=is_type0,
+                    tier=tier,
+                    lookup_dir=lookup_dir,
+                    name_index=name_index,
+                    pdf_norm_candidates=pdf_norm_candidates,
+                    referenced=referenced,
+                )
             else:
-                path = lookup_dir / f"{picked}.json"
-                if path.is_file():
-                    loaded = _load_lookup_file_cached(path)
-                    if loaded is not None and loaded[0] != tier:
-                        loaded = None
-                    db_map = None
-                    db_key = None
-                    if loaded is not None:
-                        match_kind, inner = loaded
-                        if is_type0:
-                            if match_kind == "gid":
-                                db_map = _gid_map_from_inner(inner)
-                                if db_map:
-                                    db_key = picked
-                                else:
-                                    db_map = None
-                            else:
-                                db_map = _resolve_db_gid_map(
-                                    doc, xref, match_kind, inner
-                                )
-                                if db_map:
-                                    db_key = picked
-                                else:
-                                    db_map = None
-                        else:
-                            # Simple font path: GID-based tier 1 is not
-                            # portable, only gname / gshape are. The
-                            # output is keyed by 1-byte char code, not
-                            # GID.
-                            db_map = _resolve_db_code_map_simple(
-                                doc, xref, match_kind, inner
+                picked = None
+                for cand in embedded_names:
+                    picked = _pick_best_font_key(db_index, cand)
+                    if picked:
+                        break
+                if picked is None:
+                    picked = _pick_best_font_key(db_index, basename)
+                if picked is not None:
+                    path = lookup_dir / f"{picked}.json"
+                    if path.is_file():
+                        loaded = _load_lookup_file_cached(path)
+                        if loaded is not None and loaded[0] == tier:
+                            match_kind, inner = loaded
+                            cand_map = _compute_db_map(
+                                doc, xref, is_type0, match_kind, inner
                             )
-                            if db_map:
+                            if cand_map:
+                                db_map = cand_map
                                 db_key = picked
-                            else:
-                                db_map = None
-                else:
-                    db_map, db_key = None, None
+                                matched_display = picked
             if not db_map:
                 db_map, db_key = None, None
 
@@ -911,15 +1094,14 @@ def collect_font_merges(
                 norm = _normalise_name(basename)
                 if verbose and norm not in reported:
                     reported.add(norm)
-                    print(f"  [matched] {basename[:50]} -> {db_key}  [{match_kind}]  ({ftype})")
-                # Use content-stream-derived codes/GIDs as the
-                # "referenced" set (see bug 02-performance.md).
-                # Falling back to the existing ToUnicode keys is a safe
-                # approximation for Word-style subsets when
-                # content-stream parsing came up empty.
-                referenced = referenced_by_xref.get(xref)
-                if not referenced:
-                    referenced = set(existing.keys())
+                    label = matched_display or db_key
+                    print(
+                        f"  [matched] {basename[:50]} -> {label}  "
+                        f"[{match_kind}]  ({ftype})"
+                    )
+                # Word emits content-stream sentinel GIDs that may be absent
+                # from the referenced set; fold the ones the DB knows about in
+                # so they still get patched (see Word ActualText handling).
                 if is_type0:
                     referenced = set(referenced) | (
                         db_map.keys() & WORD_SENTINEL_GIDS
@@ -934,6 +1116,7 @@ def collect_font_merges(
                     "pdf_font_name": basename,
                     "pdf_font_type": ftype,
                     "db_key_matched": db_key,
+                    "db_name_matched": matched_display,
                     "existing": existing,
                     "merged": merged,
                     "overrides": overrides,

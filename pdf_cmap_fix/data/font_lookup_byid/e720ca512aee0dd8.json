@@ -1,0 +1,62 @@
+{
+  "e720ca512aee0dd8": {
+    "3": " ",
+    "4": "!",
+    "5": "#",
+    "6": "$",
+    "7": "%",
+    "8": "&",
+    "9": "'",
+    "10": "(",
+    "11": ")",
+    "12": "*",
+    "13": "+",
+    "14": ",",
+    "15": "-",
+    "16": ".",
+    "17": "/",
+    "18": "0",
+    "19": "1",
+    "20": "2",
+    "21": "3",
+    "22": "4",
+    "23": "5",
+    "24": "6",
+    "25": "7",
+    "26": "8",
+    "27": "9",
+    "28": ":",
+    "29": ";",
+    "30": "<",
+    "31": "=",
+    "32": " ",
+    "33": "",
+    "34": ">"
+  },
+  "_meta": {
+    "lookup_kind": "gid",
+    "source": "tibetan-fonts/Non-Unicode Fonts/Nitartha/Khamdris/Khamdris-k.ttf",
+    "gids_mapped": 32,
+    "multi_char_stacks": 0,
+    "gsub_lookup_counts": {},
+    "font_id": "e720ca512aee0dd8",
+    "filename": "Khamdris-k.ttf",
+    "names": [
+      {
+        "role": "ps",
+        "raw": "Khamdris-k",
+        "norm": "khamdrisk"
+      },
+      {
+        "role": "full",
+        "raw": "Khamdris-k",
+        "norm": "khamdrisk"
+      },
+      {
+        "role": "family",
+        "raw": "Khamdris-k",
+        "norm": "khamdrisk"
+      }
+    ]
+  }
+}

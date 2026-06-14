@@ -1,0 +1,59 @@
+{
+  "9651f0425d4171fe": {
+    "3": " ",
+    "4": "0",
+    "5": "@",
+    "6": "P",
+    "7": "`",
+    "8": "°",
+    "9": "±",
+    "10": "²",
+    "11": "³",
+    "12": "´",
+    "13": "µ",
+    "14": "º",
+    "15": "»",
+    "16": "¼",
+    "17": "½",
+    "18": "¾",
+    "19": "¿",
+    "20": "À",
+    "21": "Á",
+    "22": "Â",
+    "23": "Ã",
+    "24": "Ä",
+    "25": "Å",
+    "26": "Ê",
+    "27": "Ë",
+    "28": "Ì",
+    "29": "Í",
+    "30": "Î",
+    "31": "Ï"
+  },
+  "_meta": {
+    "lookup_kind": "gid",
+    "source": "tibetan-fonts/Non-Unicode Fonts/Landza/landza99.ttf",
+    "gids_mapped": 29,
+    "multi_char_stacks": 0,
+    "gsub_lookup_counts": {},
+    "font_id": "9651f0425d4171fe",
+    "filename": "landza99.ttf",
+    "names": [
+      {
+        "role": "ps",
+        "raw": "Landza99",
+        "norm": "landza99"
+      },
+      {
+        "role": "full",
+        "raw": "Landza99",
+        "norm": "landza99"
+      },
+      {
+        "role": "family",
+        "raw": "Landza99",
+        "norm": "landza99"
+      }
+    ]
+  }
+}

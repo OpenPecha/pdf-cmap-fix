@@ -1,0 +1,29 @@
+{
+  "5b6ac47513dd4a3e": {},
+  "_meta": {
+    "lookup_kind": "gid",
+    "source": "tibetan-fonts/Non-Unicode Fonts/Nitartha/Sam/SAMW.TTF",
+    "gids_mapped": 0,
+    "multi_char_stacks": 0,
+    "gsub_lookup_counts": {},
+    "font_id": "5b6ac47513dd4a3e",
+    "filename": "SAMW.TTF",
+    "names": [
+      {
+        "role": "ps",
+        "raw": "Samw",
+        "norm": "samw"
+      },
+      {
+        "role": "full",
+        "raw": "Samw",
+        "norm": "samw"
+      },
+      {
+        "role": "family",
+        "raw": "Samw",
+        "norm": "samw"
+      }
+    ]
+  }
+}

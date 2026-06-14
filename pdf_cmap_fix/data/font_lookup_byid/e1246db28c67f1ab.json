@@ -1,0 +1,29 @@
+{
+  "e1246db28c67f1ab": {},
+  "_meta": {
+    "lookup_kind": "gid",
+    "source": "tibetan-fonts/Non-Unicode Fonts/Nitartha/Esam/Esama.ttf",
+    "gids_mapped": 0,
+    "multi_char_stacks": 0,
+    "gsub_lookup_counts": {},
+    "font_id": "e1246db28c67f1ab",
+    "filename": "Esama.ttf",
+    "names": [
+      {
+        "role": "ps",
+        "raw": "Esama",
+        "norm": "esama"
+      },
+      {
+        "role": "full",
+        "raw": "Esama",
+        "norm": "esama"
+      },
+      {
+        "role": "family",
+        "raw": "Esama",
+        "norm": "esama"
+      }
+    ]
+  }
+}

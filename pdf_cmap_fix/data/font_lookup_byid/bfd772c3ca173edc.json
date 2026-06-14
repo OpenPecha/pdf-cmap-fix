@@ -1,0 +1,33 @@
+{
+  "bfd772c3ca173edc": {
+    "1": "",
+    "2": "",
+    "3": ""
+  },
+  "_meta": {
+    "lookup_kind": "gid",
+    "source": "tibetan-fonts-private/yeshede/yeshedek1-Regular.ttf",
+    "gids_mapped": 3,
+    "multi_char_stacks": 0,
+    "gsub_lookup_counts": {},
+    "font_id": "bfd772c3ca173edc",
+    "filename": "yeshedek1-Regular.ttf",
+    "names": [
+      {
+        "role": "ps",
+        "raw": "yeshedek1-Regular-merged",
+        "norm": "yeshedek1regularmerged"
+      },
+      {
+        "role": "full",
+        "raw": "yeshedek1-Regular-merged",
+        "norm": "yeshedek1regularmerged"
+      },
+      {
+        "role": "family",
+        "raw": "yeshedek1-Regular-merged",
+        "norm": "yeshedek1regularmerged"
+      }
+    ]
+  }
+}

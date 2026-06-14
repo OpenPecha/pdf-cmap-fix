@@ -1,0 +1,65 @@
+{
+  "aac674dce6f2cf9a": {
+    "3": " ",
+    "4": "!",
+    "5": ")",
+    "6": "‐",
+    "7": "0",
+    "8": "4",
+    "9": "5",
+    "10": "6",
+    "11": "7",
+    "12": ">",
+    "13": "A",
+    "14": "G",
+    "15": "[",
+    "16": "]",
+    "17": "_",
+    "18": "b",
+    "19": "m",
+    "20": "o",
+    "21": "q",
+    "22": "{",
+    "23": "|",
+    "24": "û",
+    "25": "ü",
+    "26": "Ø",
+    "27": "¬",
+    "28": "À",
+    "29": "Ã",
+    "30": "Œ",
+    "31": "„",
+    "32": "Ó",
+    "33": "ˆ",
+    "34": "≠",
+    "35": "≤",
+    "36": "",
+    "37": "ı"
+  },
+  "_meta": {
+    "lookup_kind": "gid",
+    "source": "tibetan-fonts/Non-Unicode Fonts/LTibetan/ltibe___.ttf",
+    "gids_mapped": 35,
+    "multi_char_stacks": 0,
+    "gsub_lookup_counts": {},
+    "font_id": "aac674dce6f2cf9a",
+    "filename": "ltibe___.ttf",
+    "names": [
+      {
+        "role": "ps",
+        "raw": "LTibetanExtension",
+        "norm": "ltibetanextension"
+      },
+      {
+        "role": "full",
+        "raw": "LTibetanExtension",
+        "norm": "ltibetanextension"
+      },
+      {
+        "role": "family",
+        "raw": "LTibetanExtension",
+        "norm": "ltibetanextension"
+      }
+    ]
+  }
+}

@@ -1,0 +1,29 @@
+{
+  "8f1319249b32086a": {},
+  "_meta": {
+    "lookup_kind": "gid",
+    "source": "tibetan-fonts/Non-Unicode Fonts/GPLTibetan/gaka1.ttf",
+    "gids_mapped": 0,
+    "multi_char_stacks": 0,
+    "gsub_lookup_counts": {},
+    "font_id": "8f1319249b32086a",
+    "filename": "gaka1.ttf",
+    "names": [
+      {
+        "role": "ps",
+        "raw": "GPLTibetan1",
+        "norm": "gpltibetan1"
+      },
+      {
+        "role": "full",
+        "raw": "GPL'ed Tibetan #1",
+        "norm": "gpledtibetan1"
+      },
+      {
+        "role": "family",
+        "raw": "GPL'ed Tibetan #1",
+        "norm": "gpledtibetan1"
+      }
+    ]
+  }
+}

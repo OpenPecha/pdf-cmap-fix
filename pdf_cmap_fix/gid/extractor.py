@@ -14,7 +14,12 @@ import fitz
 from pdf_cmap_fix import tounicode_core as _core
 
 _DATA_DIR = Path(__file__).resolve().parent.parent / "data"
-FONT_LOOKUP_DIR = _DATA_DIR / "font_lookup"
+# Tier-1 (gid) lookup DB: font-ID-keyed JSON + a ``_name_index.json`` that maps
+# real name-table names to those IDs (built by
+# ``scripts/gid/rebuild_indexed_lookup.py``). This replaced the legacy
+# filename-stem-keyed ``font_lookup`` directory whose fuzzy name matching caused
+# wrong picks (e.g. TimesNewRomanPSMT -> the "Ma"/Mantra font).
+FONT_LOOKUP_DIR = _DATA_DIR / "font_lookup_byid"
 
 _TIER = "gid"
 

@@ -1,0 +1,31 @@
+{
+  "3b9ea267d5b87e63": {
+    "1": "G"
+  },
+  "_meta": {
+    "lookup_kind": "gid",
+    "source": "tibetan-fonts/Non-Unicode Fonts/SambhotaKluge.otf",
+    "gids_mapped": 1,
+    "multi_char_stacks": 0,
+    "gsub_lookup_counts": {},
+    "font_id": "3b9ea267d5b87e63",
+    "filename": "SambhotaKluge.otf",
+    "names": [
+      {
+        "role": "ps",
+        "raw": "SambhotaKluge",
+        "norm": "sambhotakluge"
+      },
+      {
+        "role": "full",
+        "raw": "SambhotaKluge",
+        "norm": "sambhotakluge"
+      },
+      {
+        "role": "family",
+        "raw": "SambhotaKluge",
+        "norm": "sambhotakluge"
+      }
+    ]
+  }
+}

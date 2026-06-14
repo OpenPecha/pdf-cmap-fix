@@ -1,0 +1,24 @@
+{
+  "c432bcfa8d414491": {},
+  "_meta": {
+    "lookup_kind": "gid",
+    "source": "tibetan-fonts/Non-Unicode Fonts/IMC/TibImcNewA.ttf",
+    "gids_mapped": 0,
+    "multi_char_stacks": 0,
+    "gsub_lookup_counts": {},
+    "font_id": "c432bcfa8d414491",
+    "filename": "TibImcNewA.ttf",
+    "names": [
+      {
+        "role": "full",
+        "raw": "Tib Imc New A",
+        "norm": "tibimcnewa"
+      },
+      {
+        "role": "family",
+        "raw": "Tib Imc New A",
+        "norm": "tibimcnewa"
+      }
+    ]
+  }
+}

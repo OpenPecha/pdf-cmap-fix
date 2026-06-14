@@ -1,0 +1,29 @@
+{
+  "09a5e898453a8ab5": {},
+  "_meta": {
+    "lookup_kind": "gid",
+    "source": "tibetan-fonts/Non-Unicode Fonts/Nitartha/Sam/SAMC.TTF",
+    "gids_mapped": 0,
+    "multi_char_stacks": 0,
+    "gsub_lookup_counts": {},
+    "font_id": "09a5e898453a8ab5",
+    "filename": "SAMC.TTF",
+    "names": [
+      {
+        "role": "ps",
+        "raw": "Samc",
+        "norm": "samc"
+      },
+      {
+        "role": "full",
+        "raw": "Samc",
+        "norm": "samc"
+      },
+      {
+        "role": "family",
+        "raw": "Samc",
+        "norm": "samc"
+      }
+    ]
+  }
+}

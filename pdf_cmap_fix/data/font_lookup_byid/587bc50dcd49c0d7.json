@@ -1,0 +1,61 @@
+{
+  "587bc50dcd49c0d7": {
+    "3": " ",
+    "4": "H",
+    "5": "L",
+    "6": "M",
+    "7": "N",
+    "8": "T",
+    "9": "d",
+    "10": "h",
+    "11": "l",
+    "12": "m",
+    "13": "n",
+    "14": "t",
+    "15": "S",
+    "16": "s",
+    "17": "A",
+    "18": "a",
+    "19": "I",
+    "20": "i",
+    "21": "U",
+    "22": "u",
+    "23": "D",
+    "24": "K",
+    "25": "k",
+    "26": "o",
+    "27": "O",
+    "28": "P",
+    "29": "Q",
+    "30": "p",
+    "31": "q",
+    "32": "R",
+    "33": "r"
+  },
+  "_meta": {
+    "lookup_kind": "gid",
+    "source": "tibetan-fonts/Non-Unicode Fonts/TNRDia/TDIA3.TTF",
+    "gids_mapped": 31,
+    "multi_char_stacks": 0,
+    "gsub_lookup_counts": {},
+    "font_id": "587bc50dcd49c0d7",
+    "filename": "TDIA3.TTF",
+    "names": [
+      {
+        "role": "ps",
+        "raw": "CourierNewDia",
+        "norm": "couriernewdia"
+      },
+      {
+        "role": "full",
+        "raw": "CourierNewDia",
+        "norm": "couriernewdia"
+      },
+      {
+        "role": "family",
+        "raw": "CourierNewDia",
+        "norm": "couriernewdia"
+      }
+    ]
+  }
+}

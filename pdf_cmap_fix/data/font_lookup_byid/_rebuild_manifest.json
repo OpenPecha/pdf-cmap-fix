@@ -1,0 +1,12 @@
+{
+  "roots": [
+    "tibetan-fonts",
+    "tibetan-fonts-private"
+  ],
+  "faces_seen": 1554,
+  "written": 0,
+  "skipped": 1545,
+  "errors": 9,
+  "duplicate_content_faces": 494,
+  "unique_font_ids": 1060
+}
