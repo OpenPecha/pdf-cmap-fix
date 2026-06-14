@@ -931,6 +931,39 @@ def _overrides(existing: dict, merged: dict) -> dict:
     return out
 
 
+def _pytiblegenc_simple_map(
+    embedded_names: list[str],
+    basename: str,
+    existing: dict[int, str],
+) -> Optional[tuple[dict[int, str], str, str, str]]:
+    """Build a ``{code -> Unicode}`` map for a legacy simple font via pytiblegenc.
+
+    Resolves the font name (embedded name-table names first, then the PDF
+    basename) to a vendored per-font conversion table, then re-maps each code's
+    *existing* ToUnicode character through that table. Returns
+    ``(db_map, db_key, match_kind, matched_display)`` or ``None`` when the font
+    is not covered or nothing converts.
+    """
+    from pdf_cmap_fix import pytiblegenc_tables as ptg
+
+    name: Optional[str] = None
+    table: Optional[dict[str, str]] = None
+    for cand in [*embedded_names, basename]:
+        name, table = ptg.table_for(cand)
+        if table is not None:
+            break
+    if table is None or name is None:
+        return None
+    db_map: dict[int, str] = {}
+    for code, value in existing.items():
+        converted = ptg.convert_text(table, value)
+        if converted:
+            db_map[code] = converted
+    if not db_map:
+        return None
+    return db_map, name, "ptg", name
+
+
 def collect_font_merges(
     doc: fitz.Document,
     *,
@@ -1041,7 +1074,17 @@ def collect_font_merges(
             db_key = None
             matched_display: Optional[str] = None
 
-            if name_index is not None:
+            # Legacy non-Unicode Tibetan *simple* fonts (Ededris/Dedris,
+            # TibetanChogyal, ...) carry no usable GSUB/cmap, so the regular
+            # lookups produce garbage. Their existing ToUnicode already yields a
+            # (wrong) Latin-ish char per code; re-mapping that char through
+            # pytiblegenc's curated per-font table recovers the real Unicode.
+            if is_simple and existing:
+                ptg_map = _pytiblegenc_simple_map(embedded_names, basename, existing)
+                if ptg_map is not None:
+                    db_map, db_key, match_kind, matched_display = ptg_map
+
+            if db_map is None and name_index is not None:
                 pdf_norm_candidates: list[str] = []
                 for cand in [*embedded_names, basename]:
                     q = _normalise_name(cand)
@@ -1057,7 +1100,7 @@ def collect_font_merges(
                     pdf_norm_candidates=pdf_norm_candidates,
                     referenced=referenced,
                 )
-            else:
+            elif db_map is None:
                 picked = None
                 for cand in embedded_names:
                     picked = _pick_best_font_key(db_index, cand)

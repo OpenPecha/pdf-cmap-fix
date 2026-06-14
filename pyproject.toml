@@ -33,7 +33,7 @@ where = ["."]
 include = ["pdf_cmap_fix*"]
 
 [tool.setuptools.package-data]
-pdf_cmap_fix = ["data/font_lookup/*.json"]
+pdf_cmap_fix = ["data/font_lookup/*.json", "data/pytiblegenc/*.csv"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
