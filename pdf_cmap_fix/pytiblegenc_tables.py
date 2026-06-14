@@ -118,6 +118,25 @@ def table_for(font_name: str) -> Tuple[Optional[str], Optional[dict[str, str]]]:
     return norm, table
 
 
+def table_for_candidates(
+    candidates: list[str],
+) -> Tuple[Optional[str], Optional[dict[str, str]]]:
+    """Resolve the first outline-identified candidate name that has a table.
+
+    ``candidates`` is ordered tightest-match-first (see
+    :func:`pdf_cmap_fix.glyph_outline_id.identify_candidates`); we normalise
+    each through the alias rules and return the first one backed by a
+    conversion table, or ``(None, None)``.
+    """
+    base = _base()
+    for cand in candidates:
+        norm = normalize_font_name(_strip_subset_prefix(cand))
+        table = base.get(norm)
+        if table is not None:
+            return norm, table
+    return None, None
+
+
 def convert_char(table: dict[str, str], ch: str) -> Optional[str]:
     """Map a single extracted character through ``table``.
 
