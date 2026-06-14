@@ -23,6 +23,10 @@ EXCERPT = DATA / "jkw-kabab-excerpt.pdf"
 # Same page with the Dedris-a font's BaseFont, FontName and embedded name table
 # scrubbed to an obfuscated name, so only outline identification can recover it.
 OBFUSCATED = DATA / "jkw-kabab-obfuscated.pdf"
+# A Type0/Identity-H legacy font (TibetanChogyal) whose ToUnicode uses a 2-byte
+# codespace -- must still be re-mapped through the table, not mis-matched by the
+# GID tier to a sparse same-named lookup.
+CHOGYAL_TYPE0 = DATA / "swift-path-chogyal-type0.pdf"
 
 pytestmark = pytest.mark.skipif(
     not EXCERPT.is_file(), reason="JKW-KABAB excerpt fixture not present"
@@ -83,6 +87,25 @@ def test_obfuscated_font_identified_via_glyph_outlines() -> None:
     assert merged[33] == "\u0f40"          # KA
     assert merged[34] == "\u0f42"          # GA
     assert merged[40] == "\u0f62\u0fab"    # RA + subjoined DZA
+
+
+@pytest.mark.skipif(
+    not CHOGYAL_TYPE0.is_file(), reason="Type0 Chogyal fixture not present"
+)
+def test_type0_legacy_font_converted_via_existing_tounicode() -> None:
+    # Regression: a Type0/Identity-H legacy font with a 2-byte/4-hex ToUnicode
+    # codespace used to fall through to the GID tier (sparse garbage match).
+    # It must instead be re-mapped through the pytiblegenc table.
+    rec = _records_by_font_name(CHOGYAL_TYPE0)["OZVHIQ+TibetanChogyal"]
+
+    assert rec["pdf_font_type"] == "Type0"
+    assert rec["db_name_matched"] == "TibetanChogyal"
+    assert rec["changed"] > 0
+    merged = rec["merged"]
+    # Codes are 2-byte (== GID under Identity-H); the existing ToUnicode maps
+    # them to Latin, which the table turns into Tibetan.
+    assert merged[4] == "\u0f42"  # GA
+    assert merged[5] == "\u0f44"  # NGA
 
 
 def test_glyph_lookup_recovers_char_missing_from_direct_table() -> None:

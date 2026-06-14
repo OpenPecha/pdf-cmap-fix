@@ -950,45 +950,20 @@ def _load_embedded_ttfont(
         return None
 
 
-def _pytiblegenc_simple_map(
-    doc: fitz.Document,
-    xref: int,
-    embedded_names: list[str],
-    basename: str,
-    existing: dict[int, str],
+def _build_ptg_db_map(
+    name: str, existing: dict[int, str], match_kind: str
 ) -> Optional[tuple[dict[int, str], str, str, str]]:
-    """Build a ``{code -> Unicode}`` map for a legacy simple font via pytiblegenc.
+    """Re-map each code's existing ToUnicode value through table ``name``.
 
-    First resolves the font name (embedded name-table names first, then the PDF
-    basename) to a vendored per-font conversion table. If the name is obfuscated
-    and resolves to nothing, falls back to identifying the original font from
-    its embedded glyph outlines. Then re-maps each code's *existing* ToUnicode
-    character through that table. Returns
-    ``(db_map, db_key, match_kind, matched_display)`` or ``None`` when the font
-    is not covered or nothing converts.
+    Works for both simple fonts (1-byte codes) and Type0/Identity-H fonts
+    (2-byte codes == GIDs): in either case the PDF's existing ToUnicode maps the
+    code to a (wrong) Latin-ish character, and re-mapping that character through
+    the curated per-font table recovers the real Unicode. Robust to a malformed
+    codespace (e.g. 4-hex ``<0003>`` keys) since :func:`_parse_tounicode` already
+    normalises the key width.
     """
     from pdf_cmap_fix import pytiblegenc_tables as ptg
 
-    name: Optional[str] = None
-    table: Optional[dict[str, str]] = None
-    match_kind = "ptg"
-    for cand in [*embedded_names, basename]:
-        name, table = ptg.table_for(cand)
-        if table is not None:
-            break
-
-    if table is None:
-        ttfont = _load_embedded_ttfont(doc, xref)
-        if ttfont is not None:
-            from pdf_cmap_fix.glyph_outline_id import identify_candidates
-
-            candidates = identify_candidates(ttfont)
-            if candidates:
-                name, table = ptg.table_for_candidates(candidates)
-                match_kind = "ptg-outline"
-
-    if table is None or name is None:
-        return None
     db_map: dict[int, str] = {}
     for code, value in existing.items():
         converted = ptg.convert_text(name, value)
@@ -997,6 +972,52 @@ def _pytiblegenc_simple_map(
     if not db_map:
         return None
     return db_map, name, match_kind, name
+
+
+def _pytiblegenc_name_map(
+    embedded_names: list[str],
+    basename: str,
+    existing: dict[int, str],
+) -> Optional[tuple[dict[int, str], str, str, str]]:
+    """Cheap name-based pytiblegenc match (no embedded-font I/O).
+
+    Resolves the font name (embedded name-table names first, then the PDF
+    basename) to a vendored conversion table and re-maps the existing ToUnicode.
+    """
+    from pdf_cmap_fix import pytiblegenc_tables as ptg
+
+    for cand in [*embedded_names, basename]:
+        name, table = ptg.table_for(cand)
+        if table is not None:
+            return _build_ptg_db_map(name, existing, "ptg")
+    return None
+
+
+def _pytiblegenc_outline_map(
+    doc: fitz.Document,
+    xref: int,
+    existing: dict[int, str],
+) -> Optional[tuple[dict[int, str], str, str, str]]:
+    """Expensive last-resort match: identify a renamed/obfuscated legacy font by
+    its embedded glyph outlines, then re-map the existing ToUnicode.
+
+    Loads and parses the embedded font program, so only call this once the
+    cheaper name-based paths (pytiblegenc + the regular lookup index) have all
+    failed.
+    """
+    from pdf_cmap_fix import pytiblegenc_tables as ptg
+    from pdf_cmap_fix.glyph_outline_id import identify_candidates
+
+    ttfont = _load_embedded_ttfont(doc, xref)
+    if ttfont is None:
+        return None
+    candidates = identify_candidates(ttfont)
+    if not candidates:
+        return None
+    name, table = ptg.table_for_candidates(candidates)
+    if name is None:
+        return None
+    return _build_ptg_db_map(name, existing, "ptg-outline")
 
 
 def collect_font_merges(
@@ -1109,15 +1130,19 @@ def collect_font_merges(
             db_key = None
             matched_display: Optional[str] = None
 
-            # Legacy non-Unicode Tibetan *simple* fonts (Ededris/Dedris,
-            # TibetanChogyal, ...) carry no usable GSUB/cmap, so the regular
-            # lookups produce garbage. Their existing ToUnicode already yields a
-            # (wrong) Latin-ish char per code; re-mapping that char through
-            # pytiblegenc's curated per-font table recovers the real Unicode.
-            if is_simple and existing:
-                ptg_map = _pytiblegenc_simple_map(
-                    doc, xref, embedded_names, basename, existing
-                )
+            # Legacy non-Unicode Tibetan fonts (Ededris/Dedris, TibetanChogyal,
+            # ...) carry no usable GSUB/cmap, so the regular lookups produce
+            # garbage. Their existing ToUnicode already yields a (wrong)
+            # Latin-ish char per code; re-mapping that char through pytiblegenc's
+            # curated per-font table recovers the real Unicode. This applies to
+            # both simple and Type0/Identity-H faces (a Type0 legacy font with a
+            # 2-byte/4-hex ToUnicode would otherwise be mis-matched by the GID
+            # tier to a sparse same-named lookup). Cheap name-based resolution
+            # only; the outline fallback (which loads the embedded program) runs
+            # below as a last resort.
+            ptg_eligible = (is_simple or is_type0) and bool(existing)
+            if ptg_eligible:
+                ptg_map = _pytiblegenc_name_map(embedded_names, basename, existing)
                 if ptg_map is not None:
                     db_map, db_key, match_kind, matched_display = ptg_map
 
@@ -1160,6 +1185,15 @@ def collect_font_merges(
                                 matched_display = picked
             if not db_map:
                 db_map, db_key = None, None
+
+            # Last resort for an unmatched legacy font with an obfuscated name:
+            # identify it from its embedded glyph outlines. Deferred to here (and
+            # gated on a no-match) because it loads/parses the embedded font
+            # program, which must not run for every well-named font.
+            if db_map is None and ptg_eligible:
+                ptg_map = _pytiblegenc_outline_map(doc, xref, existing)
+                if ptg_map is not None:
+                    db_map, db_key, match_kind, matched_display = ptg_map
 
             if db_map is None:
                 stats["no_match"] += 1

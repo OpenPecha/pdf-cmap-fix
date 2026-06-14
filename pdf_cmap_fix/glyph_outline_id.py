@@ -92,6 +92,15 @@ def _font_hash_index() -> dict[str, frozenset[str]]:
 
 
 @lru_cache(maxsize=1)
+def _all_db_hashes() -> frozenset[str]:
+    """Union of every glyph hash in the DB (for a fast non-membership cutoff)."""
+    out: set[str] = set()
+    for hs in _font_hash_index().values():
+        out |= hs
+    return frozenset(out)
+
+
+@lru_cache(maxsize=1)
 def glyph_lookup_tables() -> Tuple[
     dict[Tuple[str, int], str], dict[str, frozenset[Tuple[str, int]]]
 ]:
@@ -130,11 +139,28 @@ def identify_candidates(ttfont: "TTFont") -> List[str]:
     font's non-empty hashes, ordered from the tightest match (smallest glyph
     set) to the loosest, then by name. The empty list means "no confident
     identification".
+
+    Fast path: hashing is interleaved with a membership check against the union
+    of all DB hashes, so a font with even one outline absent from the DB (any
+    non-legacy font, e.g. Times/Arial) bails after a single glyph instead of
+    hashing the whole program.
     """
-    H = embedded_glyph_hashes(ttfont)
-    if not H:
+    if "glyf" not in ttfont:
         return []
     index = _font_hash_index()
+    if not index:
+        return []
+    universe = _all_db_hashes()
+    H: set[str] = set()
+    for glyph_name in ttfont["glyf"].keys():
+        h = compute_glyph_hash(ttfont, glyph_name)
+        if h is None:
+            continue
+        if h not in universe:
+            return []
+        H.add(h)
+    if not H:
+        return []
     matches: list[tuple[int, str]] = []
     for ps_name, db_hashes in index.items():
         if H <= db_hashes:
