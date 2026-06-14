@@ -91,6 +91,38 @@ def _font_hash_index() -> dict[str, frozenset[str]]:
     return {name: frozenset(hs) for name, hs in acc.items()}
 
 
+@lru_cache(maxsize=1)
+def glyph_lookup_tables() -> Tuple[
+    dict[Tuple[str, int], str], dict[str, frozenset[Tuple[str, int]]]
+]:
+    """Ported from pytiblegenc ``build_glyph_lookup_tables``.
+
+    Returns ``(forward_map, reverse_map)`` where
+    ``forward_map[(font_name, codepoint)] = glyph_hash`` and
+    ``reverse_map[glyph_hash] = {(font_name, codepoint), ...}``. These let a
+    character that is missing from one font's conversion table be recovered from
+    a *sibling* font whose glyph at some codepoint has the identical outline.
+    """
+    forward: dict[Tuple[str, int], str] = {}
+    reverse: dict[str, set] = {}
+    if not _GLYPH_DB.is_file():
+        return {}, {}
+    with _GLYPH_DB.open("r", newline="", encoding="utf-8") as fh:
+        for row in csv.DictReader(fh):
+            glyph_hash = row.get("glyph_hash")
+            ps_name = row.get("font_postscript_name")
+            cp_str = row.get("codepoint")
+            if not glyph_hash or not ps_name or not cp_str:
+                continue
+            try:
+                cp = int(cp_str)
+            except ValueError:
+                continue
+            forward[(ps_name, cp)] = glyph_hash
+            reverse.setdefault(glyph_hash, set()).add((ps_name, cp))
+    return forward, {h: frozenset(v) for h, v in reverse.items()}
+
+
 def identify_candidates(ttfont: "TTFont") -> List[str]:
     """Candidate source PostScript names for an embedded (subset) font.
 

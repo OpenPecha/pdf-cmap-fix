@@ -85,6 +85,18 @@ def test_obfuscated_font_identified_via_glyph_outlines() -> None:
     assert merged[40] == "\u0f62\u0fab"    # RA + subjoined DZA
 
 
+def test_glyph_lookup_recovers_char_missing_from_direct_table() -> None:
+    # Ported pytiblegenc glyph-lookup fallback: 'Ededris-d1' has no entry for the
+    # space slot in its own conversion table, but that glyph's outline matches a
+    # sibling font where it is a subjoined-U vowel, so it is recovered.
+    from pdf_cmap_fix import pytiblegenc_tables as ptg
+
+    assert " " not in ptg._base().get("Ededris-d1", {})
+    assert ptg.convert_char("Ededris-d1", " ") == "\u0f74"
+    # A direct table hit still resolves without the fallback.
+    assert ptg.convert_char("Ededris-a", "!") == "\u0f40"
+
+
 def test_identify_candidates_resolves_subset_to_source_font() -> None:
     import io
 

@@ -991,7 +991,7 @@ def _pytiblegenc_simple_map(
         return None
     db_map: dict[int, str] = {}
     for code, value in existing.items():
-        converted = ptg.convert_text(table, value)
+        converted = ptg.convert_text(name, value)
         if converted:
             db_map[code] = converted
     if not db_map:

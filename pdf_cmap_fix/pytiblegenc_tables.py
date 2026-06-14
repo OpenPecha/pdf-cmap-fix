@@ -137,28 +137,62 @@ def table_for_candidates(
     return None, None
 
 
-def convert_char(table: dict[str, str], ch: str) -> Optional[str]:
-    """Map a single extracted character through ``table``.
+def _glyph_lookup_recover(font_name: str, ch: str) -> Optional[str]:
+    """pytiblegenc ``_convert_char`` glyph-lookup fallback.
 
-    Returns the replacement string (always non-empty), or ``None`` when the
-    character is absent, an error sentinel, or maps to the empty string (a
-    glyph the source table deliberately drops, e.g. spacing).
+    When ``ch`` is absent from ``font_name``'s table, find the glyph at
+    ``ord(ch)`` in that font (via the glyph DB) and borrow the mapping of a
+    *sibling* font whose glyph has the same outline hash. Returns the recovered
+    Unicode string, or ``None``.
     """
-    value = table.get(ch)
-    if value is None or value == ERROR_CHR or value == "":
+    from pdf_cmap_fix.glyph_outline_id import glyph_lookup_tables
+
+    forward, reverse = glyph_lookup_tables()
+    glyph_hash = forward.get((font_name, ord(ch)))
+    if not glyph_hash:
         return None
-    return value
+    base = _base()
+    # Deterministic order (the source uses an unordered set).
+    for cand_font, cand_cp in sorted(reverse.get(glyph_hash, frozenset())):
+        cand_table = base.get(cand_font)
+        if cand_table is None:
+            continue
+        value = cand_table.get(chr(cand_cp))
+        if value is not None and value != ERROR_CHR and value != "":
+            return value
+    return None
 
 
-def convert_text(table: dict[str, str], text: str) -> Optional[str]:
-    """Re-map every character of an existing ToUnicode value through ``table``.
+def convert_char(font_name: str, ch: str) -> Optional[str]:
+    """Map a single character for ``font_name`` (already normalised).
+
+    Mirrors pytiblegenc ``_convert_char``: direct table hit first, then the
+    glyph-outline sibling fallback. Returns the replacement string (always
+    non-empty), or ``None`` when the character is an error sentinel, maps to the
+    empty string (a glyph the table deliberately drops, e.g. spacing), or cannot
+    be recovered at all.
+    """
+    table = _base().get(font_name)
+    if table is not None:
+        value = table.get(ch)
+        if value is not None:
+            # Present but flagged unconvertible: no glyph fallback (matches the
+            # source, which only falls back when the char is absent entirely).
+            if value == ERROR_CHR or value == "":
+                return None
+            return value
+    return _glyph_lookup_recover(font_name, ch)
+
+
+def convert_text(font_name: str, text: str) -> Optional[str]:
+    """Re-map every character of an existing ToUnicode value for ``font_name``.
 
     Returns the concatenated Unicode string, or ``None`` if any character is
     unconvertible (so the caller keeps the existing mapping for that code).
     """
     parts: list[str] = []
     for ch in text:
-        value = convert_char(table, ch)
+        value = convert_char(font_name, ch)
         if value is None:
             return None
         parts.append(value)
