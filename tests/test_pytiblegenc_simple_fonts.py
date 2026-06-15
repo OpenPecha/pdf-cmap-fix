@@ -27,6 +27,10 @@ OBFUSCATED = DATA / "jkw-kabab-obfuscated.pdf"
 # codespace -- must still be re-mapped through the table, not mis-matched by the
 # GID tier to a sparse same-named lookup.
 CHOGYAL_TYPE0 = DATA / "swift-path-chogyal-type0.pdf"
+# Page 1 of a real BDRC corpus document (Thrangu Rinpoche's collected works).
+# Its legacy Ededris fonts are embedded as Type1/CFF subsets with a real
+# /Encoding but NO ToUnicode -- the from-scratch encoding route must rebuild it.
+THRANGU_CFF = DATA / "thrangu-sungtsom-excerpt.pdf"
 
 pytestmark = pytest.mark.skipif(
     not EXCERPT.is_file(), reason="JKW-KABAB excerpt fixture not present"
@@ -106,6 +110,142 @@ def test_type0_legacy_font_converted_via_existing_tounicode() -> None:
     # them to Latin, which the table turns into Tibetan.
     assert merged[4] == "\u0f42"  # GA
     assert merged[5] == "\u0f44"  # NGA
+
+
+@pytest.mark.skipif(
+    not THRANGU_CFF.is_file(), reason="Thrangu CFF excerpt fixture not present"
+)
+def test_cff_type1_font_without_tounicode_rebuilt_via_encoding() -> None:
+    # Real-world case: Type1/CFF Ededris subsets with a /Encoding but no
+    # ToUnicode at all. The from-scratch encoding route maps each code's glyph
+    # name through the Adobe Glyph List, then the pytiblegenc table.
+    rec = _records_by_font_name(THRANGU_CFF)["LEMGRM+Ededris-a"]
+
+    assert rec["pdf_font_type"] == "Type1"
+    assert rec["db_name_matched"] == "Ededris-a"
+    assert rec["to_unicode_xref"] is None  # synthesised from scratch
+    assert rec["changed"] > 0
+
+    merged = rec["merged"]
+    # /Encoding maps code 33 -> glyph 'I' -> table -> GA + subjoined YA, etc.
+    assert merged[33] == "གྱ"  # GA + subjoined YA
+    assert merged[40] == "ཕྲ"  # PHA + subjoined RA
+    assert merged[48] == "རྗ"  # RA + subjoined JA
+
+
+@pytest.mark.skipif(
+    not THRANGU_CFF.is_file(), reason="Thrangu CFF excerpt fixture not present"
+)
+def test_cff_type1_decoys_stay_unconverted() -> None:
+    by_name = _records_by_font_name(THRANGU_CFF)
+    # Latin Type1/CFF fonts on the page are not legacy Tibetan faces: outline
+    # identification and name lookup both fail, so no record is emitted.
+    assert "SCOWDF+TimesNewRomanPSMT" not in by_name
+    assert "DKFVEI+NewBaskervilleStd-Roman" not in by_name
+
+
+@pytest.mark.skipif(
+    not THRANGU_CFF.is_file(), reason="Thrangu CFF excerpt fixture not present"
+)
+def test_cff_type1_page_extracts_tibetan_after_apply() -> None:
+    from pdf_cmap_fix.tounicode_core import apply_font_merges_to_doc
+
+    doc = fitz.open(str(THRANGU_CFF))
+    try:
+        records, _ = collect_font_merges(doc)
+        apply_font_merges_to_doc(doc, records)
+        data = doc.tobytes(garbage=4, deflate=True)
+    finally:
+        doc.close()
+
+    reopened = fitz.open(stream=data, filetype="pdf")
+    try:
+        text = reopened.load_page(0).get_text()
+    finally:
+        reopened.close()
+
+    # The document title -- "gsung rtsom thor bu" (collected miscellaneous
+    # writings) -- extracts as correct Tibetan; before the fix the page yielded
+    # zero Tibetan code points.
+    assert "གསུང་རྩོམ་ཐོར་བུ" in text
+    assert sum(1 for ch in text if "ༀ" <= ch <= "࿿") > 500
+
+
+def _records_from_stripped_tounicode(path: Path = EXCERPT) -> tuple[dict[str, dict], "fitz.Document", list]:
+    """Open ``path``, delete every font's /ToUnicode, then collect merges.
+
+    Returns ``(records_by_font_name, doc, records)`` -- the doc and record list
+    are returned so a caller can run ``apply_font_merges_to_doc`` and inspect the
+    result. The caller owns closing the doc.
+    """
+    import re
+
+    doc = fitz.open(str(path))
+    for f in doc[0].get_fonts(full=True):
+        if re.search(r"/ToUnicode (\d+) 0 R", doc.xref_object(f[0])):
+            doc.xref_set_key(f[0], "ToUnicode", "null")
+    records, _ = collect_font_merges(doc)
+    return {r["pdf_font_name"]: r for r in records}, doc, records
+
+
+def test_dedris_a_tounicode_built_from_scratch_when_absent() -> None:
+    # No ToUnicode and no resolvable glyph names: the map is rebuilt purely from
+    # the embedded glyph outlines, and must match the existing-ToUnicode path.
+    by_name, doc, _ = _records_from_stripped_tounicode()
+    try:
+        rec = by_name["KSWSGG+Dedris-a"]
+        assert rec["db_name_matched"] == "Ededris-a"
+        # to_unicode_xref is None => the font had no ToUnicode to re-map; the
+        # stream is created from scratch on apply.
+        assert rec["to_unicode_xref"] is None
+        assert rec["changed"] > 0
+
+        merged = rec["merged"]
+        assert merged[33] == "ཀ"          # KA
+        assert merged[34] == "ག"          # GA
+        assert merged[40] == "རྫ"    # RA + subjoined DZA (stack)
+        assert merged[48] == "བྱ"    # BA + subjoined YA (stack)
+    finally:
+        doc.close()
+
+
+def test_from_scratch_tounicode_stream_is_attached_and_extracts_tibetan() -> None:
+    import re
+
+    from pdf_cmap_fix.tounicode_core import apply_font_merges_to_doc
+
+    by_name, doc, records = _records_from_stripped_tounicode()
+    try:
+        apply_font_merges_to_doc(doc, records)
+
+        # A fresh /ToUnicode object was created and wired into the font dict.
+        xref = next(
+            f[0] for f in doc[0].get_fonts(full=True) if f[3].endswith("+Dedris-a")
+        )
+        assert re.search(r"/ToUnicode (\d+) 0 R", doc.xref_object(xref))
+
+        data = doc.tobytes(garbage=4, deflate=True)
+    finally:
+        doc.close()
+
+    reopened = fitz.open(stream=data, filetype="pdf")
+    try:
+        text = reopened.load_page(0).get_text()
+    finally:
+        reopened.close()
+    tibetan = sum(1 for ch in text if "ༀ" <= ch <= "࿿")
+    # The page is almost entirely Tibetan; before the fix it extracted ~0.
+    assert tibetan > 500
+
+
+def test_times_decoy_stays_unconverted_with_no_tounicode() -> None:
+    by_name, doc, _ = _records_from_stripped_tounicode()
+    try:
+        # The Latin decoy is not a legacy font: outline identification bails, so
+        # no from-scratch map is built and no record is emitted for it.
+        assert "JJGQVW+TimesNewRomanPSMT" not in by_name
+    finally:
+        doc.close()
 
 
 def test_glyph_lookup_recovers_char_missing_from_direct_table() -> None:
