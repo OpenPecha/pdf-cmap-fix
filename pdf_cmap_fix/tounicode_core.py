@@ -17,6 +17,7 @@ import fitz
 from fontTools.ttLib import TTFont
 
 from pdf_cmap_fix.content_streams import collect_referenced_gids
+from pdf_cmap_fix.pdf_font_encoding import parse_pdf_encoding
 
 LookupTier = Literal["gid", "gname", "gshape"]
 
@@ -1020,6 +1021,165 @@ def _pytiblegenc_outline_map(
     return _build_ptg_db_map(name, existing, "ptg-outline")
 
 
+def _recover_codes_from_outlines(
+    ttfont: TTFont,
+    name: str,
+    *,
+    is_type0: bool,
+    referenced: Optional[set],
+) -> dict[int, str]:
+    """Recover ``{code: tibetan}`` by hashing each code's glyph outline.
+
+    Used for symbolic TrueType subsets that ship no usable /Encoding or glyph
+    names: hash the glyph each code draws and look the hash up in pytiblegenc's
+    glyph DB to recover the ``(font, codepoint)`` it stands for, then convert
+    that code point through the per-font table.
+
+    The code set is the embedded subset's own cmap (simple fonts) or the
+    content-stream-referenced GIDs (Type0/Identity-H, where the code *is* the
+    GID); a subset only embeds the glyphs it uses, so either is complete.
+    """
+    from pdf_cmap_fix import pytiblegenc_tables as ptg
+    from pdf_cmap_fix.glyph_outline_id import compute_glyph_hash, glyph_lookup_tables
+
+    if "glyf" not in ttfont:
+        return {}
+
+    glyph_order = ttfont.getGlyphOrder()
+    if is_type0:
+        # Identity-H: the code is the GID.
+        codes = {c for c in (referenced or set()) if 0 <= c < len(glyph_order)}
+
+        def glyph_name_for(code: int) -> Optional[str]:
+            return glyph_order[code]
+    else:
+        # Symbolic subsets carry a (1,0) or (3,0) cmap subtable mapping the
+        # 1-byte code to a glyph name (a (3,0) symbol cmap keys on 0xF000+code).
+        if "cmap" not in ttfont:
+            return {}
+        codemap: dict[int, str] = {}
+        try:
+            for sub in ttfont["cmap"].tables:
+                for code, gname in sub.cmap.items():
+                    codemap.setdefault(code, gname)
+        except Exception:
+            return {}
+        if not codemap:
+            return {}
+        codes = set(codemap)
+
+        def glyph_name_for(code: int) -> Optional[str]:
+            g = codemap.get(code)
+            if g is None and 0 <= code <= 0xFF:
+                g = codemap.get(0xF000 + code)
+            return g
+
+    # The glyph DB keys siblings on the *raw* PostScript name (e.g. ``Dedris-a``)
+    # plus its own code point; the conversion tables key on the *normalised* name
+    # (``Ededris-a``). Normalise a sibling's name so its table can be resolved.
+    def _norm(fc: tuple) -> Optional[str]:
+        n, _t = ptg.table_for(fc[0])
+        return n
+
+    _forward, reverse = glyph_lookup_tables()
+    db_map: dict[int, str] = {}
+    for code in codes:
+        gname = glyph_name_for(code)
+        if not gname:
+            continue
+        glyph_hash = compute_glyph_hash(ttfont, gname)
+        if not glyph_hash:
+            continue
+        sibs = reverse.get(glyph_hash)
+        if not sibs:
+            continue
+        # Prefer the identified font, then take the first sibling whose table
+        # actually converts the code point (mirrors _glyph_lookup_recover).
+        ordered = sorted(sibs, key=lambda fc: (_norm(fc) != name, fc))
+        for sib_font, cp in ordered:
+            norm_sib = _norm((sib_font, cp))
+            if not norm_sib:
+                continue
+            converted = ptg.convert_char(norm_sib, chr(cp))
+            if converted:
+                db_map[code] = converted
+                break
+    return db_map
+
+
+def _legacy_tounicode_from_scratch(
+    doc: fitz.Document,
+    xref: int,
+    basename: str,
+    *,
+    is_type0: bool,
+    referenced: Optional[set],
+) -> Optional[tuple[dict[int, str], str]]:
+    """Build a ToUnicode map *from scratch* for a legacy Tibetan font that ships
+    no usable ToUnicode.
+
+    The remap paths above all need an existing (wrong, Latin-ish) ToUnicode to
+    re-map, but many legacy non-Unicode Tibetan PDFs (Ededris/Dedris,
+    TibetanChogyal, ...) carry none. We reconstruct the per-code character the
+    legacy table expects by one of two routes and convert it through the table:
+
+    * **Encoding** -- a simple font's ``/Encoding`` maps each code to a glyph
+      name whose Adobe-Glyph-List code point *is* that Latin-ish character (this
+      is exactly what a ToUnicode would have carried). Covers the common
+      Type1/CFF and named-TrueType case.
+    * **Outlines** -- symbolic subsets strip /Encoding and glyph names, so fall
+      back to hashing each code's glyph outline (see
+      :func:`_recover_codes_from_outlines`). Also the Type0/Identity-H path.
+
+    The conversion table is resolved from the PDF base font name first, then --
+    for fonts embedded under an obfuscated name -- from the glyph outlines.
+
+    Returns ``(db_map, matched_font_name)`` or ``None`` when the font is not a
+    recoverable legacy face.
+    """
+    from pdf_cmap_fix import pytiblegenc_tables as ptg
+
+    # Resolve the per-font conversion table: by name first, else by hashing the
+    # embedded outlines (handles obfuscated PostScript names). Non-legacy faces
+    # resolve to neither and bail out.
+    name, _table = ptg.table_for(basename)
+    ttfont = _load_embedded_ttfont(doc, xref)
+    if name is None:
+        if ttfont is None or "glyf" not in ttfont:
+            return None
+        from pdf_cmap_fix.glyph_outline_id import identify_candidates
+
+        name, _table = ptg.table_for_candidates(identify_candidates(ttfont))
+        if name is None:
+            return None
+
+    db_map: dict[int, str] = {}
+
+    # Encoding route (simple fonts only -- Type0 uses a CMap, not /Encoding).
+    if not is_type0:
+        encoding = parse_pdf_encoding(doc, xref)
+        if encoding:
+            from fontTools.agl import toUnicode
+
+            for code, gname in encoding.items():
+                ch = toUnicode(gname)
+                if not ch:
+                    continue
+                converted = ptg.convert_char(name, ch)
+                if converted:
+                    db_map[code] = converted
+
+    # Outline route: symbolic subsets with no usable /Encoding, and Type0 fonts.
+    if not db_map and ttfont is not None:
+        db_map = _recover_codes_from_outlines(
+            ttfont, name, is_type0=is_type0, referenced=referenced
+        )
+
+    if not db_map:
+        return None
+    return db_map, name
+
+
 def collect_font_merges(
     doc: fitz.Document,
     *,
@@ -1099,24 +1259,63 @@ def collect_font_merges(
 
             font_obj = doc.xref_object(xref)
             m = re.search(r"/ToUnicode (\d+) 0 R", font_obj)
-            if not m:
-                stats["no_change"] += 1
-                continue
-            tu_xref = int(m.group(1))
-            try:
-                tu_stream = doc.xref_stream(tu_xref)
-            except Exception:
-                stats["no_change"] += 1
-                continue
-
-            existing = _parse_tounicode(tu_stream)
+            tu_xref = int(m.group(1)) if m else None
+            existing: dict = {}
+            if tu_xref is not None:
+                try:
+                    existing = _parse_tounicode(doc.xref_stream(tu_xref))
+                except Exception:
+                    existing = {}
 
             # The "referenced" set (content-stream-derived codes/GIDs) is the
             # performance lever on subsets *and* the tie-breaker when a name
-            # maps to several faces (see bug 02-performance.md). Falling back
-            # to the existing ToUnicode keys is a safe approximation for
-            # Word-style subsets when content-stream parsing came up empty.
+            # maps to several faces (see bug 02-performance.md). It is also the
+            # only key set available when synthesising a ToUnicode below.
             referenced = referenced_by_xref.get(xref)
+
+            # A legacy Tibetan font (Ededris/Dedris, TibetanChogyal, ...)
+            # frequently ships *no* ToUnicode at all, so the remap pipeline below
+            # has nothing to work with and the font would be silently skipped.
+            # Reconstruct the per-code Unicode -- from the /Encoding glyph names
+            # or, for symbolic subsets, the glyph outlines -- and synthesise a
+            # fresh ToUnicode CMap (created and attached in the apply phase).
+            # Non-legacy faces resolve to no table and bail out in the helper.
+            if not existing:
+                built = _legacy_tounicode_from_scratch(
+                    doc, xref, basename, is_type0=is_type0, referenced=referenced
+                )
+                if built is None:
+                    stats["no_change"] += 1
+                    continue
+                db_map, matched_name = built
+                norm = _normalise_name(basename)
+                if verbose and norm not in reported:
+                    reported.add(norm)
+                    print(
+                        f"  [created] {basename[:50]} -> {matched_name}  "
+                        f"[ptg-from-scratch]  ({ftype})"
+                    )
+                records.append(
+                    {
+                        "font_xref": xref,
+                        "to_unicode_xref": None,  # created + attached in apply
+                        "pdf_font_name": basename,
+                        "pdf_font_type": ftype,
+                        "db_key_matched": matched_name,
+                        "db_name_matched": matched_name,
+                        "existing": {},
+                        "merged": db_map,
+                        "overrides": dict(db_map),
+                        "changed": len(db_map),
+                    }
+                )
+                stats["patched"] += 1
+                stats["upgrades"] += len(db_map)
+                continue
+
+            # Falling back to the existing ToUnicode keys is a safe
+            # approximation for Word-style subsets when content-stream parsing
+            # came up empty.
             if not referenced:
                 referenced = set(existing.keys())
 
@@ -1267,7 +1466,17 @@ def apply_font_merges_to_doc(doc: fitz.Document, records: list[dict[str, Any]]) 
             cmap_bytes = _build_tounicode_simple(r["merged"])
         else:
             cmap_bytes = _build_tounicode_type0(r["merged"])
-        doc.update_stream(r["to_unicode_xref"], cmap_bytes)
+        tu_xref = r.get("to_unicode_xref")
+        if tu_xref:
+            # Repair/enhance an existing ToUnicode stream in place.
+            doc.update_stream(tu_xref, cmap_bytes)
+        else:
+            # Legacy font that shipped no ToUnicode: create a new stream object
+            # and attach it to the font dict's /ToUnicode entry.
+            new_xref = doc.get_new_xref()
+            doc.update_object(new_xref, "<<>>")
+            doc.update_stream(new_xref, cmap_bytes)
+            doc.xref_set_key(r["font_xref"], "ToUnicode", f"{new_xref} 0 R")
 
 
 def _strip_word_actualtext_sentinels_in_stream(
