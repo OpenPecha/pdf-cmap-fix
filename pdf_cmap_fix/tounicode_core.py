@@ -1112,6 +1112,82 @@ def _recover_codes_from_outlines(
     return db_map
 
 
+def _recover_codes_from_shapes(
+    doc: fitz.Document,
+    xref: int,
+    *,
+    is_type0: bool,
+    referenced: Optional[set],
+    font_hint: Optional[str] = None,
+) -> tuple[Optional[str], dict[int, str]]:
+    """Recover ``(font_name, {code: tibetan})`` by matching glyph *shapes*.
+
+    The representation-independent counterpart to
+    :func:`_recover_codes_from_outlines`: it reads the embedded program as a
+    CFF-capable font (so Type1/CFF works, unlike the glyf-only hash path),
+    fingerprints each code's glyph outline, votes a reference font, and recovers
+    each code's native byte. Returns ``(None, {})`` when numpy/the shape DB is
+    unavailable or nothing matches confidently.
+    """
+    from pdf_cmap_fix import glyph_shape_id
+    from pdf_cmap_fix import pytiblegenc_tables as ptg
+
+    if not glyph_shape_id.available():
+        return None, {}
+    try:
+        tup = doc.extract_font(xref)
+    except Exception:
+        return None, {}
+    if not tup or len(tup) < 4 or not tup[3]:
+        return None, {}
+    ttfont = _load_pdf_embedded_font(bytes(tup[3]))
+    if ttfont is None:
+        return None, {}
+    try:
+        glyph_set = ttfont.getGlyphSet()
+    except Exception:
+        return None, {}
+    # unitsPerEm: prefer the CFF FontMatrix (what the DB build used), else head.
+    upem = None
+    if "CFF " in ttfont:
+        try:
+            cff = ttfont["CFF "].cff
+            fm = cff[cff.fontNames[0]].rawDict.get("FontMatrix")
+            if fm and fm[0]:
+                upem = round(1 / fm[0])
+        except Exception:
+            upem = None
+    if not upem:
+        upem = ttfont["head"].unitsPerEm if "head" in ttfont else 1000
+
+    # code -> embedded glyph name to draw
+    pairs: list[tuple[int, str]] = []
+    if is_type0:
+        order = ttfont.getGlyphOrder()
+        for c in (referenced or set()):
+            if 0 <= c < len(order):
+                pairs.append((c, order[c]))
+    else:
+        enc = parse_pdf_encoding(doc, xref)
+        pairs = list(enc.items())
+    if not pairs:
+        return None, {}
+
+    font_name, code_to_byte = glyph_shape_id.identify_and_recover(
+        glyph_set, upem, pairs, font_hint=font_hint
+    )
+    if not font_name or not code_to_byte:
+        return None, {}
+    db_map: dict[int, str] = {}
+    for code, bcode in code_to_byte.items():
+        conv = ptg.convert_char(font_name, chr(bcode))
+        if conv:
+            db_map[code] = conv
+    if not db_map:
+        return None, {}
+    return font_name, db_map
+
+
 def _legacy_tounicode_from_scratch(
     doc: fitz.Document,
     xref: int,
@@ -1149,12 +1225,22 @@ def _legacy_tounicode_from_scratch(
     # resolve to neither and bail out.
     name, _table = ptg.table_for(basename)
     ttfont = _load_embedded_ttfont(doc, xref)
+    # Shape-recovery result, computed at most once and reused for code recovery.
+    shape_font: Optional[str] = None
+    shape_map: Optional[dict[int, str]] = None
     if name is None:
-        if ttfont is None or "glyf" not in ttfont:
-            return None
-        from pdf_cmap_fix.glyph_outline_id import identify_candidates
+        # TrueType glyf outlines -> exact hash identification.
+        if ttfont is not None and "glyf" in ttfont:
+            from pdf_cmap_fix.glyph_outline_id import identify_candidates
 
-        name, _table = ptg.table_for_candidates(identify_candidates(ttfont))
+            name, _table = ptg.table_for_candidates(identify_candidates(ttfont))
+        # CFF/Type1 (or anything the hash path can't read) -> shape matching,
+        # which also recovers an obfuscated name from the glyph outlines.
+        if name is None:
+            shape_font, shape_map = _recover_codes_from_shapes(
+                doc, xref, is_type0=is_type0, referenced=referenced
+            )
+            name = shape_font
         if name is None:
             return None
 
@@ -1189,6 +1275,18 @@ def _legacy_tounicode_from_scratch(
         db_map = _recover_codes_from_outlines(
             ttfont, name, is_type0=is_type0, referenced=referenced
         )
+
+    # Shape route: CFF/Type1 outlines the glyf hash path above cannot read.
+    # Reuse the map already computed during identification when possible.
+    if not db_map:
+        if shape_map and shape_font == name:
+            db_map = shape_map
+        else:
+            sf, smap = _recover_codes_from_shapes(
+                doc, xref, is_type0=is_type0, referenced=referenced, font_hint=name
+            )
+            if smap:
+                db_map = smap
 
     if not db_map:
         return None

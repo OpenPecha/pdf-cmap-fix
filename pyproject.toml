@@ -13,6 +13,7 @@ keywords = ["pdf", "unicode", "tibetan", "fonts", "tounicode", "cmap", "nlp"]
 dependencies = [
     "pymupdf>=1.23.0",
     "fonttools>=4.0.0",
+    "numpy>=1.20.0",
 ]
 
 [project.optional-dependencies]
@@ -33,7 +34,12 @@ where = ["."]
 include = ["pdf_cmap_fix*"]
 
 [tool.setuptools.package-data]
-pdf_cmap_fix = ["data/font_lookup/*.json", "data/pytiblegenc/*.csv"]
+pdf_cmap_fix = [
+    "data/font_lookup/*.json",
+    "data/pytiblegenc/*.csv",
+    "data/pytiblegenc/glyph_shape_db.npz",
+    "data/pytiblegenc/glyph_shape_fonts.json",
+]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
