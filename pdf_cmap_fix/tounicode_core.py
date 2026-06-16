@@ -188,6 +188,11 @@ def _resolve_db_gid_map(
 # or outline-fingerprint lookup has nothing to bind against.
 _SIMPLE_FONT_TYPES = frozenset({"Type1", "MMType1", "TrueType"})
 
+# Tibetan Machine / Chogyal CFF subsets name glyphs ``MT<byte>`` where <byte> is
+# the font's native single-byte code (what the conversion tables key on), not an
+# Adobe-Glyph-List name. Used by the from-scratch Encoding route below.
+_MT_GLYPH_NAME = re.compile(r"^MT(\d+)$")
+
 
 def _load_pdf_embedded_font(buf: bytes) -> Optional[TTFont]:
     """Load a PDF-embedded font as ``fontTools.TTFont``.
@@ -1163,6 +1168,16 @@ def _legacy_tounicode_from_scratch(
 
             for code, gname in encoding.items():
                 ch = toUnicode(gname)
+                if not ch:
+                    # Some legacy CFF/Type1 subsets (Tibetan Machine / Chogyal
+                    # family) name glyphs ``MT<byte>`` where <byte> IS the font's
+                    # native code that the conversion table is keyed on -- not an
+                    # AGL name. Recover that byte directly.
+                    m = _MT_GLYPH_NAME.match(gname)
+                    if m:
+                        cp = int(m.group(1))
+                        if 0 <= cp <= 0x10FFFF:
+                            ch = chr(cp)
                 if not ch:
                     continue
                 converted = ptg.convert_char(name, ch)

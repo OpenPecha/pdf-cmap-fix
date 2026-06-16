@@ -107,15 +107,28 @@ def table_for(font_name: str) -> Tuple[Optional[str], Optional[dict[str, str]]]:
     """Resolve a PDF font name to ``(normalised_name, char_map)`` or ``(None, None)``.
 
     Strips a subset prefix, applies pytiblegenc's normalisation/aliases, then
-    looks up the per-font conversion table.
+    looks up the per-font conversion table. If that fails, peels off a leading
+    foundry/wrapper prefix delimited by ``_`` or ``.`` (e.g. the ``Gen_`` in
+    ``Gen_TibetanChogyal`` / ``Gen.TibetanChogyalSkt1``) and retries. It only ever
+    returns a name that is itself a known table, so this cannot produce a wrong
+    match.
     """
     if not font_name:
         return None, None
-    norm = normalize_font_name(_strip_subset_prefix(font_name))
-    table = _base().get(norm)
-    if table is None:
-        return None, None
-    return norm, table
+    base = _base()
+    rest = _strip_subset_prefix(font_name)
+    while True:
+        norm = normalize_font_name(rest)
+        table = base.get(norm)
+        if table is not None and len(norm) >= 4:
+            return norm, table
+        # Peel one leading wrapper token (delimited by '_' or '.') and retry.
+        idx = min((rest.find(c) for c in ("_", ".") if c in rest), default=-1)
+        if idx < 0:
+            return None, None
+        rest = rest[idx + 1:].strip()
+        if not rest:
+            return None, None
 
 
 def table_for_candidates(
