@@ -14,8 +14,9 @@ Usage:
   python scripts/shape/build_shape_db.py /path/to/font-dir [/path/to/another-font-dir ...]
 
 Note: the reference fonts are NOT vendored; only these derived low-resolution
-coverage fingerprints (64x64) are. Some faces (e.g. the Esam* family) are skipped
-when every available copy has an unreadable 'glyf' table -- they are reported.
+coverage fingerprints (64x64) are. Faces with a recoverable malformed loca or a
+non-Unicode-only cmap are repaired in-memory; anything still unreadable after
+that is skipped and reported.
 """
 import glob
 import json
@@ -69,8 +70,23 @@ def fingerprints_for(path):
     """(name byte_code -> uint8 fingerprint) for one font file, or []"""
     out = []
     t = TTFont(path, fontNumber=0)
+    # Repair a malformed loca with spurious trailing entries: some Nitartha
+    # Sam/Esam faces ship one extra garbage offset, so fontTools reads a final
+    # glyph of negative length ("not enough 'glyf' table data").
+    if "loca" in t and "maxp" in t:
+        ng = t["maxp"].numGlyphs
+        loca = t["loca"]
+        if len(loca.locations) > ng + 1:
+            loca.locations = loca.locations[: ng + 1]
     upem = t["head"].unitsPerEm
-    cmap = t.getBestCmap() or {}
+    cmap = t.getBestCmap()
+    if not cmap:
+        # Legacy faces often ship only (1,0)/(3,0) cmaps with no Unicode
+        # subtable, so getBestCmap() is None; merge whatever subtables exist.
+        cmap = {}
+        for sub in t["cmap"].tables:
+            for k, v in sub.cmap.items():
+                cmap.setdefault(k, v)
     gs = t.getGlyphSet()
     for b in range(32, 256):
         gname = _byte_to_glyph(cmap, b)
