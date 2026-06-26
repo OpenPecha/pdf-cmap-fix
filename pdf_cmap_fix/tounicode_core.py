@@ -20,6 +20,7 @@ from pdf_cmap_fix.content_streams import collect_referenced_gids
 from pdf_cmap_fix.pdf_font_encoding import parse_pdf_encoding
 
 LookupTier = Literal["gid", "gname", "gshape"]
+StrategySpec = tuple[LookupTier, Path]
 
 # Word PDFs may emit these Type0 GIDs before stack syllables; they are not
 # always picked up by :func:`collect_referenced_gids` but still need ToUnicode
@@ -43,6 +44,7 @@ _WORD_ACTUALTEXT_SENTINEL_RE = re.compile(
 
 PREVIEW_LINES = 15
 PREVIEW_DIFF = 8
+TIBETAN_RANGE = (0x0F00, 0x0FFF)
 
 
 def _strip_prefix(name: str) -> str:
@@ -1852,6 +1854,106 @@ def _show_diff_sample(raw: str, patched: str, n: int = PREVIEW_DIFF) -> None:
         print(f"      PATCHED: {_printable(p)}")
 
 
+def _data_root_from_lookup(default_lookup_dir: Path) -> Path:
+    """Return the package data root for a default lookup directory."""
+    if default_lookup_dir.name == "font_lookup_byid":
+        return default_lookup_dir.parent
+    return default_lookup_dir.parent
+
+
+def _default_strategy_specs(default_lookup_dir: Path) -> dict[str, StrategySpec]:
+    """Strategies exposed by the top-level CLI.
+
+    The tier-specific CLIs continue to use their historical fixed tier. The
+    top-level command can try the same bundled lookup trees users would
+    otherwise invoke manually.
+    """
+    data_root = _data_root_from_lookup(default_lookup_dir)
+    return {
+        "gid": ("gid", default_lookup_dir),
+        "gid-pua-free": ("gid", data_root / "font_lookup_gid_pua_free"),
+        "gname": ("gname", data_root / "font_lookup_gname"),
+        "gname-pua-free": ("gname", data_root / "font_lookup_gname_pua_free"),
+        "gshape": ("gshape", data_root / "font_lookup_gshape"),
+        "gshape-pua-free": ("gshape", data_root / "font_lookup_gshape_pua_free"),
+    }
+
+
+def _text_quality(text: str) -> dict[str, int]:
+    tibetan = 0
+    non_tibetan_non_ascii = 0
+    for c in text:
+        cp = ord(c)
+        if TIBETAN_RANGE[0] <= cp <= TIBETAN_RANGE[1]:
+            tibetan += 1
+        elif cp > 0x7F:
+            non_tibetan_non_ascii += 1
+    return {
+        "tibetan": tibetan,
+        "non_tibetan_non_ascii": non_tibetan_non_ascii,
+        "chars": len(text),
+    }
+
+
+def _quality_sort_key(quality: dict[str, int]) -> tuple[int, int, int]:
+    return (
+        quality["tibetan"],
+        -quality["non_tibetan_non_ascii"],
+        quality["chars"],
+    )
+
+
+def _select_auto_strategy(
+    pdf_path: Path,
+    *,
+    strategies: dict[str, StrategySpec],
+    verbose: bool = True,
+) -> tuple[str, LookupTier, Path, Optional[dict]]:
+    """Pick the strategy whose patched extraction has the most Tibetan text."""
+    best: Optional[tuple[tuple[int, int, int], str, LookupTier, Path, dict, dict[str, int]]] = None
+    if verbose:
+        print("\n[Auto strategy] Scoring bundled lookup strategies ...")
+    for name, (cand_tier, cand_lookup) in strategies.items():
+        if not cand_lookup.is_dir():
+            if verbose:
+                print(f"  {name:16s} skipped (missing lookup dir: {cand_lookup})")
+            continue
+        result = extract_pdf_text(
+            pdf_path,
+            write_files=False,
+            lookup_dir=cand_lookup,
+            tier=cand_tier,
+            verbose=False,
+        )
+        quality = _text_quality(result["patched"])
+        key = _quality_sort_key(quality)
+        stats = result["stats"]
+        if verbose:
+            print(
+                f"  {name:16s} tibetan={quality['tibetan']} "
+                f"non_tib_non_ascii={quality['non_tibetan_non_ascii']} "
+                f"upgrades={stats['upgrades']}"
+            )
+        if best is None or key > best[0]:
+            best = (key, name, cand_tier, cand_lookup, result, quality)
+
+    if best is None:
+        raise RuntimeError("auto strategy could not find any usable lookup directory")
+
+    _, name, selected_tier, selected_lookup, result, quality = best
+    if verbose:
+        print(
+            f"  selected:      {name} "
+            f"({selected_tier}, {selected_lookup})"
+        )
+        if name != "gid":
+            print(
+                "  warning: auto selected a non-default lookup strategy; "
+                "review extraction output if this PDF mixes unusual fonts."
+            )
+    return name, selected_tier, selected_lookup, result
+
+
 def cli_main(
     argv: list[str],
     *,
@@ -1859,6 +1961,7 @@ def cli_main(
     default_lookup_dir: Path,
     usage_text: str,
     program_label: str,
+    strategy_specs: Optional[dict[str, StrategySpec]] = None,
 ) -> None:
     """Shared argv parser and driver for tier CLIs."""
     import io as io_mod
@@ -1877,22 +1980,57 @@ def cli_main(
         sys.exit(0)
 
     font_lookup_cli: Optional[Path] = None
+    strategy_cli: Optional[str] = "auto" if strategy_specs is not None else None
     i = 0
     while i < len(argv):
         if argv[i] == "--font-lookup-dir" and i + 1 < len(argv):
             font_lookup_cli = Path(argv[i + 1])
             i += 2
             continue
+        if argv[i] == "--strategy" and i + 1 < len(argv):
+            strategy_cli = argv[i + 1]
+            i += 2
+            continue
+        if argv[i] == "--no-auto":
+            strategy_cli = "gid"
+            i += 1
+            continue
+        if argv[i] == "--pua-free":
+            strategy_cli = "gid-pua-free"
+            i += 1
+            continue
+        if argv[i] == "--gshape":
+            strategy_cli = "gshape"
+            i += 1
+            continue
+        if argv[i] == "--gshape-pua-free":
+            strategy_cli = "gshape-pua-free"
+            i += 1
+            continue
         break
     argv = argv[i:]
 
-    lookup_root = (
-        font_lookup_cli.expanduser().resolve()
-        if font_lookup_cli is not None
-        else default_lookup_dir.resolve()
-    )
-    if not lookup_root.is_dir():
-        flag = "--font-lookup-dir" if font_lookup_cli is not None else "default lookup dir"
+    lookup_root = default_lookup_dir.resolve()
+    selected_tier = tier
+    selected_strategy = strategy_cli or tier
+    auto_enabled = strategy_specs is not None and strategy_cli == "auto"
+
+    if font_lookup_cli is not None:
+        lookup_root = font_lookup_cli.expanduser().resolve()
+        selected_strategy = "custom"
+        auto_enabled = False
+    elif strategy_specs is not None:
+        if strategy_cli == "auto":
+            lookup_root = default_lookup_dir.resolve()
+        elif strategy_cli in strategy_specs:
+            selected_tier, lookup_root = strategy_specs[strategy_cli]
+            lookup_root = lookup_root.resolve()
+        else:
+            choices = ", ".join(["auto", *strategy_specs])
+            sys.exit(f"unknown --strategy {strategy_cli!r}; choices: {choices}")
+
+    if not auto_enabled and not lookup_root.is_dir():
+        flag = "--font-lookup-dir" if font_lookup_cli is not None else "lookup dir"
         sys.exit(f"font lookup directory not found ({flag}): {lookup_root}")
 
     dump_cmap: Optional[str] = None
@@ -1911,9 +2049,19 @@ def cli_main(
     if not pdf_args:
         sys.exit(usage_text)
 
-    n_lookup = len(_discover_lookup_keys(lookup_root))
-    print(f"Loading font lookup ({tier}) ...")
-    print(f"  {n_lookup} font JSON files under {lookup_root}")
+    if auto_enabled:
+        print("Loading font lookup strategies (auto) ...")
+        for name, (_, cand_lookup) in strategy_specs.items():
+            if cand_lookup.is_dir():
+                n_lookup = len(_discover_lookup_keys(cand_lookup))
+                print(f"  {name:16s} {n_lookup} font JSON files under {cand_lookup}")
+            else:
+                print(f"  {name:16s} missing lookup dir: {cand_lookup}")
+    else:
+        n_lookup = len(_discover_lookup_keys(lookup_root))
+        print(f"Loading font lookup ({selected_tier}) ...")
+        print(f"  strategy: {selected_strategy}")
+        print(f"  {n_lookup} font JSON files under {lookup_root}")
 
     for arg in pdf_args:
         pdf_path = Path(arg)
@@ -1926,14 +2074,29 @@ def cli_main(
         print(f"  PDF: {pdf_path.name}")
         print(f"{'='*65}")
 
+        result_for_text: Optional[dict] = None
+        run_tier = selected_tier
+        run_lookup = lookup_root
+        run_strategy = selected_strategy
+        if auto_enabled:
+            try:
+                run_strategy, run_tier, run_lookup, result_for_text = _select_auto_strategy(
+                    pdf_path,
+                    strategies=strategy_specs,
+                    verbose=True,
+                )
+            except RuntimeError as e:
+                print(f"  SKIP ({e})", file=sys.stderr)
+                continue
+
         if dump_cmap is not None:
             out_json = Path(dump_cmap)
             if len(pdf_args) > 1:
                 out_json = out_json.parent / f"{out_json.stem}_{pdf_path.stem}{out_json.suffix}"
             payload = build_tounicode_dict(
                 pdf_path,
-                lookup_dir=lookup_root,
-                tier=tier,
+                lookup_dir=run_lookup,
+                tier=run_tier,
             )
             serial = _sanitise_json_utf8(_serialise_cmap_result(payload))
             out_json.parent.mkdir(parents=True, exist_ok=True)
@@ -1953,10 +2116,11 @@ def cli_main(
 
         if patch_pdf_mode:
             print("\n[Patch-only mode] Rewriting ToUnicode CMaps ...")
+            print(f"  strategy:      {run_strategy}")
             result = patch_pdf(
                 pdf_path,
-                lookup_dir=lookup_root,
-                tier=tier,
+                lookup_dir=run_lookup,
+                tier=run_tier,
                 verbose=True,
             )
             stats = result["stats"]
@@ -1975,12 +2139,16 @@ def cli_main(
             continue
 
         print("\n[Phase 1] Raw extraction ...")
-        result = extract_pdf_text(
-            pdf_path,
-            lookup_dir=lookup_root,
-            tier=tier,
-            verbose=True,
-        )
+        if result_for_text is None:
+            result = extract_pdf_text(
+                pdf_path,
+                lookup_dir=run_lookup,
+                tier=run_tier,
+                verbose=True,
+            )
+        else:
+            print(f"  strategy:      {run_strategy}")
+            result = result_for_text
         raw_text = result["raw"]
         patched_text = result["patched"]
         stats = result["stats"]

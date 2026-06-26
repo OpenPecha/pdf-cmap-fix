@@ -117,10 +117,13 @@ def extract_pdf_text(
 
 USAGE = (
     "Usage:\n"
+    "  pdf-cmap-fix [--strategy auto|gid|gid-pua-free|gname|gname-pua-free|gshape|gshape-pua-free] <pdf1> [pdf2] ...\n"
+    "      auto is the default and picks the patched extraction with the most Tibetan text\n"
+    "  pdf-cmap-fix [--no-auto] [--pua-free] [--gshape] [--gshape-pua-free] <pdf1> [pdf2] ...\n"
     "  pdf-cmap-fix [--font-lookup-dir DIR] <pdf1> [pdf2] ...\n"
-    "      GID → Unicode lookups from DIR (default: pdf_cmap_fix/data/font_lookup)\n"
-    "  pdf-cmap-fix [--font-lookup-dir DIR] --patch-pdf <pdf> ...\n"
-    "  pdf-cmap-fix [--font-lookup-dir DIR] --dump-cmap OUT.json <pdf> ...\n"
+    "      Custom lookup dir disables auto and uses the GID tier\n"
+    "  pdf-cmap-fix [strategy options] --patch-pdf <pdf> ...\n"
+    "  pdf-cmap-fix [strategy options] --dump-cmap OUT.json <pdf> ...\n"
 )
 
 
@@ -131,6 +134,7 @@ def main() -> None:
         default_lookup_dir=FONT_LOOKUP_DIR,
         usage_text=USAGE,
         program_label="pdf-cmap-fix",
+        strategy_specs=_core._default_strategy_specs(FONT_LOOKUP_DIR),
     )
 
 
