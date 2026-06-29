@@ -11,7 +11,7 @@ import json
 import re
 import sys
 from pathlib import Path
-from typing import Any, Iterable, Literal, Optional, Tuple
+from typing import Any, Iterable, Literal, Optional, Sequence, Tuple, Union
 
 import fitz
 from fontTools.ttLib import TTFont
@@ -21,6 +21,10 @@ from pdf_cmap_fix.pdf_font_encoding import parse_pdf_encoding
 
 LookupTier = Literal["gid", "gname", "gshape"]
 StrategySpec = tuple[LookupTier, Path]
+# Public API ``strategy=`` argument: a single strategy name (e.g. "gid-pua-free"),
+# the literal "auto" (score over every bundled tree), or an explicit ordered
+# subset of names to score over (e.g. ["gid", "gid-pua-free"]).
+StrategyArg = Union[str, Sequence[str]]
 
 # Word PDFs may emit these Type0 GIDs before stack syllables; they are not
 # always picked up by :func:`collect_referenced_gids` but still need ToUnicode
@@ -1952,6 +1956,72 @@ def _select_auto_strategy(
                 "review extraction output if this PDF mixes unusual fonts."
             )
     return name, selected_tier, selected_lookup, result
+
+
+def resolve_strategy(
+    pdf_path,
+    *,
+    strategy: Optional[StrategyArg],
+    default_tier: LookupTier,
+    default_lookup_dir: Path,
+    font_lookup_dir: Optional[Path] = None,
+    verbose: bool = False,
+) -> tuple[str, LookupTier, Path]:
+    """Resolve a public-API ``strategy=`` argument to a concrete ``(name, tier, lookup_dir)``.
+
+    - ``strategy=None`` (and no ``font_lookup_dir``): the caller's default tier
+      and lookup directory — unchanged historical behaviour.
+    - ``font_lookup_dir=...``: that directory with the default tier (mutually
+      exclusive with ``strategy``).
+    - ``strategy="<name>"``: use that one bundled tree, no scoring.
+    - ``strategy="auto"``: score every bundled tree and pick the best.
+    - ``strategy=["<name>", ...]``: score over just that ordered subset.
+
+    Scoring (for "auto" / a list) extracts text with each candidate tree and
+    keeps the one yielding the most Tibetan with the least non-Tibetan noise
+    (see :func:`_select_auto_strategy`).
+    """
+    if font_lookup_dir is not None:
+        if strategy is not None:
+            raise ValueError("pass either font_lookup_dir or strategy, not both")
+        return default_tier, default_tier, Path(font_lookup_dir).expanduser().resolve()
+
+    if strategy is None:
+        return default_tier, default_tier, default_lookup_dir.resolve()
+
+    specs = _default_strategy_specs(default_lookup_dir)
+
+    # A single named strategy: use it directly, no scoring.
+    if isinstance(strategy, str) and strategy != "auto":
+        if strategy not in specs:
+            raise ValueError(
+                f"unknown strategy {strategy!r}; choose from {sorted(specs)} or 'auto'"
+            )
+        tier, lookup = specs[strategy]
+        if not lookup.is_dir():
+            raise FileNotFoundError(
+                f"strategy {strategy!r} lookup directory is not installed: {lookup}"
+            )
+        return strategy, tier, lookup.resolve()
+
+    # "auto" over all bundled trees, or an explicit ordered subset.
+    if strategy == "auto":
+        subset = specs
+    else:
+        subset = {}
+        for name in strategy:
+            if name not in specs:
+                raise ValueError(
+                    f"unknown strategy {name!r}; choose from {sorted(specs)}"
+                )
+            subset[name] = specs[name]
+        if not subset:
+            raise ValueError("strategy list is empty")
+
+    name, tier, lookup, _ = _select_auto_strategy(
+        Path(pdf_path), strategies=subset, verbose=verbose
+    )
+    return name, tier, lookup
 
 
 def cli_main(

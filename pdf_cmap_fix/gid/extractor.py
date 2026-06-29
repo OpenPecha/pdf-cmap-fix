@@ -60,13 +60,19 @@ def build_tounicode_dict(
     pdf_path,
     *,
     font_lookup_dir: Optional[Path] = None,
+    strategy: Optional[_core.StrategyArg] = None,
 ) -> dict[str, Any]:
-    lookup_dir = (
-        Path(font_lookup_dir).expanduser().resolve()
-        if font_lookup_dir is not None
-        else FONT_LOOKUP_DIR.resolve()
+    name, tier, lookup_dir = _core.resolve_strategy(
+        pdf_path,
+        strategy=strategy,
+        default_tier=_TIER,
+        default_lookup_dir=FONT_LOOKUP_DIR,
+        font_lookup_dir=font_lookup_dir,
     )
-    return _core.build_tounicode_dict(pdf_path, lookup_dir=lookup_dir, tier=_TIER)
+    result = _core.build_tounicode_dict(pdf_path, lookup_dir=lookup_dir, tier=tier)
+    if strategy is not None:
+        result["stats"]["strategy"] = name
+    return result
 
 
 def patch_pdf(
@@ -75,21 +81,28 @@ def patch_pdf(
     write_file: bool = True,
     *,
     font_lookup_dir: Optional[Path] = None,
+    strategy: Optional[_core.StrategyArg] = None,
     verbose: bool = False,
 ) -> dict:
-    lookup_dir = (
-        Path(font_lookup_dir).expanduser().resolve()
-        if font_lookup_dir is not None
-        else FONT_LOOKUP_DIR.resolve()
+    name, tier, lookup_dir = _core.resolve_strategy(
+        pdf_path,
+        strategy=strategy,
+        default_tier=_TIER,
+        default_lookup_dir=FONT_LOOKUP_DIR,
+        font_lookup_dir=font_lookup_dir,
+        verbose=verbose,
     )
-    return _core.patch_pdf(
+    result = _core.patch_pdf(
         pdf_path,
         output_path=output_path,
         write_file=write_file,
         lookup_dir=lookup_dir,
-        tier=_TIER,
+        tier=tier,
         verbose=verbose,
     )
+    if strategy is not None:
+        result["stats"]["strategy"] = name
+    return result
 
 
 def extract_pdf_text(
@@ -98,21 +111,28 @@ def extract_pdf_text(
     write_files: bool = True,
     *,
     font_lookup_dir: Optional[Path] = None,
+    strategy: Optional[_core.StrategyArg] = None,
     verbose: bool = False,
 ) -> dict:
-    lookup_dir = (
-        Path(font_lookup_dir).expanduser().resolve()
-        if font_lookup_dir is not None
-        else FONT_LOOKUP_DIR.resolve()
+    name, tier, lookup_dir = _core.resolve_strategy(
+        pdf_path,
+        strategy=strategy,
+        default_tier=_TIER,
+        default_lookup_dir=FONT_LOOKUP_DIR,
+        font_lookup_dir=font_lookup_dir,
+        verbose=verbose,
     )
-    return _core.extract_pdf_text(
+    result = _core.extract_pdf_text(
         pdf_path,
         output_dir=output_dir,
         write_files=write_files,
         lookup_dir=lookup_dir,
-        tier=_TIER,
+        tier=tier,
         verbose=verbose,
     )
+    if strategy is not None:
+        result["stats"]["strategy"] = name
+    return result
 
 
 USAGE = (
