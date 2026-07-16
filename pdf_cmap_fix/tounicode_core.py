@@ -37,8 +37,17 @@ WORD_SENTINEL_GIDS: frozenset[int] = frozenset({0xFEFF, 0xFFFD})
 #   EMC
 #
 # We preserve the inner drawing operators and only remove the BDC/EMC wrapper.
+# NOTE: The quantifiers are deliberately bounded. A previous version used
+# ``<<.*?`` / ``(.*?)`` with DOTALL, which on InDesign PDFs (hundreds of
+# legitimate ActualText spans per page, occasional FEFFFFFD sentinels)
+# matched from the *first* /Span on the page to a distant sentinel and
+# deleted everything in between - silently destroying page content.
+# ``[^<>]*`` keeps the dict scan inside one ``<<...>>``; the tempered dot
+# ``(?:(?!BDC|EMC).)*?`` stops the captured body from crossing other
+# marked-content sections.
 _WORD_ACTUALTEXT_SENTINEL_RE = re.compile(
-    rb"/Span\s*<<.*?/ActualText\s*<\s*FEFFFFFD\s*>.*?>>\s*BDC\s*(.*?)\s*EMC",
+    rb"/Span\s*<<[^<>]*/ActualText\s*<\s*FEFFFFFD\s*>[^<>]*>>\s*BDC\s*"
+    rb"((?:(?!BDC|EMC).)*?)\s*EMC",
     re.IGNORECASE | re.DOTALL,
 )
 
@@ -1605,7 +1614,25 @@ def _strip_word_actualtext_sentinels_in_stream(
     if not stream:
         return stream, 0
     out, n = _WORD_ACTUALTEXT_SENTINEL_RE.subn(lambda m: m.group(1), stream)
+    if n and not _text_show_ops_preserved(stream, out):
+        # Fail-safe: stripping must only remove BDC/EMC wrapper tokens,
+        # never text-showing operators. If any Tj/TJ/'/" payload changed,
+        # keep the original stream rather than write a lossy one.
+        return stream, 0
     return out, n
+
+
+_TEXT_SHOW_OP_RE = re.compile(
+    rb"(?:<[0-9A-Fa-f\s]*>|\((?:\\.|[^\\()])*\))\s*(?:Tj|'|\")"
+    rb"|\[(?:\\.|[^\[\]\\])*\]\s*TJ"
+)
+
+
+def _text_show_ops_preserved(before: bytes, after: bytes) -> bool:
+    """True if *after* contains exactly the same text-show operators as
+    *before* (same payloads, same order). Cheap corruption guard for
+    content-stream rewrites that are only supposed to drop wrappers."""
+    return _TEXT_SHOW_OP_RE.findall(before) == _TEXT_SHOW_OP_RE.findall(after)
 
 
 def strip_word_actualtext_sentinels(doc: fitz.Document) -> dict[str, int]:
