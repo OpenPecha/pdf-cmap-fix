@@ -26,6 +26,11 @@ LookupTier = Literal["gid", "gname", "gshape"]
 # entries (often supplied via lookup JSON, e.g. microsofthimalaya.json).
 WORD_SENTINEL_GIDS: frozenset[int] = frozenset({0xFEFF, 0xFFFD})
 
+# How many contradicted Tibetan entries a tier-1 GID map must produce -- with no
+# corroboration at all -- before we treat it as keyed to a different glyph order
+# and drop it. See :func:`_gid_map_corroborated`.
+MIN_GID_CONFLICTS = 4
+
 # Word sometimes wraps real Tj glyph text in marked-content spans with
 # ActualText<FEFFFFFD>. PyMuPDF includes that ActualText in extraction,
 # producing visible U+FFFD noise even when the following GIDs map fine.
@@ -929,6 +934,61 @@ def _merge(
     return merged, changed
 
 
+def _is_tibetan_text(s: str) -> bool:
+    """True when ``s`` is non-empty and entirely Tibetan script (U+0F00-0FFF).
+
+    Used to tell an existing ToUnicode entry that already carries real Unicode
+    from a legacy one, whose entries are the Latin-ish stand-ins an ANSI-era
+    Tibetan font emits (``!`` for ``ཀ``, ...).
+    """
+    return bool(s) and all("ༀ" <= c <= "࿿" for c in s)
+
+
+def _gid_map_corroborated(
+    existing: dict,
+    db_map: dict,
+    referenced: Optional[set] = None,
+    min_conflicts: int = MIN_GID_CONFLICTS,
+) -> bool:
+    """True unless ``db_map`` looks keyed to a *different* glyph order.
+
+    Tier-1 lookups key on raw GIDs, which only transfer when the embedded font
+    program has the same glyph order as the font the DB was built from. Font
+    names are reused across incompatible releases (``TibetanChogyalUnicode``
+    ships a dozen dated builds; ``MonlamUniOuChan1`` several), and a name match
+    alone cannot tell them apart -- so a wrong pick silently overwrites correct
+    Unicode with values from an unrelated glyph space.
+
+    The check looks only at codes where the PDF's existing ToUnicode already
+    resolves to Tibetan, i.e. entries that are worth protecting:
+
+    * ``db == existing`` or ``db.startswith(existing)`` **corroborates** the
+      map. The prefix case is the tool's whole purpose -- the DB decomposing a
+      stacked syllable the existing map only partially represented
+      (``ས`` -> ``སྒྲུབ``).
+    * anything else **conflicts**.
+
+    A compatible map always produces corroboration (measured across the bundled
+    examples: 5750 / 67 / 79 corroborations against 1423 / 13 / 18 conflicts).
+    A map from a different glyph order produces *none at all*. So we reject only
+    on zero corroboration plus at least ``min_conflicts`` conflicts, which keeps
+    the check inert for legacy fonts (their existing entries are Latin and are
+    skipped outright) and for thin evidence.
+    """
+    codes = (db_map.keys() & referenced) if referenced else db_map.keys()
+    corroborated = conflicts = 0
+    for code in codes:
+        old = existing.get(code, "")
+        if not _is_tibetan_text(old):
+            continue
+        new = db_map[code]
+        if new == old or new.startswith(old):
+            corroborated += 1
+        else:
+            conflicts += 1
+    return not (corroborated == 0 and conflicts >= min_conflicts)
+
+
 def _overrides(existing: dict, merged: dict) -> dict:
     out = {}
     for k, v in merged.items():
@@ -1507,12 +1567,34 @@ def collect_font_merges(
                 if ptg_map is not None:
                     db_map, db_key, match_kind, matched_display = ptg_map
 
+            # A tier-1 map is keyed on raw GIDs and was picked on the strength
+            # of a font *name* alone. When the embedded program turns out to
+            # use a different glyph order (a same-named but incompatible
+            # release), applying it would replace correct Unicode with values
+            # from an unrelated glyph space -- so drop it and keep what the PDF
+            # already has. Only the gid tier needs this: gname / gshape resolve
+            # through the embedded font, and ptg only fires on legacy fonts.
+            rejected_gid_map = False
+            if (
+                db_map is not None
+                and match_kind == "gid"
+                and not _gid_map_corroborated(existing, db_map, referenced)
+            ):
+                db_map, db_key, matched_display = None, None, None
+                rejected_gid_map = True
+
             if db_map is None:
                 stats["no_match"] += 1
                 norm = _normalise_name(basename)
                 if verbose and norm not in reported:
                     reported.add(norm)
-                    print(f"  [no DB match] {basename}")
+                    if rejected_gid_map:
+                        print(
+                            f"  [rejected] {basename[:50]}  "
+                            f"[gid map contradicts existing ToUnicode]  ({ftype})"
+                        )
+                    else:
+                        print(f"  [no DB match] {basename}")
                 merged = dict(existing)
                 changed = 0
                 overrides = {}
