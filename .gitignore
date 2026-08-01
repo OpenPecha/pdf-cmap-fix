@@ -1,3 +1,5 @@
+.DS_Store
+
 # Font archives — prefer repo-root fonts/; scripts/ is a legacy location (see README).
 fonts/*.zip
 scripts/*.zip
