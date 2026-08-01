@@ -943,7 +943,8 @@ def _is_tibetan_text(s: str) -> bool:
     from a legacy one, whose entries are the Latin-ish stand-ins an ANSI-era
     Tibetan font emits (``!`` for ``ཀ``, ...).
     """
-    return bool(s) and all("ༀ" <= c <= "࿿" for c in s)
+    lo, hi = TIBETAN_RANGE
+    return bool(s) and all(lo <= ord(c) <= hi for c in s)
 
 
 def _gid_map_corroborated(
