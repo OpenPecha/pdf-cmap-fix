@@ -19,6 +19,7 @@ Spec references: PDF 32000-1:2008 §9.6.5 (Character Encoding), §9.6.6
 """
 from __future__ import annotations
 
+import io
 import re
 from typing import Dict, Optional
 
@@ -26,6 +27,7 @@ import fitz
 
 from fontTools.encodings.StandardEncoding import StandardEncoding
 from fontTools.encodings.MacRoman import MacRoman as _MacRomanEncoding
+from fontTools.ttLib import TTFont
 
 
 # WinAnsiEncoding (PDF 32000-1:2008 Annex D.2). fontTools does not ship
@@ -146,6 +148,58 @@ def _xref_object_safe(doc: fitz.Document, xref: int) -> Optional[str]:
         return None
 
 
+def _embedded_cmap_glyph_names(
+    doc: fitz.Document, font_xref: int
+) -> Dict[int, str]:
+    """Fall back to the embedded font's own ``cmap`` table.
+
+    Word/LibreOffice frequently emit *symbolic* TrueType subsets that
+    carry no PDF ``/Encoding`` entry at all: the content stream's 1-byte
+    char codes are only meaningful via the font program's own built-in
+    ``(1, 0)`` or ``(3, 0)`` cmap subtable, which maps each code straight
+    to a PostScript glyph name (e.g. code 33 -> glyph ``tibTsek``). That
+    glyph name is exactly what the gname/gshape lookup tiers key on, so
+    reading it here lets those tiers recover text that ``/Encoding``
+    parsing alone would silently skip.
+
+    Returns ``{}`` if the font can't be extracted/parsed or carries no
+    ``cmap`` table -- callers already treat an empty mapping as "no
+    match" without raising.
+    """
+    try:
+        tup = doc.extract_font(font_xref)
+    except Exception:
+        return {}
+    if not tup or len(tup) < 4:
+        return {}
+    buf = tup[3]
+    if not buf or not isinstance(buf, (bytes, bytearray)):
+        return {}
+    ext_font: Optional[TTFont] = None
+    try:
+        ext_font = TTFont(io.BytesIO(bytes(buf)), lazy=False)
+        if "cmap" not in ext_font:
+            return {}
+        out: Dict[int, str] = {}
+        for sub in ext_font["cmap"].tables:
+            try:
+                items = sub.cmap.items()
+            except Exception:
+                continue
+            for code, gname in items:
+                if 0 <= code <= 255:
+                    out.setdefault(code, gname)
+        return out
+    except Exception:
+        return {}
+    finally:
+        if ext_font is not None:
+            try:
+                ext_font.close()
+            except Exception:
+                pass
+
+
 def parse_pdf_encoding(
     doc: fitz.Document, font_xref: int
 ) -> Dict[int, str]:
@@ -158,11 +212,9 @@ def parse_pdf_encoding(
     * Dict (the common case) -- a ``/BaseEncoding`` name is loaded if
       present (default: ``StandardEncoding``), then the ``/Differences``
       array is applied on top.
-    * Missing -- returns an empty mapping. The caller can decide to
-      skip the font or fall back to the embedded font's built-in
-      encoding (not implemented here, since PyMuPDF does not expose it
-      and walking the raw font file would duplicate work the font
-      shaper already does).
+    * Missing -- falls back to the embedded font's own built-in cmap
+      (see :func:`_embedded_cmap_glyph_names`). Returns an empty mapping
+      only if that also yields nothing.
 
     Slots that remain unassigned are omitted from the returned dict so
     the caller can use ``.get(code)`` cleanly.
@@ -176,10 +228,10 @@ def parse_pdf_encoding(
     try:
         enc_key = doc.xref_get_key(font_xref, "Encoding")
     except Exception:
-        return {}
+        return _embedded_cmap_glyph_names(doc, font_xref)
 
     if not enc_key:
-        return {}
+        return _embedded_cmap_glyph_names(doc, font_xref)
 
     kind, value = enc_key[0], enc_key[1]
     table: list
@@ -192,18 +244,21 @@ def parse_pdf_encoding(
         try:
             ref_xref = int(value.split()[0])
         except (ValueError, IndexError):
-            return {}
+            return _embedded_cmap_glyph_names(doc, font_xref)
         enc_obj_text = _xref_object_safe(doc, ref_xref)
         if enc_obj_text is None:
-            return {}
+            return _embedded_cmap_glyph_names(doc, font_xref)
         table = _table_from_encoding_dict_text(enc_obj_text)
     elif kind == "dict":
         # Inline dictionary.
         table = _table_from_encoding_dict_text(value)
     else:
-        return {}
+        return _embedded_cmap_glyph_names(doc, font_xref)
 
-    return {cc: gn for cc, gn in enumerate(table) if gn}
+    result = {cc: gn for cc, gn in enumerate(table) if gn}
+    if result:
+        return result
+    return _embedded_cmap_glyph_names(doc, font_xref)
 
 
 def _table_from_encoding_dict_text(dict_text: str) -> list:

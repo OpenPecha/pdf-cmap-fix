@@ -1,0 +1,16 @@
+{
+  "_meta": {
+    "lookup_kind": "gname",
+    "source": "manual glyph-sheet patch for W2KG229478.pdf"
+  },
+  "tibetancalligraphicskt1": {
+    "uniF003": "འ",
+    "uniF005": "འ",
+    "uniF006": "ངྒ",
+    "uniF008": "ངྐ",
+    "uniF001": "ཛྲ",
+    "uniF002": "ཊྭ",
+    "uniF004": "ཎྜ",
+    "uniF007": "གྷ"
+  }
+}

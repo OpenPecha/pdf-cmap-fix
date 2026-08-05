@@ -27,9 +27,15 @@ import fitz
 # Match a font-selection op like ``/F2 12 Tf``. We re-search a small
 # backward window when the bytes ``Tf`` appear, rather than tokenising
 # the whole stream up-front.
-_TF_RE = re.compile(rb"/([A-Za-z][A-Za-z0-9_]*)\s+[-+]?[\d.]+\s+Tf")
+#
+# The name character class includes ``.`` because Word/LibreOffice-style
+# PDF producers commonly emit font resource names like ``/TT10.1`` --
+# without it, every text-show op selecting such a font is silently
+# dropped and the referenced-GID/char-code set for that font comes back
+# empty (see bug report: dotted font names -> "no_match" en masse).
+_TF_RE = re.compile(rb"/([A-Za-z][A-Za-z0-9_.]*)\s+[-+]?[\d.]+\s+Tf")
 # ``/Fname size_xref 0 R`` references inside a /Font resource dict.
-_FONT_REF_RE = re.compile(r"/([A-Za-z][A-Za-z0-9_]*)\s+(\d+)\s+0\s+R")
+_FONT_REF_RE = re.compile(r"/([A-Za-z][A-Za-z0-9_.]*)\s+(\d+)\s+0\s+R")
 
 _OCTAL_ESCAPES = {0x6E: 0x0A, 0x72: 0x0D, 0x74: 0x09, 0x62: 0x08, 0x66: 0x0C}
 

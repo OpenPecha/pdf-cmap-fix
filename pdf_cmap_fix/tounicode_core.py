@@ -17,6 +17,7 @@ import fitz
 from fontTools.ttLib import TTFont
 
 from pdf_cmap_fix.content_streams import collect_referenced_gids
+from pdf_cmap_fix.dedupe_strokefill import dedupe_stroke_fill_duplicates
 from pdf_cmap_fix.pdf_font_encoding import parse_pdf_encoding
 
 LookupTier = Literal["gid", "gname", "gshape"]
@@ -82,6 +83,17 @@ def _build_db_index(font_keys: Iterable[str]) -> dict:
     return {re.sub(r"[^a-z0-9]", "", k.lower()): k for k in font_keys}
 
 
+# Guards against spurious substring matches between a fuzzy-matched PDF font
+# name and a short/generic database key (e.g. "Times New Roman" containing
+# "ma", which used to false-match the legacy "Ma" font's lookup table -- see
+# docs/known-issues for a worked example). A substring match (score 1 or 2)
+# is only accepted when the shorter of the two names is reasonably long and
+# covers a meaningful fraction of the longer one; short/generic names must
+# match *exactly* (score 3) instead.
+_SUBSTRING_MATCH_MIN_LEN = 6
+_SUBSTRING_MATCH_MIN_RATIO = 0.5
+
+
 def _pick_best_font_key(db_index: dict, pdf_basename: str) -> Optional[str]:
     """Return the font key that best matches a PDF base font name."""
     pdf_key = _normalise_name(pdf_basename)
@@ -96,6 +108,12 @@ def _pick_best_font_key(db_index: dict, pdf_basename: str) -> Optional[str]:
             score = 1
         else:
             continue
+        if score in (1, 2):
+            shorter, longer = sorted((pdf_key, db_norm), key=len)
+            if not shorter or len(shorter) < _SUBSTRING_MATCH_MIN_LEN:
+                continue
+            if len(shorter) / len(longer) < _SUBSTRING_MATCH_MIN_RATIO:
+                continue
         delta = abs(len(db_norm) - len(pdf_key))
         if score > best_score or (score == best_score and delta < best_delta):
             best_score, best_delta, best_key = score, delta, db_key
@@ -1304,6 +1322,86 @@ def _legacy_tounicode_from_scratch(
     return db_map, name
 
 
+def _db_tounicode_from_scratch(
+    doc: fitz.Document,
+    xref: int,
+    basename: str,
+    *,
+    is_type0: bool,
+    tier: LookupTier,
+    lookup_dir: Path,
+    db_index: dict,
+    name_index: Optional[dict],
+    referenced: Optional[set],
+) -> Optional[tuple[dict[int, str], str]]:
+    """Synthesise a ToUnicode map from scratch via the bundled lookup DB.
+
+    Fallback for fonts that ship *no* ToUnicode at all and are not a
+    recognised legacy (pytiblegenc) face -- e.g. a modern Unicode font whose
+    PDF producer simply omitted ``/ToUnicode``. Some of these still carry
+    codes whose glyph name is a multi-character ligature (``tibtSa_Lt`` ->
+    "སལ") that has no Adobe-Glyph-List / ``uniXXXX`` fallback a
+    generic reader can decode on its own -- those codes render fine (the
+    glyph outline is embedded) but extract as nothing/control characters.
+
+    Reuses the same name-matching the merge path below uses for fonts that
+    DO have an existing table, so a font with a real DB entry is not
+    silently skipped just because it has nothing to merge against.
+    Returns ``(code_to_unicode, matched_name)`` or ``None``.
+    """
+    embedded_names = _extract_font_names(doc, xref)
+    db_map: Optional[dict[int, str]] = None
+    db_key: Optional[str] = None
+
+    if name_index is not None:
+        pdf_norm_candidates: list[str] = []
+        for cand in [*embedded_names, basename]:
+            q = _normalise_name(cand)
+            if q and q not in pdf_norm_candidates:
+                pdf_norm_candidates.append(q)
+        db_map, db_key, _match_kind, _matched = _pick_db_map_via_index(
+            doc,
+            xref,
+            is_type0=is_type0,
+            tier=tier,
+            lookup_dir=lookup_dir,
+            name_index=name_index,
+            pdf_norm_candidates=pdf_norm_candidates,
+            referenced=referenced or set(),
+        )
+    else:
+        picked = None
+        for cand in embedded_names:
+            picked = _pick_best_font_key(db_index, cand)
+            if picked:
+                break
+        if picked is None:
+            picked = _pick_best_font_key(db_index, basename)
+        if picked is not None:
+            path = lookup_dir / f"{picked}.json"
+            if path.is_file():
+                loaded = _load_lookup_file_cached(path)
+                if loaded is not None and loaded[0] == tier:
+                    match_kind, inner = loaded
+                    cand_map = _compute_db_map(doc, xref, is_type0, match_kind, inner)
+                    if cand_map:
+                        db_map = cand_map
+                        db_key = picked
+
+    if not db_map:
+        return None
+
+    # Restrict to codes the content stream actually uses -- same safety
+    # margin _legacy_tounicode_from_scratch's outline/shape routes apply,
+    # so we don't emit ToUnicode entries for glyphs never shown.
+    if referenced:
+        db_map = {code: u for code, u in db_map.items() if code in referenced}
+        if not db_map:
+            return None
+
+    return db_map, (db_key or basename)
+
+
 def collect_font_merges(
     doc: fitz.Document,
     *,
@@ -1404,10 +1502,30 @@ def collect_font_merges(
             # or, for symbolic subsets, the glyph outlines -- and synthesise a
             # fresh ToUnicode CMap (created and attached in the apply phase).
             # Non-legacy faces resolve to no table and bail out in the helper.
+            #
+            # Try the accurate DB-name match first (keys directly off the
+            # embedded font's own PostScript names against a per-font-built
+            # lookup table). Only fall back to pytiblegenc's legacy heuristic
+            # -- which can mis-identify the font as an unrelated shipped
+            # font entirely -- when the DB match finds nothing.
             if not existing:
-                built = _legacy_tounicode_from_scratch(
-                    doc, xref, basename, is_type0=is_type0, referenced=referenced
+                built = _db_tounicode_from_scratch(
+                    doc,
+                    xref,
+                    basename,
+                    is_type0=is_type0,
+                    tier=tier,
+                    lookup_dir=lookup_dir,
+                    db_index=db_index,
+                    name_index=name_index,
+                    referenced=referenced,
                 )
+                created_via = "db-from-scratch"
+                if built is None:
+                    built = _legacy_tounicode_from_scratch(
+                        doc, xref, basename, is_type0=is_type0, referenced=referenced
+                    )
+                    created_via = "ptg-from-scratch"
                 if built is None:
                     stats["no_change"] += 1
                     continue
@@ -1417,7 +1535,7 @@ def collect_font_merges(
                     reported.add(norm)
                     print(
                         f"  [created] {basename[:50]} -> {matched_name}  "
-                        f"[ptg-from-scratch]  ({ftype})"
+                        f"[{created_via}]  ({ftype})"
                     )
                 records.append(
                     {
@@ -1453,23 +1571,11 @@ def collect_font_merges(
             db_key = None
             matched_display: Optional[str] = None
 
-            # Legacy non-Unicode Tibetan fonts (Ededris/Dedris, TibetanChogyal,
-            # ...) carry no usable GSUB/cmap, so the regular lookups produce
-            # garbage. Their existing ToUnicode already yields a (wrong)
-            # Latin-ish char per code; re-mapping that char through pytiblegenc's
-            # curated per-font table recovers the real Unicode. This applies to
-            # both simple and Type0/Identity-H faces (a Type0 legacy font with a
-            # 2-byte/4-hex ToUnicode would otherwise be mis-matched by the GID
-            # tier to a sparse same-named lookup). Cheap name-based resolution
-            # only; the outline fallback (which loads the embedded program) runs
-            # below as a last resort.
-            ptg_eligible = (is_simple or is_type0) and bool(existing)
-            if ptg_eligible:
-                ptg_map = _pytiblegenc_name_map(embedded_names, basename, existing)
-                if ptg_map is not None:
-                    db_map, db_key, match_kind, matched_display = ptg_map
-
-            if db_map is None and name_index is not None:
+            # Try the accurate name/DB-indexed match first: it keys directly
+            # off the embedded font's own PostScript names against a
+            # per-font-built lookup table, so it is far less likely to
+            # mis-identify the font than pytiblegenc's legacy heuristic below.
+            if name_index is not None:
                 pdf_norm_candidates: list[str] = []
                 for cand in [*embedded_names, basename]:
                     q = _normalise_name(cand)
@@ -1485,7 +1591,7 @@ def collect_font_merges(
                     pdf_norm_candidates=pdf_norm_candidates,
                     referenced=referenced,
                 )
-            elif db_map is None:
+            else:
                 picked = None
                 for cand in embedded_names:
                     picked = _pick_best_font_key(db_index, cand)
@@ -1508,6 +1614,24 @@ def collect_font_merges(
                                 matched_display = picked
             if not db_map:
                 db_map, db_key = None, None
+
+            # Legacy non-Unicode Tibetan fonts (Ededris/Dedris, TibetanChogyal,
+            # ...) carry no usable GSUB/cmap, so the accurate lookup above
+            # finds nothing for them. Their existing ToUnicode already yields
+            # a (wrong) Latin-ish char per code; re-mapping that char through
+            # pytiblegenc's curated per-font table recovers the real Unicode.
+            # This applies to both simple and Type0/Identity-H faces. Only
+            # tried when the accurate match above found nothing -- pytiblegenc's
+            # own name heuristic can mis-identify the font as a completely
+            # unrelated shipped font, so it must never be allowed to override
+            # a correct match (it used to run first and silently did exactly
+            # that). The outline fallback (which loads the embedded program)
+            # runs further below as the true last resort.
+            ptg_eligible = (is_simple or is_type0) and bool(existing)
+            if db_map is None and ptg_eligible:
+                ptg_map = _pytiblegenc_name_map(embedded_names, basename, existing)
+                if ptg_map is not None:
+                    db_map, db_key, match_kind, matched_display = ptg_map
 
             # Last resort for an unmatched legacy font with an obfuscated name:
             # identify it from its embedded glyph outlines. Deferred to here (and
@@ -1684,9 +1808,87 @@ def patch_doc(
     )
     apply_font_merges_to_doc(doc, records)
     clean_stats = strip_word_actualtext_sentinels(doc)
+    dedup_stats = dedupe_stroke_fill_duplicates(doc)
     stats = dict(stats)
     stats.update(clean_stats)
+    stats.update(dedup_stats)
     return stats
+
+
+_PERIODIC_REPEAT_MAX_PERIOD = 4
+_PERIODIC_REPEAT_MIN_REPEATS = 3
+
+
+def _is_digit_unit(unit: str) -> bool:
+    """True if every character in *unit* is a decimal digit (ASCII or
+    Tibetan, U+0F20-U+0F29). Folio/page numbers like ``111`` or a Tibetan
+    triple-digit are legitimate period-1 "repeats" of a single digit and
+    must never be collapsed."""
+    for ch in unit:
+        cp = ord(ch)
+        if ch.isdigit() or 0x0F20 <= cp <= 0x0F29:
+            continue
+        return False
+    return True
+
+
+def _collapse_periodic_repeats(text: str) -> str:
+    """Collapse a same-substring pattern that repeats immediately 3+ times
+    in a row down to a single copy of that pattern.
+
+    Targets a fake-bold/anti-aliasing artifact seen in some DTP-produced
+    Tibetan PDFs: the same short glyph run is painted several times with
+    sub-pixel ``Td``/``TD`` nudges instead of using a real bold font (see
+    :mod:`pdf_cmap_fix.dedupe_strokefill`). The content-stream-level pass
+    in that module handles the common case (a whole ``Tj`` operand
+    repeated verbatim), but some producers split the repeated run across
+    Tj calls of uneven length (e.g. 2+2+1 characters), which desyncs the
+    per-operand comparison and leaves a partial repeat -- e.g. a vowel
+    sign tripled (``ིིི``) or two characters interleaved across repeats
+    (``ོ།ོ།ོ།``). Both are literal immediate repeats of a short unit at
+    the character-string level regardless of how the content stream
+    happened to chop them up, so this text-level pass catches what the
+    content-stream pass could not.
+
+    Deliberately conservative:
+
+    * Requires 3+ consecutive repeats of the *same* unit (length 1-4).
+      Genuine Tibetan orthography intentionally doubles some punctuation
+      exactly once (``།།``, "nyis shad") but never triples it, so a
+      3-repeat threshold never touches that.
+    * Skips units that are all-digit (ASCII or Tibetan digits): a folio
+      number like ``111`` is a legitimate period-1 "repeat" of one digit,
+      not a rendering artifact.
+    * Skips units containing a literal space: dotted table-of-contents
+      leaders (``་ ་ ་ ་ ...``) are a real, intentional period-2 pattern
+      and must survive untouched.
+    """
+    n = len(text)
+    if n < _PERIODIC_REPEAT_MIN_REPEATS:
+        return text
+    out: list[str] = []
+    i = 0
+    while i < n:
+        collapsed = False
+        max_p = min(_PERIODIC_REPEAT_MAX_PERIOD, (n - i) // _PERIODIC_REPEAT_MIN_REPEATS)
+        for p in range(1, max_p + 1):
+            unit = text[i : i + p]
+            if " " in unit or _is_digit_unit(unit):
+                continue
+            reps = 1
+            j = i + p
+            while j + p <= n and text[j : j + p] == unit:
+                reps += 1
+                j += p
+            if reps >= _PERIODIC_REPEAT_MIN_REPEATS:
+                out.append(unit)
+                i = j
+                collapsed = True
+                break
+        if not collapsed:
+            out.append(text[i])
+            i += 1
+    return "".join(out)
 
 
 def extract_all(doc: fitz.Document) -> str:
@@ -1696,6 +1898,7 @@ def extract_all(doc: fitz.Document) -> str:
             "text",
             flags=fitz.TEXT_PRESERVE_WHITESPACE | fitz.TEXT_PRESERVE_LIGATURES,
         )
+        text = _collapse_periodic_repeats(text)
         pages.append(f"=== PAGE {pno+1} ===\n{text.strip()}")
     return "\n".join(pages)
 
