@@ -41,6 +41,22 @@ _STEPS = 10       # bezier flattening steps
 _ACCEPT = 0.05            # max mean-abs distance to trust a single glyph match
 _DISTINCT_VOTE_MIN = 0.008  # min summed distinctiveness weight to accept a font
 
+# Consensus gates. The summed weight above is an *absolute* score, so a font
+# with many glyphs can clear it purely by accumulating dozens of weak, mutually
+# inconsistent votes -- e.g. a Latin table-of-contents face (digits, periods,
+# a-z) whose glyphs scatter their nearest matches across eleven unrelated
+# reference families, no single one of which it resembles. A real legacy
+# Tibetan face instead agrees with itself: nearly every glyph's nearest match
+# lands in one design family, at a distance an order of magnitude smaller.
+#
+# Measured on the validated corpus (see tests/test_glyph_shape_id.py):
+#   true matches   family agreement 0.80-1.00, median own-font distance <=0.015
+#   false matches  family agreement <=0.26,    median own-font distance >=0.020
+_FAMILY_AGREEMENT_MIN = 0.5   # min fraction of glyphs whose nearest match is
+                              # in the winning font's design family
+_MATCH_DIST_MEDIAN_MAX = 0.02  # max median distance among glyphs that matched
+                               # the winning font
+
 _DATA = Path(__file__).resolve().parent / "data" / "pytiblegenc"
 _DB_FILE = _DATA / "glyph_shape_db.npz"
 _FONTS_FILE = _DATA / "glyph_shape_fonts.json"
@@ -226,9 +242,15 @@ def identify_and_recover(
         # non-Tibetan faces (Times/Palatino) that happen to share common glyphs,
         # while still trusting tiny but distinctive Sanskrit subfonts.
         votes: Dict[int, float] = {}
+        nearest_font: List[int] = []
+        nearest_family: List[int] = []
+        nearest_dist: List[float] = []
         for fp in fps.values():
             d = np.abs(vecs - fp).mean(axis=1)
             i0 = int(np.argmin(d))
+            nearest_font.append(int(font_ids[i0]))
+            nearest_family.append(int(family_ids[i0]))
+            nearest_dist.append(float(d[i0]))
             if d[i0] > _ACCEPT:
                 continue
             other = d[family_ids != family_ids[i0]]
@@ -239,6 +261,21 @@ def identify_and_recover(
             return None, {}
         target_id = max(votes, key=votes.get)
         if votes[target_id] < _DISTINCT_VOTE_MIN:
+            return None, {}
+
+        # Stage 1b: consensus. The vote above is an absolute sum, so a font
+        # with many glyphs can clear it on accumulated noise. Require the
+        # winner to actually look like the embedded face: most glyphs must
+        # point at its design family, and the ones that matched it must do so
+        # at true same-glyph distance rather than near the _ACCEPT ceiling.
+        target_family = int(family_ids[int(np.argmax(font_ids == target_id))])
+        agreement = sum(1 for f in nearest_family if f == target_family) / len(
+            nearest_family
+        )
+        if agreement < _FAMILY_AGREEMENT_MIN:
+            return None, {}
+        own = [dist for f, dist in zip(nearest_font, nearest_dist) if f == target_id]
+        if not own or float(np.median(own)) > _MATCH_DIST_MEDIAN_MAX:
             return None, {}
 
     # Stage 2: within the chosen font, recover each code's native byte code.
