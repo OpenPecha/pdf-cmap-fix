@@ -236,11 +236,14 @@ ToUnicode generation). Tier 1 (`gid`) is still Type0-only because a
 simple font's internal CharString indices are font-local and not
 portable across PDFs that subset the same family differently.
 
-The last remaining edge case is **TrueType simple-encoding fonts that
-have no `/Encoding` entry** (e.g. some Ghostscript outputs), which rely
-on the font's built-in encoding. We don't yet parse that built-in
-encoding; for those PDFs the extractor reports "no match" and leaves
-the ToUnicode unchanged.
+**TrueType simple-encoding fonts with no `/Encoding` entry** rely on
+the font's built-in encoding. We now read that from the embedded
+TrueType cmap (Windows Symbol `(3,0)`, then Macintosh Roman `(1,0)`).
+Quartz / Affinity subsets typically remap that cmap so its keys *are*
+the 1-byte char codes and keep ``uniXXXX`` / ``uniXXXXYYYY`` glyph
+names; those names are decoded directly when no lookup hits. Ghostscript
+outputs whose cmap keys are sequential integers unrelated to glyph
+names still need a gname / gshape lookup for that font.
 
 ## Supported Fonts
 
@@ -251,12 +254,12 @@ many others from the combined font ZIPs.
 
 Fonts **not** yet supported:
 
-- TrueType simple-encoding PDFs whose `/Font` dict has **no** `/Encoding`
-  entry (the font relies on its built-in encoding). Examples: Himalaya-G in
-  older Ghostscript PDFs (PUA codepoints F001–F04B, predating Tibetan
-  Unicode standardisation), and other Ghostscript outputs with sequential
-  char-code assignment. Adding the font's built-in encoding read path is a
-  follow-up enhancement.
+- TrueType simple-encoding PDFs whose built-in cmap keys are sequential
+  integers unrelated to glyph names **and** whose face is not in the
+  gname / gshape lookup (e.g. some older Ghostscript Himalaya-G outputs
+  with PUA codepoints F001–F04B). The cmap is now readable; a lookup
+  entry for that font is still required when the glyph names are not
+  explicit ``uniXXXX`` Tibetan names.
 - Type3 (procedural) fonts have no embedded font program; lookups have
   nothing to bind against.
 

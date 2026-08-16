@@ -12,8 +12,11 @@ import pytest
 from pdf_cmap_fix.pdf_font_encoding import (
     WIN_ANSI_ENCODING,
     _base_encoding_table,
+    _char_code_from_cmap_key,
     _parse_differences,
+    parse_embedded_ttf_encoding,
     parse_pdf_encoding,
+    resolve_simple_encoding,
 )
 
 
@@ -154,3 +157,27 @@ def test_parse_pdf_encoding_ignores_dot_notdef() -> None:
     doc = _make_doc(encoding_key=("dict", enc_text))
     enc = parse_pdf_encoding(doc, 1)
     assert enc[173] == ".notdef"
+
+
+def test_char_code_from_cmap_key_windows_symbol_and_byte() -> None:
+    assert _char_code_from_cmap_key(0xF021, 3, 0) == 0x21
+    assert _char_code_from_cmap_key(0x21, 1, 0) == 0x21
+    assert _char_code_from_cmap_key(0x0F42, 3, 1) is None
+
+
+def test_parse_embedded_ttf_encoding_returns_empty_without_font() -> None:
+    doc = _make_doc(encoding_key=None)
+    assert parse_embedded_ttf_encoding(doc, 1) == {}
+
+
+def test_resolve_simple_encoding_prefers_pdf_encoding() -> None:
+    doc = _make_doc(encoding_key=("name", "WinAnsiEncoding"))
+    enc = resolve_simple_encoding(doc, 1)
+    assert enc[65] == "A"
+    # Must not attempt extract_font when /Encoding is present.
+    doc.extract_font.assert_not_called()
+
+
+def test_resolve_simple_encoding_falls_back_when_encoding_missing() -> None:
+    doc = _make_doc(encoding_key=None)
+    assert resolve_simple_encoding(doc, 1) == {}

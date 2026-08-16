@@ -361,10 +361,12 @@ pyproject.toml
 - **Type3** (procedural): not supported. These fonts have no
   embedded font program, so neither glyph name nor outline fingerprint
   lookups have anything to bind against. Silently skipped.
-- **TrueType simple-encoding without `/Encoding`** (e.g. some
-  Ghostscript outputs where char codes are sequential integers
-  unrelated to glyph names): still not supported. Adding the font's
-  built-in encoding read path is a future enhancement.
+- **TrueType simple-encoding without `/Encoding`**: the embedded
+  font's cmap is now read as the built-in encoding. Quartz / Affinity
+  subsets that keep ``uniXXXX`` glyph names are repaired from those
+  names even when the face is not in the lookup DB. Ghostscript
+  outputs whose cmap keys are sequential integers *unrelated* to
+  glyph names still need a gname / gshape lookup for that font.
 
 See [docs/approach.md](docs/approach.md) for the full rationale.
 

@@ -1,4 +1,4 @@
-"""Resolve a simple (Type1 / MMType1 / TrueType) PDF font's /Encoding to
+"""Resolve a simple (Type1 / MMType1 / TrueType) PDF font's char codes to
 the ``{char_code (0..255): glyph_name}`` mapping the content stream uses.
 
 This is the simple-font equivalent of the Type0 (Identity-H) assumption
@@ -19,10 +19,12 @@ Spec references: PDF 32000-1:2008 §9.6.5 (Character Encoding), §9.6.6
 """
 from __future__ import annotations
 
+import io
 import re
 from typing import Dict, Optional
 
 import fitz
+from fontTools.ttLib import TTFont
 
 from fontTools.encodings.StandardEncoding import StandardEncoding
 from fontTools.encodings.MacRoman import MacRoman as _MacRomanEncoding
@@ -158,11 +160,9 @@ def parse_pdf_encoding(
     * Dict (the common case) -- a ``/BaseEncoding`` name is loaded if
       present (default: ``StandardEncoding``), then the ``/Differences``
       array is applied on top.
-    * Missing -- returns an empty mapping. The caller can decide to
-      skip the font or fall back to the embedded font's built-in
-      encoding (not implemented here, since PyMuPDF does not expose it
-      and walking the raw font file would duplicate work the font
-      shaper already does).
+    * Missing -- returns an empty mapping. Call
+      :func:`resolve_simple_encoding` to fall back to the embedded
+      TrueType cmap (Quartz / Affinity / some Ghostscript subsets).
 
     Slots that remain unassigned are omitted from the returned dict so
     the caller can use ``.get(code)`` cleanly.
@@ -222,3 +222,99 @@ def _table_from_encoding_dict_text(dict_text: str) -> list:
     if diff_match:
         table = _parse_differences(diff_match.group(1), table)
     return table
+
+
+# Preferred cmap platforms for a TrueType font's built-in encoding
+# (PDF 32000-1:2008 §9.6.6.4): Windows Symbol, then Macintosh Roman.
+_BUILTIN_CMAP_PREF = (
+    (3, 0),
+    (1, 0),
+)
+
+
+def _char_code_from_cmap_key(cp: int, platform_id: int, plat_enc_id: int) -> Optional[int]:
+    """Map a cmap codepoint to a 1-byte PDF char code, or ``None``.
+
+    Windows Symbol (3, 0) often stores keys in ``0xF000..0xF0FF``; the PDF
+    char code is the low byte. Macintosh Roman (1, 0) and remapped subset
+    cmaps use the codepoint itself when it already fits in a byte.
+    """
+    if platform_id == 3 and plat_enc_id == 0 and 0xF000 <= cp <= 0xF0FF:
+        return cp & 0xFF
+    if 0 <= cp <= 255:
+        return cp
+    return None
+
+
+def _cmap_table_to_encoding(table) -> Dict[int, str]:
+    out: Dict[int, str] = {}
+    plat, enc = table.platformID, table.platEncID
+    for cp, gname in table.cmap.items():
+        if not gname or gname == ".notdef":
+            continue
+        code = _char_code_from_cmap_key(cp, plat, enc)
+        if code is None:
+            continue
+        out[code] = gname
+    return out
+
+
+def parse_embedded_ttf_encoding(
+    doc: fitz.Document, font_xref: int
+) -> Dict[int, str]:
+    """Read ``{char_code: glyph_name}`` from an embedded TrueType cmap.
+
+    Used when the PDF ``/Font`` dict has no ``/Encoding`` (symbolic Quartz /
+    Affinity subsets, some Ghostscript outputs). The subset cmap is the
+    built-in encoding: its keys *are* the 1-byte codes the content stream
+    uses, and the glyph names are whatever the subsetter kept (often
+    ``uniXXXX`` / ``uniXXXXYYYY`` for Unicode Tibetan faces).
+    """
+    try:
+        tup = doc.extract_font(font_xref)
+        if not tup or len(tup) < 4:
+            return {}
+        buf = tup[3]
+        if not buf or not isinstance(buf, (bytes, bytearray)):
+            return {}
+        tt = TTFont(io.BytesIO(bytes(buf)), lazy=False)
+    except Exception:
+        return {}
+    try:
+        cmap = tt.get("cmap")
+        if cmap is None or not getattr(cmap, "tables", None):
+            return {}
+        for plat, enc in _BUILTIN_CMAP_PREF:
+            for table in cmap.tables:
+                if table.platformID == plat and table.platEncID == enc and table.cmap:
+                    resolved = _cmap_table_to_encoding(table)
+                    if resolved:
+                        return resolved
+        # Last resort: any cmap whose keys all collapse to a single byte
+        # (typical of a subsetter that remapped a Unicode cmap in place).
+        for table in cmap.tables:
+            if not table.cmap:
+                continue
+            if all(
+                _char_code_from_cmap_key(cp, table.platformID, table.platEncID) is not None
+                for cp in table.cmap
+            ):
+                resolved = _cmap_table_to_encoding(table)
+                if resolved:
+                    return resolved
+        return {}
+    finally:
+        try:
+            tt.close()
+        except Exception:
+            pass
+
+
+def resolve_simple_encoding(
+    doc: fitz.Document, font_xref: int
+) -> Dict[int, str]:
+    """``/Encoding`` if present, otherwise the embedded TrueType cmap."""
+    enc = parse_pdf_encoding(doc, font_xref)
+    if enc:
+        return enc
+    return parse_embedded_ttf_encoding(doc, font_xref)

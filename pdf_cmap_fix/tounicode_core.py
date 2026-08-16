@@ -17,7 +17,7 @@ import fitz
 from fontTools.ttLib import TTFont
 
 from pdf_cmap_fix.content_streams import collect_referenced_gids
-from pdf_cmap_fix.pdf_font_encoding import parse_pdf_encoding
+from pdf_cmap_fix.pdf_font_encoding import resolve_simple_encoding
 
 LookupTier = Literal["gid", "gname", "gshape"]
 StrategySpec = tuple[LookupTier, Path]
@@ -45,6 +45,13 @@ MIN_GID_CONFLICTS = 4
 _WORD_ACTUALTEXT_SENTINEL_RE = re.compile(
     rb"/Span\s*<<.*?/ActualText\s*<\s*FEFFFFFD\s*>.*?>>\s*BDC\s*(.*?)\s*EMC",
     re.IGNORECASE | re.DOTALL,
+)
+
+# Explicit Unicode glyph names: uniXXXX, uniXXXXYYYY (AGL ligature groups),
+# or uXXXX / uXXXXX / uXXXXXX. Used when a simple TrueType subset has no
+# /Encoding but kept these names in its cmap (Quartz / Affinity).
+_UNI_GLYPH_NAME_RE = re.compile(
+    r"^(?:uni(?:[0-9A-Fa-f]{4})+|u[0-9A-Fa-f]{4,6})$"
 )
 
 PREVIEW_LINES = 15
@@ -406,9 +413,7 @@ def _resolve_db_code_map_simple(
         # GID-based tier 1 is Type0-only by design (see docstring).
         return {}
 
-    from pdf_cmap_fix.pdf_font_encoding import parse_pdf_encoding
-
-    code_to_gname = parse_pdf_encoding(doc, font_xref)
+    code_to_gname = resolve_simple_encoding(doc, font_xref)
     if not code_to_gname:
         return {}
 
@@ -947,6 +952,56 @@ def _is_tibetan_text(s: str) -> bool:
     return bool(s) and all(lo <= ord(c) <= hi for c in s)
 
 
+def _has_tibetan(s: str) -> bool:
+    lo, hi = TIBETAN_RANGE
+    return any(lo <= ord(c) <= hi for c in s)
+
+
+def _unicode_from_uni_glyph_name(gname: str) -> Optional[str]:
+    """Decode an explicit ``uniXXXX`` / ``uXXXXX`` glyph name to Tibetan.
+
+    ``fontTools.agl.toUnicode`` already concatenates ``uni`` 4-hex groups
+    (``uni0F400F74`` → ``ཀུ``). We only accept those explicit Unicode names
+    whose decoded value contains Tibetan, so Latin AGL names (``comma``,
+    ``A``) and PUA ``uniF001`` leftovers cannot overwrite a good ToUnicode.
+    """
+    if not gname or not _UNI_GLYPH_NAME_RE.match(gname):
+        return None
+    from fontTools.agl import toUnicode
+
+    decoded = toUnicode(gname)
+    if decoded and _has_tibetan(decoded):
+        return decoded
+    return None
+
+
+def _tounicode_from_embedded_uni_names(
+    doc: fitz.Document,
+    font_xref: int,
+    existing: dict,
+) -> Optional[dict[int, str]]:
+    """Build a ToUnicode map from ``uni*`` glyph names on a simple font.
+
+    Quartz / Affinity TrueType subsets often ship no ``/Encoding``, a cmap
+    whose keys *are* the PDF char codes, and glyph names like ``uni0F400F74``,
+    while the PDF ToUnicode maps those same codes to ASCII (``'``, ``,``,
+    ``0``). The names are the source of truth.
+    """
+    encoding = resolve_simple_encoding(doc, font_xref)
+    if not encoding:
+        return None
+    db_map: dict[int, str] = {}
+    for code, gname in encoding.items():
+        uni = _unicode_from_uni_glyph_name(gname)
+        if not uni:
+            continue
+        old = existing.get(code, "")
+        if _is_tibetan_text(old) and not (uni == old or uni.startswith(old)):
+            continue
+        db_map[code] = uni
+    return db_map or None
+
+
 def _gid_map_corroborated(
     existing: dict,
     db_map: dict,
@@ -1231,7 +1286,7 @@ def _recover_codes_from_shapes(
             if 0 <= c < len(order):
                 pairs.append((c, order[c]))
     else:
-        enc = parse_pdf_encoding(doc, xref)
+        enc = resolve_simple_encoding(doc, xref)
         pairs = list(enc.items())
     if not pairs:
         return None, {}
@@ -1311,7 +1366,7 @@ def _legacy_tounicode_from_scratch(
 
     # Encoding route (simple fonts only -- Type0 uses a CMap, not /Encoding).
     if not is_type0:
-        encoding = parse_pdf_encoding(doc, xref)
+        encoding = resolve_simple_encoding(doc, xref)
         if encoding:
             from fontTools.agl import toUnicode
 
@@ -1585,6 +1640,18 @@ def collect_font_merges(
             ):
                 db_map, db_key, matched_display = None, None, None
                 rejected_gid_map = True
+
+            # Simple TrueType with no /Encoding and no lookup hit: decode
+            # explicit uni* glyph names from the embedded cmap. Quartz /
+            # Affinity subsets keep those names while writing ASCII ToUnicode
+            # for stacked syllables.
+            if db_map is None and is_simple:
+                uni_map = _tounicode_from_embedded_uni_names(doc, xref, existing)
+                if uni_map is not None:
+                    db_map = uni_map
+                    db_key = "embedded-uni-names"
+                    match_kind = "uni-name"
+                    matched_display = "embedded-uni-names"
 
             if db_map is None:
                 stats["no_match"] += 1
