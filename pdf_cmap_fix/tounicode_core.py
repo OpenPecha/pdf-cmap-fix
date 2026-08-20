@@ -58,6 +58,13 @@ PREVIEW_LINES = 15
 PREVIEW_DIFF = 8
 TIBETAN_RANGE = (0x0F00, 0x0FFF)
 
+# PyMuPDF garbage levels 3 and 4 merge duplicate objects (4 also compares
+# stream bytes). On a 300-page tagged PDF with tens of thousands of xrefs
+# that is ~100s natively and effectively hangs the in-browser Pyodide
+# worker, for a ~1% size win. Level 2 still drops unused objects and
+# compacts the xref after we rewrite ToUnicode streams.
+_PDF_SAVE_KW = dict(garbage=2, deflate=True)
+
 
 def _strip_prefix(name: str) -> str:
     return name.split("+", 1)[1] if "+" in name else name
@@ -1870,7 +1877,7 @@ def patch_pdf(
             tier=tier,
             verbose=verbose,
         )
-        pdf_bytes = doc.tobytes(garbage=4, deflate=True)
+        pdf_bytes = doc.tobytes(**_PDF_SAVE_KW)
     finally:
         doc.close()
 
