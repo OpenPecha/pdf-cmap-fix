@@ -1338,7 +1338,11 @@ def _legacy_tounicode_from_scratch(
       :func:`_recover_codes_from_outlines`). Also the Type0/Identity-H path.
 
     The conversion table is resolved from the PDF base font name first, then --
-    for fonts embedded under an obfuscated name -- from the glyph outlines.
+    for fonts embedded under an obfuscated name -- from the glyph outlines
+    (exact TrueType hashes, or fuzzy CFF shape matching). TrueType fonts whose
+    hashes are absent from the glyph DB are *not* run through shape matching:
+    that path false-positives Latin faces (Optima, Lucida Grande) as
+    ``Ededris-vowa`` and then remaps their MacRoman encoding to Tibetan.
 
     Returns ``(db_map, matched_font_name)`` or ``None`` when the font is not a
     recoverable legacy face.
@@ -1359,13 +1363,18 @@ def _legacy_tounicode_from_scratch(
             from pdf_cmap_fix.glyph_outline_id import identify_candidates
 
             name, _table = ptg.table_for_candidates(identify_candidates(ttfont))
-        # CFF/Type1 (or anything the hash path can't read) -> shape matching,
-        # which also recovers an obfuscated name from the glyph outlines.
+        # CFF/Type1 (no glyf hashes to compare) -> shape matching, which also
+        # recovers an obfuscated name from the glyph outlines. Do not use this
+        # as a fallback for TrueType: a glyf font that failed exact-hash ID is
+        # not a vendored legacy face, and the bitmap matcher false-positives
+        # large Latin subsets as Ededris-vowa (see tests for Optima / Lucida).
         if name is None:
-            shape_font, shape_map = _recover_codes_from_shapes(
-                doc, xref, is_type0=is_type0, referenced=referenced
-            )
-            name = shape_font
+            is_truetype_glyf = ttfont is not None and "glyf" in ttfont and "CFF " not in ttfont
+            if not is_truetype_glyf:
+                shape_font, shape_map = _recover_codes_from_shapes(
+                    doc, xref, is_type0=is_type0, referenced=referenced
+                )
+                name = shape_font
         if name is None:
             return None
 

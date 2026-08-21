@@ -8,7 +8,9 @@ runtime, so only shape matching can resolve it.
 
 The distinctiveness gate must also REJECT non-Tibetan faces (a Latin period has
 the same shape as a Tibetan tsheg): that is covered by the existing decoy tests
-in ``test_pytiblegenc_simple_fonts.py`` (Times/NewBaskerville stay unconverted).
+in ``test_pytiblegenc_simple_fonts.py`` (Times/NewBaskerville stay unconverted)
+and by ``test_latin_optima_and_lucida_are_not_converted`` (Optima / Lucida Grande).
+TrueType fonts are identified by exact outline hash, not this bitmap matcher.
 """
 from __future__ import annotations
 

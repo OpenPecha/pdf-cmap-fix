@@ -40,6 +40,14 @@ _STEPS = 10       # bezier flattening steps
 # while Latin faces sharing only generic marks top out at ~0.0002).
 _ACCEPT = 0.05            # max mean-abs distance to trust a single glyph match
 _DISTINCT_VOTE_MIN = 0.008  # min summed distinctiveness weight to accept a font
+# AGL/native-byte corroboration: a Latin face with MacRoman names (Optima,
+# Lucida Grande) can still accumulate a vote above ``_DISTINCT_VOTE_MIN``
+# because many letterforms sit inside ``_ACCEPT`` of some Tibetan stack. Real
+# legacy fonts that *use* those AGL names as native slots recover the same
+# byte; Latin decoys recover a scrambled byte. Need this many AGL-named
+# matches before judging, and reject when agreement is below the ratio.
+_AGL_CORROBORATE_MIN = 4
+_AGL_CORROBORATE_RATIO = 0.25
 
 _DATA = Path(__file__).resolve().parent / "data" / "pytiblegenc"
 _DB_FILE = _DATA / "glyph_shape_db.npz"
@@ -224,7 +232,9 @@ def identify_and_recover(
         # shared across every font (a Latin period == a Tibetan tsheg) carry ~0
         # weight; only genuinely Tibetan shapes accumulate weight. This rejects
         # non-Tibetan faces (Times/Palatino) that happen to share common glyphs,
-        # while still trusting tiny but distinctive Sanskrit subfonts.
+        # while still trusting tiny but distinctive Sanskrit subfonts. Large
+        # Latin faces (Optima, Lucida Grande) can still sneak over the sum
+        # gate; they are rejected by the AGL/native-byte check below.
         votes: Dict[int, float] = {}
         for fp in fps.values():
             d = np.abs(vecs - fp).mean(axis=1)
@@ -253,4 +263,42 @@ def identify_and_recover(
             out[code] = int(fcodes[j])
     if not out:
         return None, {}
+    # font_hint means the caller already resolved the conversion table by name;
+    # don't second-guess it. Otherwise reject a vote whose recovered native
+    # bytes disagree with the AGL values of the embedded glyph names -- the
+    # signature of a Latin font false-positive.
+    if font_hint is None and _agl_native_mismatch(pairs, out):
+        return None, {}
     return fonts[target_id], out
+
+
+def _agl_native_mismatch(
+    pairs: List[Tuple[int, str]], code_to_native: Dict[int, int]
+) -> bool:
+    """True when AGL glyph names and recovered native bytes disagree.
+
+    Legacy Tibetan fonts reuse MacRoman glyph names as *native slots*
+    (``'A'`` is byte 65 in the conversion table), so a correct match recovers
+    ``native == ord(AGL(name))``. A Latin decoy voted as Ededris-vowa recovers
+    scrambled bytes. Glyphs without a single-character AGL mapping (``MT33``,
+    ``.notdef.2``, ``uni0F40``) are ignored; too few named matches is a no-op
+    so tiny Sanskrit subsets keep working.
+    """
+    try:
+        from fontTools.agl import toUnicode
+    except Exception:
+        return False
+    gname_by_code = {code: gname for code, gname in pairs}
+    agree = disagree = 0
+    for code, native in code_to_native.items():
+        ch = toUnicode(gname_by_code.get(code, "") or "")
+        if len(ch) != 1:
+            continue
+        if native == ord(ch):
+            agree += 1
+        else:
+            disagree += 1
+    checked = agree + disagree
+    if checked < _AGL_CORROBORATE_MIN:
+        return False
+    return agree / checked < _AGL_CORROBORATE_RATIO
